@@ -261,7 +261,8 @@ html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .blk.ghost { background: repeating-linear-gradient(135deg, var(--focus-bg) 0 6px, #fff 6px 12px); border: 1.5px dashed var(--ink-2); border-left-width: 1.5px; color: var(--ink); cursor: pointer; }
 .blk.ghost:hover { border-color: var(--ink); }
 .blk.conf { outline: 2px solid var(--need); outline-offset: -2px; }
-.pin { position: absolute; left: 4px; right: 4px; height: 20px; border-radius: 6px; background: var(--deadline); color: #fff; font: 600 11px/20px var(--disp); padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin { position: absolute; left: 4px; right: 4px; min-height: 20px; border-radius: 6px; background: var(--deadline); color: #fff; font: 600 11px/20px var(--disp); padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: box-shadow .15s; }
+.pin:hover, .pin:focus, .pin.open { white-space: normal; line-height: 1.35; padding: 4px 7px; z-index: 30; box-shadow: 0 10px 24px -8px rgba(30,27,46,.4), 0 0 0 2px #fff; outline: none; }
 .pin.u1 { background: var(--urgent); }
 .allday { position: sticky; top: 58px; z-index: 3; padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; background: #fcfaf6; }
 html[data-theme="steam"] .allday { background: #fbf4e8; }
@@ -948,7 +949,7 @@ function renderWeekView(items) {
       if (multi.includes(i)) continue;
       const p = etParts(i.start), top = ((p.h + p.mi / 60) - H0) * PX;
       if (top < -PX || top > (H1 - H0) * PX) continue;
-      if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}">${esc(i.title)}</div>`; continue; }
+      if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" tabindex="0" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)} · ${timeOf(i.start)}">${esc(i.title)} · ${timeOf(i.start)}</div>`; continue; }
       // Later overlapping items step in from the left and sit on top (Google-Calendar style) so every block keeps its width.
       // short items get two lines of room anyway (like every calendar app); only stacked overlaps go single-line
       const { col: c } = lay.get(i), hpx = Math.max(42, (i.end - i.start) / H * PX - 2), inset = Math.min(60, c * 30);
@@ -1077,7 +1078,7 @@ document.addEventListener("click", async e => {
   const nav = e.target.closest(".tab, .tabbar button, #setupBtn"); if (nav) return go(nav.dataset.view);
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
-  const blk = e.target.closest(".blk"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
+  const blk = e.target.closest(".blk, .pin"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open, .pin.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); toast(t("removed")); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
