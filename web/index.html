@@ -790,11 +790,11 @@ function renderHero(items) {
   $("kicker").textContent = fmt(n, { weekday: "long", month: "long", day: "numeric" });
   // Greeting follows the clock (ET): one fixed line per part of the day.
   const G = {
-    en: { night: "Still up, {n}? Burning the midnight oil.", morning: "Good morning, {n}. A new day begins.", afternoon: "Good afternoon, {n}. Keep going — you're past halfway.", evening: "Good evening, {n}. Nice work today, time to wind down." },
-    zh: { night: "{n}，还没睡呢，熬夜辛苦了。", morning: "{n}，早上好，新的一天开始了。", afternoon: "{n}，下午好，今天继续加油，已经过半了。", evening: "{n}，晚上好，今天辛苦了，该收工了。" }
+    en: { night: "<span>Still up?</span> Burning the midnight oil.", morning: "<span>Good morning.</span> A new day begins.", afternoon: "<span>Good afternoon.</span> Keep going — you're past halfway.", evening: "<span>Good evening.</span> Nice work today, time to wind down." },
+    zh: { night: "<span>还没睡呢</span>，熬夜辛苦了。", morning: "<span>早上好</span>，新的一天开始了。", afternoon: "<span>下午好</span>，今天继续加油，已经过半了。", evening: "<span>晚上好</span>，今天辛苦了，该收工了。" }
   };
   const period = p.h < 5 ? "night" : p.h < 12 ? "morning" : p.h < 18 ? "afternoon" : "evening";
-  $("greeting").innerHTML = G[lang][period].replace("{n}", "<span>Lee</span>");
+  $("greeting").innerHTML = G[lang][period];
   const wk = items.filter(i => i.end >= n && i.start < n + 7 * D && i.kind !== "focus");
   const c = k => wk.filter(i => i.kind === k).length, dl = wk.filter(i => i.kind === "deadline");
   const urgent = dl.filter(i => i.tri?.level === "urgent").length, ignored = state.triage.filter(x => x.level === "ignore").length;
