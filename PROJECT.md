@@ -4,6 +4,8 @@
 
 **Name:** Operator — the telegraph operator who watches every course line for you.
 
+**Domain:** myoperator.club (GoDaddy Registry / MLH free code, registered 2026-10-24 at Porkbun, auto-renew off)
+
 **One line:** You never log in to Brightspace again. An agent watches every course for you and only "sends a telegram" (iMessage) when something actually matters.
 
 ## Problem
