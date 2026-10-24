@@ -14,8 +14,10 @@ function getDm() {
     }
     const app = await Spectrum({ projectId, projectSecret, providers: [imessage.config()] });
     const im = imessage(app);
-    const me = await im.user(phone);
-    return im.space.create(me);
+    // Free/shared-pool plan: the user texts the line once, then we reuse that DM.
+    // Creating a fresh DM is refused ("Target not allowed"), so try the existing chat first.
+    try { return await im.space.get(`any;-;${phone}`); }
+    catch { const me = await im.user(phone); return im.space.create(me); }
   })();
   return dmPromise;
 }
