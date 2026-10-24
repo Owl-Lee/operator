@@ -35,9 +35,12 @@ export function loadAgentLog(): AgentEntry[] {
   return existsSync(AGENT) ? JSON.parse(readFileSync(AGENT, "utf8")) : [];
 }
 
-export function logAgent(type: AgentEntry["type"], text: string, meta?: Record<string, unknown>): void {
+export function logAgent(type: AgentEntry["type"], text: string, meta?: Record<string, unknown>, opts?: { collapseKey?: string }): void {
   mkdirSync(DIR, { recursive: true });
   const log = loadAgentLog();
+  // Flipping the same item back and forth should read as one line, not a wall of done/undone.
+  if (opts?.collapseKey && log[0]?.meta?.collapseKey === opts.collapseKey) log.shift();
+  if (opts?.collapseKey) meta = { ...(meta ?? {}), collapseKey: opts.collapseKey };
   log.unshift({ at: new Date().toISOString(), type, text, ...(meta ? { meta } : {}) });
   writeFileSync(AGENT, JSON.stringify(log.slice(0, 300), null, 2));
 }

@@ -222,6 +222,8 @@ textarea, input { font-family: var(--sans); }
 .item.done h4 { text-decoration: line-through; text-decoration-color: var(--line-2); }
 .item.done .kind { opacity: .5; }
 .item .side .chk { margin-right: 2px; }
+.chk-slot { width: 22px; height: 22px; }
+#feed { max-height: 520px; overflow: auto; }
 .dl .item.urgent h4 { color: var(--urgent); }
 .item.urgent .kind { color: var(--urgent); background: #fde7e4; }
 .item.urgent .kind::before { background: var(--urgent); }
@@ -781,7 +783,7 @@ const kicon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const emptyHtml = (a, b) => `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg><div><b>${t(a)}</b>${t(b)}</div></div>`;
 const undoBtn = i => i.pasted && i.rid ? `<button class="undo" data-remove="${esc(i.rid)}" title="${t("paste.undo")}">↩ ${t("paste.undo")}</button>` : "";
 /* ✓ on deadlines: mark done (reminders stop); on a done item it re-opens */
-const doneBtn = i => i.kind === "deadline" && i.type !== "milestone" ? `<button class="chk ${i.done ? "on" : ""}" data-done="${esc(i.id)}" data-title="${esc(i.title)}" data-undo="${i.done ? 1 : ""}" title="${t(i.done ? "done.undo" : "done.mark")}">${i.done ? "✓" : ""}</button>` : "";
+const doneBtn = i => i.kind === "deadline" && i.type !== "milestone" ? `<button class="chk ${i.done ? "on" : ""}" data-done="${esc(i.id)}" data-title="${esc(i.title)}" data-undo="${i.done ? 1 : ""}" title="${t(i.done ? "done.undo" : "done.mark")}">${i.done ? "✓" : ""}</button>` : `<span class="chk-slot"></span>`;
 const tagz = i => `${i.sample ? '<span class="sample">sample</span>' : ""}${i.pasted ? `<span class="pasted">${lang === "zh" ? "粘贴" : "pasted"}</span>` : ""}`;
 
 /* ---------------- renderers ---------------- */
@@ -868,7 +870,7 @@ function toast(msg, action) {
   el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), action ? 6000 : 2500);
 }
 function renderFeed() {
-  const n = now(), log = state.agentLog.slice(0, 8);
+  const n = now(), log = state.agentLog.slice(0, 24);
   if (!log.length) { $("feed").innerHTML = emptyHtml("empty.feed", "empty.feed.sub"); return; }
   const rel = ms => { const m = Math.round((n - ms) / 60000); return m < 1 ? t("just now") : m < 60 ? t("min ago", { n: m }) : m < 1440 ? t("h ago", { n: Math.round(m / 60) }) : fmt(ms, { month: "short", day: "numeric" }); };
   const seen = renderFeed.seen || (renderFeed.seen = new Set(state.agentLog.map(e => e.at)));
@@ -918,7 +920,7 @@ function renderWeekStrip() {
 }
 function dlHtml(i) {
   const lvl = i.done ? "done" : (i.tri?.level || "need");
-  return `<div class="item ${lvl}" data-kind="deadline" title="${esc(reason(i.tri?.reason) || "")}">
+  return `<div class="item ${lvl}" data-kind="deadline" data-lvl="${i.tri?.level || "need"}" title="${esc(reason(i.tri?.reason) || "")}">
     ${doneBtn(i)}
     <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(lang === "zh" ? { assignment: "作业", discussion: "讨论", quiz: "测验", exam: "考试" }[i.type] || i.type : i.type) : ""}</p></div>
     <div class="date">${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric" }))}<small>${timeOf(i.start)}</small>${i.pasted ? `<div style="margin-top:6px">${undoBtn(i)}</div>` : ""}</div>
@@ -1122,7 +1124,16 @@ document.addEventListener("click", async e => {
   const blk = e.target.closest(".blk, .pin"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open, .pin.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
   if (e.target.closest("#briefBtn")) return playBriefing();
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
-  const dn = e.target.closest("[data-done]"); if (dn) { e.preventDefault(); e.stopPropagation(); await fetch("/api/done", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid: dn.dataset.done, title: dn.dataset.title, undo: !!dn.dataset.undo }) }); toast(t(dn.dataset.undo ? "done.reopened" : "done.marked", { t: dn.dataset.title })); return load(); }
+  const dn = e.target.closest("[data-done]"); if (dn) {
+    e.preventDefault(); e.stopPropagation();
+    const uid = dn.dataset.done, undo = !!dn.dataset.undo, title = dn.dataset.title;
+    // flip every row for this item in place — no re-render, no flicker
+    document.querySelectorAll("[data-done]").forEach(b => { if (b.dataset.done !== uid) return; b.classList.toggle("on", !undo); b.textContent = undo ? "" : "✓"; b.dataset.undo = undo ? "" : "1"; b.title = t(undo ? "done.mark" : "done.undo"); const it = b.closest(".item"); if (it) it.className = `item ${undo ? (it.dataset.lvl || "need") : "done"}`; });
+    toast(t(undo ? "done.reopened" : "done.marked", { t: title }));
+    await fetch("/api/done", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid, title, undo }) });
+    try { state = await (await fetch("/api/state")).json(); } catch {}
+    renderFeed(); renderHero(allItems()); return;
+  }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); toast(t("removed")); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();

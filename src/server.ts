@@ -49,8 +49,8 @@ createServer(async (req, res) => {
     if (url.pathname === "/api/done" && req.method === "POST") {
       const { uid, title, undo } = await body(req);
       if (!uid) return json({ error: "uid required" }, 400);
-      if (undo) { unmarkDone(uid); logAgent("triage", `Re-opened from the dashboard: ${title ?? uid}.`, { uid, via: "web" }); }
-      else { markDone(uid, title ?? uid, "web"); logAgent("triage", `Marked done from the dashboard: ${title ?? uid}. Reminders for it are off.`, { uid, via: "web" }); }
+      if (undo) { unmarkDone(uid); logAgent("triage", `Re-opened from the dashboard: ${title ?? uid}.`, { uid, via: "web" }, { collapseKey: `done:${uid}` }); }
+      else { markDone(uid, title ?? uid, "web"); logAgent("triage", `Marked done from the dashboard: ${title ?? uid}. Reminders for it are off.`, { uid, via: "web" }, { collapseKey: `done:${uid}` }); }
       return json({ ok: true });
     }
     /* Setup page: save the Brightspace feed URL and import right away. */
