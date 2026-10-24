@@ -248,8 +248,8 @@ textarea, input { font-family: var(--sans); }
 .wk .hours span { position: absolute; right: 8px; transform: translateY(-50%); font: 500 11px var(--sans); color: var(--muted); }
 .blk { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font: 600 11.5px/1.25 var(--disp); color: var(--c); background: var(--cbg); border-left: 3px solid var(--c); overflow: hidden; }
 .blk small { display: block; font: 500 10.5px var(--sans); color: var(--ink-2); opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.blk.tight { padding: 3px 6px; font-size: 11px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
-.blk.over { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(30,27,46,.12); }
+.blk.tight { padding: 3px 5px; font-size: 10.5px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
+.blk.over { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(30,27,46,.12); margin-top: 4px; font-size: 10px; padding: 3px 4px; }
 .blk.ghost { background: repeating-linear-gradient(135deg, var(--focus-bg) 0 6px, #fff 6px 12px); border: 1.5px dashed var(--ink-2); border-left-width: 1.5px; color: var(--ink); cursor: pointer; }
 .blk.ghost:hover { border-color: var(--ink); }
 .blk.conf { outline: 2px solid var(--need); outline-offset: -2px; }
@@ -840,9 +840,10 @@ function renderWeekView(items) {
       if (top < -PX || top > (H1 - H0) * PX) continue;
       if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}">${esc(i.title)}</div>`; continue; }
       // Later overlapping items step in from the left and sit on top (Google-Calendar style) so every block keeps its width.
-      const { col: c } = lay.get(i), hpx = Math.max(22, (i.end - i.start) / H * PX - 2), inset = c * 22;
-      const tight = hpx < 44;
-      col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}${tight ? "" : `<small>${esc(i.location || "")}</small>`}</div>`;
+      const { col: c } = lay.get(i), hpx = Math.max(22, (i.end - i.start) / H * PX - 2), inset = Math.min(60, c * 30);
+      const tight = hpx < 44 || c > 0;
+      const shortTitle = i.title.split(/\s[·(（]|\s-\s/)[0].trim(); // "Office hours · Prof. (EST 393)" → "Office hours"
+      col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(tight ? shortTitle : i.title)}${tight ? "" : `<small>${esc(i.location || "")}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
