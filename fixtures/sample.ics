@@ -1,0 +1,45 @@
+BEGIN:VCALENDAR
+PRODID:-//D2L//NONSGML v1.0//EN
+VERSION:2.0
+METHOD:PUBLISH
+X-WR-CALNAME:All Courses - Stony Brook University
+BEGIN:VEVENT
+SUMMARY:Discussion Week #9
+LOCATION:-EST 391.30 Technology Assessment - Fall 2026
+DESCRIPTION:Week 9\nSummarize the reading.\n\n\nDiscussions:\nDiscussion Week #9 - https://mycourses.stonybrook.edu/d2l/le/2751225/discussions/topics/3157967/View
+DTSTART:20261024T035959Z
+DTEND:20261024T035959Z
+UID:6686-14837885@mycourses.stonybrook.edu
+SEQUENCE:0
+LAST-MODIFIED:20260822T205519Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:HW#3 - Due
+LOCATION:-EST 393.01 Project Management - Fall 2026
+DESCRIPTION:Answer the following questions about risk management.\n\n\nAssignments:\nHW#3 - https://mycourses.stonybrook.edu/d2l/lms/dropbox/user/folder_submit_files.d2l?ou=2751229&db=5306840
+DTSTART:20261027T035959Z
+DTEND:20261027T035959Z
+UID:6686-14723707@mycourses.stonybrook.edu
+SEQUENCE:2
+LAST-MODIFIED:20260819T165825Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Discussion Week #10
+LOCATION:-EST 391.30 Technology Assessment - Fall 2026
+DESCRIPTION:Week 10\nSummarize the reading.\n\n\nDiscussions:\nDiscussion Week #10 - https://mycourses.stonybrook.edu/d2l/le/2751225/discussions/topics/3157979/View
+DTSTART:20261031T035959Z
+DTEND:20261031T035959Z
+UID:6686-14837919@mycourses.stonybrook.edu
+SEQUENCE:0
+LAST-MODIFIED:20260822T205704Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Final Exam
+LOCATION:-ANT 102.01 What Makes Us Human? - Fall 2026
+DTSTART:20261215T161500Z
+DTEND:20261215T184500Z
+UID:6686-14691346@mycourses.stonybrook.edu
+SEQUENCE:0
+LAST-MODIFIED:20260818T185721Z
+END:VEVENT
+END:VCALENDAR
