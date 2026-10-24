@@ -140,7 +140,7 @@ textarea, input { font-family: var(--sans); }
 .nowline span { position: absolute; right: 0; top: -20px; font: 600 11px var(--disp); color: var(--urgent); }
 
 /* focus */
-.focus { background: linear-gradient(160deg, #1f1b2f, #2b2140 60%, #3a1f3a); color: #fff; border: 0; position: relative; overflow: hidden; }
+.focus { background: linear-gradient(160deg, #1f1b2f, #2b2140 60%, #3a1f3a); color: #fff; border: 0; position: relative; overflow: hidden; align-self: start; }
 .focus::after { content: ""; position: absolute; width: 260px; height: 260px; right: -90px; top: -110px; border-radius: 50%; background: radial-gradient(circle, rgba(255,154,60,.55), transparent 65%); pointer-events: none; }
 .focus .kicker { font: 600 12px var(--disp); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
 .focus h2 { font: 800 28px/1.1 var(--disp); margin: 8px 0 4px; }
@@ -211,7 +211,12 @@ textarea, input { font-family: var(--sans); }
 
 /* deadlines */
 .dl .item { grid-template-columns: 1fr auto; }
-.dl .body { border: 0; padding: 0; }
+.dl .body { border: 0; padding: 0 0 0 18px; position: relative; }
+.dl .body::before { content: ""; position: absolute; left: 0; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); }
+.dl .item.urgent .body::before { background: var(--urgent); box-shadow: 0 0 0 3px rgba(229,55,46,.15); }
+.dl .item.urgent h4 { color: var(--urgent); }
+.item.urgent .kind { color: var(--urgent); background: #fde7e4; }
+.item.urgent .kind::before { background: var(--urgent); }
 .dl .item + .item::before { left: 10px; }
 .dl .date { text-align: right; font: 600 13px var(--disp); color: var(--ink-2); }
 .dl .date small { display: block; color: var(--muted); font-weight: 500; font-size: 12px; }
@@ -231,12 +236,13 @@ textarea, input { font-family: var(--sans); }
 .conflict { background: #fff1dc; color: #7a4a0c; }
 
 /* week view */
-.wk { display: grid; grid-template-columns: 56px repeat(7, 1fr); border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: #fff; }
-.wk .hd { padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: var(--bg-2); }
+.wkwrap { max-height: 70vh; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff; }
+.wk { display: grid; grid-template-columns: 56px repeat(7, 1fr); }
+.wk .hd { position: sticky; top: 0; z-index: 3; padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: var(--bg-2); }
 .wk .hd b { display: block; font-size: 18px; color: var(--ink); }
 .wk .hd.today b { color: var(--accent); }
-.wk .col { position: relative; height: 720px; border-left: 1px solid var(--line); background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
-.wk .hours { position: relative; height: 720px; }
+.wk .col { position: relative; height: 960px; border-left: 1px solid var(--line); background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
+.wk .hours { position: relative; height: 960px; }
 .wk .hours span { position: absolute; right: 8px; transform: translateY(-50%); font: 500 11px var(--sans); color: var(--muted); }
 .blk { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font: 600 11.5px/1.25 var(--disp); color: var(--c); background: var(--cbg); border-left: 3px solid var(--c); overflow: hidden; }
 .blk small { display: block; font: 500 10.5px var(--sans); color: var(--ink-2); opacity: .8; }
@@ -386,14 +392,13 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
       <div class="card focus" style="--c:5" id="focus"></div>
       <div class="card" style="--c:7"><div class="card-h"><h2><span data-i18n="h.feed">What the agent did</span> <span class="kind" style="--c:#16b36a;--cbg:#e6f7ee" data-i18n="h.live">live</span></h2><span class="more" id="feedCount"></span></div><div id="feed"></div></div>
       <div class="card" style="--c:5"><div class="card-h"><h2 data-i18n="h.quiet">Didn't bother you with</h2><button class="more" id="quietToggle"></button></div><div id="quiet"></div></div>
-      <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.week">This week</h2><span class="more" id="weekRange"></span></div><div class="week" id="weekstrip"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.deadlines">Deadlines</h2></div><div class="dl" id="deadlines"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.agenda">Meetings &amp; events</h2><span class="more" id="agCount"></span></div><div class="ag" id="agenda"></div></div>
     </div>
   </section>
 
   <section class="view" id="view-week" hidden>
-    <div class="card"><div class="card-h"><h2 data-i18n="h.weekview">Week view</h2><span class="more" id="weekRange2"></span></div><div class="wk" id="wk"></div>
+    <div class="card"><div class="card-h"><h2 data-i18n="h.weekview">Week view</h2><span class="more" id="weekRange2"></span></div><div class="wkwrap" id="wkwrap"><div class="wk" id="wk"></div></div>
       <div class="legend" id="legend"></div></div>
   </section>
   <section class="view" id="view-deadlines" hidden><div class="card"><div class="card-h"><h2 data-i18n="h.alldl">Every upcoming deadline</h2></div><div class="dl" id="deadlinesAll"></div></div></section>
@@ -659,7 +664,7 @@ function renderHero(items) {
   const wk = items.filter(i => i.end >= n && i.start < n + 7 * D && i.kind !== "focus");
   const c = k => wk.filter(i => i.kind === k).length, dl = wk.filter(i => i.kind === "deadline");
   const urgent = dl.filter(i => i.tri?.level === "urgent").length, ignored = state.triage.filter(x => x.level === "ignore").length;
-  $("summary").textContent = t("sum", { d: dl.length, c: c("class"), m: c("meeting"), e: c("event"), u: urgent ? t("sum.urgent", { n: urgent }) : t("sum.nourgent"), ig: ignored });
+  $("summary").hidden = true;
   const next = items.find(i => i.start >= n && i.link && i.kind !== "focus");
   const a = $("openNext"); if (next) { a.href = next.link; a.textContent = t("next", { t: next.title }); a.hidden = false; } else a.hidden = true;
   $("stats").innerHTML = [["deadline", dl.length], ["class", c("class")], ["meeting", c("meeting")], ["event", c("event")]]
@@ -672,10 +677,10 @@ function renderHero(items) {
   $("status").innerHTML = `<i></i><span><b>${t(connected ? "status.online" : "status.off")}</b><span class="hide-m">${connected ? t("status.watch", { n: courses }) : ""}${ago !== null ? t("status.checked", { t: ago < 1 ? t("just now") : ago < 60 ? t("min ago", { n: ago }) : t("h ago", { n: Math.round(ago / 60) }) }) : ""}</span></span>`;
 }
 function itemHtml(i) {
-  const n = now(), u = i.kind === "deadline" ? urgency(i.start) : 0, past = i.end < n && !i.ongoing;
+  const n = now(), u = i.kind === "deadline" && i.tri?.level === "urgent" ? 1 : 0, past = i.end < n && !i.ongoing;
   const when = i.kind === "deadline" ? `${timeOf(i.start)}<small>${t("due")}</small>` : i.ongoing ? `${t("ongoing")}<small>${t("until")} ${fmt(i.end, { weekday: "short" })} ${timeOf(i.end)}</small>` : `${timeOf(i.start)}<small>${timeOf(i.end)}</small>`;
   const sub = [i.course && i.kind !== "class" ? code(i.course) : "", i.kind === "class" ? courseName(i.course) : "", i.location, i.type && !/milestone|pasted/.test(i.type) ? i.type : "", i.kind === "focus" ? i.note : ""].filter(Boolean).join(" · ");
-  const side = `<span class="kind">${t("kind." + i.kind)}</span>${triChip(i, true)}${undoBtn(i)}`;
+  const side = `<span class="kind">${t("kind." + i.kind)}</span>${undoBtn(i)}`;
   return `<div class="item ${u === 1 ? "urgent" : ""} ${past ? "past" : ""}" data-kind="${i.kind}">
     <div class="time">${when}</div>
     <div class="body"><h4>${esc(i.title)}${tagz(i)}</h4><p>${esc(sub)}${i.conflict ? ` · <span class="warn">⚠ ${t("overlaps")} ${esc(i.conflict)}</span>` : ""}</p></div>
@@ -702,11 +707,9 @@ function renderTimeline(items) {
 function renderFocus(items) {
   const i = items.find(x => x.kind === "deadline" && x.start >= now() && visible(x));
   if (!i) { $("focus").innerHTML = `<div class="kicker">${t("focus.k")}</div><h2>${t("focus.clear")}</h2><p class="sub">${t("focus.clear.sub")}</p>`; return; }
-  const rest = items.filter(x => x.kind === "deadline" && x !== i && x.start >= now() && visible(x)).slice(0, 3);
-  $("focus").innerHTML = `<div class="kicker">${t("focus.k")}</div><h2>${esc(i.title)}</h2><p class="sub">${esc(code(i.course))} · ${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}${i.tri ? ` · <span style="color:#ffb08f">${esc(reason(i.tri.reason))}</span>` : ""}</p>
+  $("focus").innerHTML = `<div class="kicker">${t("focus.k")}</div><h2>${esc(i.title)}</h2><p class="sub">${esc(code(i.course))} · ${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</p>
     <div class="cd" id="cd" data-due="${i.start}"></div>
-    ${i.link ? `<a class="btn" href="${esc(i.link)}" target="_blank" rel="noopener">${t(i.type === "milestone" ? "focus.event" : "focus.open")}</a>` : ""}
-    ${rest.length ? `<div class="after"><div class="kicker">${t("focus.after")}</div>${rest.map(x => `<div class="after-row"><span>${esc(x.title)}<small>${esc(code(x.course))}</small></span><b>${esc(fmt(x.start, { weekday: "short", month: "short", day: "numeric" }))}</b></div>`).join("")}</div>` : ""}`;
+    ${i.link ? `<a class="btn" href="${esc(i.link)}" target="_blank" rel="noopener">${t(i.type === "milestone" ? "focus.event" : "focus.open")}</a>` : ""}`;
   tick();
 }
 function tick() {
@@ -753,20 +756,15 @@ function renderQuiet() {
     <div class="quiet-list ${quietOpen ? "show" : ""}">${ig.slice(0, 12).map(x => { const i = byUid.get(x.uid); return `<div class="ql"><span>${esc(i?.title)} <small>· ${esc(code(i?.course))}</small></span><small>${esc(reason(x.reason))}</small></div>`; }).join("")}${ig.length > 12 ? `<div class="ql"><small>${t("quiet.more", { n: ig.length - 12 })}</small></div>` : ""}</div>`;
   $("quietToggle").textContent = t(quietOpen ? "quiet.hide" : "quiet.show");
 }
-function renderWeekStrip(items) {
+function renderWeekStrip() {
   const today = etMidnight(now());
-  const range = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
-  $("weekRange").textContent = range; $("weekRange2").textContent = range;
-  $("weekstrip").innerHTML = Array.from({ length: 7 }, (_, k) => {
-    const d = today + k * D, list = items.filter(i => visible(i) && dayKey(i.start) === d && i.kind !== "focus");
-    return `<div class="wd ${k === 0 ? "today" : ""}"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
-  }).join("");
+  $("weekRange2").textContent = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
 }
 function dlHtml(i) {
-  const elapsed = Math.min(1, Math.max(0, 1 - (i.start - now()) / (14 * D)));
-  return `<div class="item" data-kind="deadline">
-    <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(t("kind." + i.type) === "kind." + i.type ? i.type : (lang === "zh" ? { assignment: "作业", discussion: "讨论", quiz: "测验", exam: "考试" }[i.type] || i.type : i.type)) : ""}</p><div class="bar"><i style="width:${Math.round(elapsed * 100)}%"></i></div></div>
-    <div class="date">${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric" }))}<small>${timeOf(i.start)}</small><div style="margin-top:6px">${triChip(i, true)} ${undoBtn(i)}</div></div>
+  const lvl = i.tri?.level || "need";
+  return `<div class="item ${lvl}" data-kind="deadline" title="${esc(reason(i.tri?.reason) || "")}">
+    <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(lang === "zh" ? { assignment: "作业", discussion: "讨论", quiz: "测验", exam: "考试" }[i.type] || i.type : i.type) : ""}</p></div>
+    <div class="date">${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric" }))}<small>${timeOf(i.start)}</small>${i.pasted ? `<div style="margin-top:6px">${undoBtn(i)}</div>` : ""}</div>
     ${i.link ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
 }
 function renderDeadlines(items) {
@@ -786,10 +784,24 @@ function renderAgenda(items) {
         ${i.milestone ? `<div class="mile">${t("mile", { t: esc(i.milestone.title) + " · " + esc(fmt(etToMs(i.milestone.at), { weekday: "short", hour: "numeric", minute: "2-digit" })) })}</div>` : ""}
       </div>${i.link ? `<a href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}" style="position:absolute;inset:0"></a>` : ""}</div>`).join("") || emptyHtml("empty.ag", "empty.ag.sub");
 }
+/* Overlapping blocks share the column side by side instead of stacking. */
+function layoutColumns(list) {
+  const sorted = [...list].sort((a, b) => a.start - b.start || b.end - a.end), out = new Map();
+  let cluster = [], clusterEnd = 0;
+  const flush = () => {
+    const colsEnd = [];
+    for (const i of cluster) { let c = colsEnd.findIndex(e => e <= i.start); if (c < 0) { c = colsEnd.length; colsEnd.push(0); } colsEnd[c] = i.end; out.set(i, { col: c }); }
+    for (const i of cluster) out.get(i).n = colsEnd.length;
+    cluster = []; clusterEnd = 0;
+  };
+  for (const i of sorted) { if (cluster.length && i.start >= clusterEnd) flush(); cluster.push(i); clusterEnd = Math.max(clusterEnd, i.end); }
+  if (cluster.length) flush();
+  return out;
+}
 function renderWeekView(items) {
-  const n = now(), today = etMidnight(n), H0 = 8, H1 = 20, PX = 60;
+  const n = now(), today = etMidnight(n), H0 = 7, H1 = 23, PX = 60;
   let head = `<div class="hd"></div>`, allday = `<div class="allday"></div>`;
-  const body = `<div class="hours">${Array.from({ length: H1 - H0 + 1 }, (_, k) => `<span style="top:${k * PX}px">${(H0 + k) % 12 || 12}${H0 + k < 12 ? "a" : "p"}</span>`).join("")}</div>`;
+  const body = `<div class="hours">${Array.from({ length: H1 - H0 + 1 }, (_, k) => `<span style="top:${k * PX}px">${H0 + k}:00</span>`).join("")}</div>`;
   const cols = [];
   for (let k = 0; k < 7; k++) {
     const d = today + k * D, list = items.filter(i => visible(i) && (dayKey(i.start) === d || (i.kind === "event" && i.start < d && i.end > d)));
@@ -798,16 +810,19 @@ function renderWeekView(items) {
     allday += `<div class="allday">${multi.map(i => `<span data-kind="event">${esc(i.title)}</span>`).join("")}</div>`;
     let col = "";
     if (k === 0) { const p = etParts(n), top = ((p.h + p.mi / 60) - H0) * PX; if (top >= 0 && top <= (H1 - H0) * PX) col += `<div class="now-h" style="top:${top}px"></div>`; }
+    const timed = list.filter(i => !multi.includes(i) && i.kind !== "deadline"), lay = layoutColumns(timed);
     for (const i of list) {
       if (multi.includes(i)) continue;
       const p = etParts(i.start), top = ((p.h + p.mi / 60) - H0) * PX;
       if (top < -PX || top > (H1 - H0) * PX) continue;
-      if (i.kind === "deadline") col += `<div class="pin u${urgency(i.start)}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}${i.tri ? " — " + esc(reason(i.tri.reason)) : ""}">${esc(i.title)}</div>`;
-      else col += `<div class="blk ${i.conflict ? "conf" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${Math.max(22, (i.end - i.start) / H * PX - 2)}px" title="${esc(i.title)}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}<small>${esc(i.location || "")}</small></div>`;
+      if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}">${esc(i.title)}</div>`; continue; }
+      const { col: c, n: cn } = lay.get(i), w = 100 / cn;
+      col += `<div class="blk" data-kind="${i.kind}" style="top:${top}px;height:${Math.max(22, (i.end - i.start) / H * PX - 2)}px;left:calc(${c * w}% + 3px);width:calc(${w}% - 6px);right:auto" title="${esc(i.title)}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}<small>${esc(i.location || "")}</small></div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
   $("wk").innerHTML = head + allday + body + cols.join("");
+  const wrap = $("wkwrap"); if (wrap && !wrap.dataset.scrolled) { wrap.scrollTop = (8 - H0) * PX; wrap.dataset.scrolled = "1"; }
 }
 function renderCourses() {
   const m = new Map();
@@ -879,7 +894,7 @@ async function sendToAgent() {
 /* ---------------- wiring ---------------- */
 function render() {
   const items = allItems();
-  renderHero(items); renderTimeline(items); renderFocus(items); renderFeed(); renderQuiet(); renderWeekStrip(items);
+  renderHero(items); renderTimeline(items); renderFocus(items); renderFeed(); renderQuiet(); renderWeekStrip();
   renderDeadlines(items); renderAgenda(items); renderWeekView(items); renderCourses(); renderSetup();
 }
 async function load() {
@@ -890,6 +905,7 @@ function go(view) {
   document.querySelectorAll(".tab, .tabbar button").forEach(x => x.classList.toggle("on", x.dataset.view === view));
   $("setupBtn").classList.toggle("on", view === "setup");
   document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + view);
+  if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled) { w.scrollTop = 60; w.dataset.scrolled = "1"; } }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 document.addEventListener("click", async e => {
