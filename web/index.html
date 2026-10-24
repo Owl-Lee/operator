@@ -249,6 +249,7 @@ textarea, input { font-family: var(--sans); }
 .blk { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font: 600 11.5px/1.25 var(--disp); color: var(--c); background: var(--cbg); border-left: 3px solid var(--c); overflow: hidden; }
 .blk small { display: block; font: 500 10.5px var(--sans); color: var(--ink-2); opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .blk.tight { padding: 3px 6px; font-size: 11px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
+.blk.over { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(30,27,46,.12); }
 .blk.ghost { background: repeating-linear-gradient(135deg, var(--focus-bg) 0 6px, #fff 6px 12px); border: 1.5px dashed var(--ink-2); border-left-width: 1.5px; color: var(--ink); cursor: pointer; }
 .blk.ghost:hover { border-color: var(--ink); }
 .blk.conf { outline: 2px solid var(--need); outline-offset: -2px; }
@@ -401,7 +402,6 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 
   <section class="view" id="view-today">
     <div class="grid">
-      <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.week">This week</h2><span class="more" id="weekRange"></span></div><div class="week" id="weekstrip"></div></div>
       <div class="card" style="--c:7"><div class="card-h"><h2 data-i18n="h.timeline">Timeline</h2></div><div id="timeline"></div></div>
       <div class="stack" style="--c:5">
         <div class="card focus" id="focus"></div>
@@ -778,14 +778,9 @@ function renderQuiet() {
     <div class="quiet-list ${quietOpen ? "show" : ""}">${ig.slice(0, 12).map(x => { const i = byUid.get(x.uid); return `<div class="ql"><span>${esc(i?.title)} <small>· ${esc(code(i?.course))}</small></span><small>${esc(reason(x.reason))}</small></div>`; }).join("")}${ig.length > 12 ? `<div class="ql"><small>${t("quiet.more", { n: ig.length - 12 })}</small></div>` : ""}</div>`;
   $("quietToggle").textContent = t(quietOpen ? "quiet.hide" : "quiet.show");
 }
-function renderWeekStrip(items) {
+function renderWeekStrip() {
   const today = etMidnight(now());
-  const range = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
-  $("weekRange").textContent = range; $("weekRange2").textContent = range;
-  $("weekstrip").innerHTML = Array.from({ length: 7 }, (_, k) => {
-    const d = today + k * D, list = items.filter(i => dayKey(i.start) === d);
-    return `<div class="wd ${k === 0 ? "today" : ""}"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
-  }).join("");
+  $("weekRange2").textContent = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
 }
 function dlHtml(i) {
   const lvl = i.tri?.level || "need";
@@ -844,9 +839,10 @@ function renderWeekView(items) {
       const p = etParts(i.start), top = ((p.h + p.mi / 60) - H0) * PX;
       if (top < -PX || top > (H1 - H0) * PX) continue;
       if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}">${esc(i.title)}</div>`; continue; }
-      const { col: c, n: cn } = lay.get(i), w = 100 / cn, hpx = Math.max(22, (i.end - i.start) / H * PX - 2);
-      const tight = cn > 1 || hpx < 44;
-      col += `<div class="blk ${tight ? "tight" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${c * w}% + 3px);width:calc(${w}% - 6px);right:auto" title="${esc(i.title)}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}${tight ? "" : `<small>${esc(i.location || "")}</small>`}</div>`;
+      // Later overlapping items step in from the left and sit on top (Google-Calendar style) so every block keeps its width.
+      const { col: c } = lay.get(i), hpx = Math.max(22, (i.end - i.start) / H * PX - 2), inset = c * 22;
+      const tight = hpx < 44;
+      col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}${tight ? "" : `<small>${esc(i.location || "")}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
