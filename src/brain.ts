@@ -17,22 +17,28 @@ interface Decision {
 const nowET = (now: Date) => now.toLocaleString("en-US", { timeZone: "America/New_York", weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" });
 const busy = (lang: "zh" | "en", why: string) => lang === "zh" ? `TELEGRAM: 线路繁忙（${why}）。STOP. 一分钟后再发一次。STOP.` : `TELEGRAM: LINE BUSY (${why}). STOP. TRY AGAIN IN A MINUTE. STOP.`;
 
-export async function handleInbound(text: string, now = new Date()): Promise<string> {
-  const lang: "zh" | "en" = /[一-龥]/.test(text) ? "zh" : "en";
-  if (!hasGemini()) return rulesFallback(text, now, lang);
+export interface InboundInput { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }
+
+export async function handleInbound(input: string | InboundInput, now = new Date()): Promise<string> {
+  const inp: InboundInput = typeof input === "string" ? { text: input } : input;
+  const text = inp.text ?? "";
+  const lang: "zh" | "en" = /[一-龥]/.test(text) || (!text && true) ? "zh" : "en"; // voice/photo without text: default to Chinese for this user
+  if (!hasGemini()) return text ? rulesFallback(text, now, lang) : (lang === "zh" ? "接上 Gemini 后才能听语音、看图片。" : "Voice and photos need Gemini connected.");
   try {
-    return await decide(text, now, lang);
+    return await decide(inp, now, lang);
   } catch (e: any) {
-    logAgent("triage", `Could not handle “${text.slice(0, 60)}”: ${e?.message ?? e}`, { via: "imessage" });
+    logAgent("triage", `Could not handle “${(text || (inp.audio ? "voice note" : "photo")).slice(0, 60)}”: ${e?.message ?? e}`, { via: "imessage" });
     return busy(lang, String(e?.message ?? e).replace(/^Gemini busy \(|\)\..*$/g, "").slice(0, 40));
   }
 }
 
-async function decide(text: string, now: Date, lang: "zh" | "en"): Promise<string> {
+async function decide(inp: InboundInput, now: Date, lang: "zh" | "en"): Promise<string> {
   const open = openDeadlines(now);
   const today = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-  const r: Decision = await geminiJson([{ text: `You are Brass Telegraph, a Stony Brook student's schedule agent, replying over iMessage. Now: ${nowET(now)} (America/New_York, today=${today}).
-The user just texted: "${text}"
+  const text = inp.text ?? "";
+  const what = inp.audio ? "The user just sent a VOICE NOTE (attached audio). First transcribe it faithfully into \"transcript\", then treat the transcript as their message." : inp.image ? "The user just sent a PHOTO (attached image) — a timetable, a poster, an email screenshot. Describe what matters in \"transcript\" and treat it as their message (usually intent add)." : `The user just texted: "${text}"`;
+  const parts: any[] = [{ text: `You are Brass Telegraph, a Stony Brook student's schedule agent, replying over iMessage. Now: ${nowET(now)} (America/New_York, today=${today}).
+${what}
 
 OPEN DEADLINES (id | course | title | due | status):
 ${open.map(d => `- id=${d.uid} | ${d.course} | ${d.title} (${d.kind}) | due ${new Date(d.due).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}${d.done ? " | DONE" : ""}`).join("\n") || "(none)"}
@@ -47,7 +53,16 @@ Return ONLY one JSON object:
 - Asking about the schedule: {"intent":"question","answer":"<1–3 concrete sentences: items, days, times; prioritise exams > due within 72h > quizzes > rest>"}
 - Giving you something to record (meeting, event, class, deadline): {"intent":"add","items":[{"kind":"deadline|class|meeting|event","title":"...","course":"...","date":"YYYY-MM-DD","days":["Mon"],"start":"HH:MM","end":"HH:MM","location":"...","note":"..."}],"summary":"<one line confirming what you recorded, with date/time/place>"}
 - Anything else: {"intent":"chat","reply":"<short friendly reply; if asked who you are, say what you can do>"}
-Resolve relative dates from today ("这周日" = the coming Sunday). Reply in the user's language (Chinese → Chinese); keep "TELEGRAM:"/"STOP." as-is. Never invent schedule facts.` }]);
+Resolve relative dates from today ("这周日" = the coming Sunday). Reply in the user's language (Chinese → Chinese); keep "TELEGRAM:"/"STOP." as-is. Never invent schedule facts.${inp.audio || inp.image ? ' Always include "transcript": "<what you heard/saw, in its original language>" in the JSON.' : ""}` }];
+  if (inp.audio) parts.push({ inline_data: { mime_type: inp.audio.mime, data: inp.audio.data } });
+  if (inp.image) parts.push({ inline_data: { mime_type: inp.image.mime, data: inp.image.data } });
+  const r: Decision & { transcript?: string } = await geminiJson(parts);
+  const heard = r.transcript && (inp.audio || inp.image) ? (lang === "zh" ? `（${inp.audio ? "听到" : "看到"}：${r.transcript.slice(0, 120)}）\n` : `(${inp.audio ? "Heard" : "Saw"}: ${r.transcript.slice(0, 120)})\n`) : "";
+  const out = await act(r, text || r.transcript || "", open, now, lang, today);
+  return heard + out;
+}
+
+async function act(r: Decision, text: string, open: ReturnType<typeof openDeadlines>, now: Date, lang: "zh" | "en", today: string): Promise<string> {
 
   if (r.intent === "done" || r.intent === "undo") {
     const d = open.find(x => x.uid === r.uid);

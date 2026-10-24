@@ -62,6 +62,16 @@
       "location": "SBUHacks, CEWIT",
       "note": "Divide Gemini + Photon work",
       "sample": true
+    },
+    {
+      "id": "p-mvmqw83p0",
+      "title": "Jennifer老师会议",
+      "location": "Earth and Space Sciences 102",
+      "note": "与Jennifer老师的会议",
+      "source": "agent",
+      "raw": "你帮我新增一个周日这周日下午2:00的一个会议吧，适合Jennifer老师的，然后在教室1零二教室是在earthand space那栋楼",
+      "start": "2026-10-25T14:00",
+      "end": "2026-10-25T15:00"
     }
   ],
   "events": [

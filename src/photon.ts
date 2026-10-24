@@ -30,20 +30,26 @@ export async function sendTelegram(text: string): Promise<void> {
   await dm.send(text);
 }
 
-/** Run `handler` for every text the user sends to the line; whatever it returns is sent back. */
-export async function startInbound(handler: (text: string) => Promise<string | null>, log: (s: string) => void = console.log): Promise<void> {
+export interface Inbound { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }
+
+/** Run `handler` for every text / voice note / photo the user sends to the line; whatever it returns is sent back. */
+export async function startInbound(handler: (input: Inbound) => Promise<string | null>, log: (s: string) => void = console.log): Promise<void> {
   const app = await getApp();
   const me = myPhone().replace(/\D/g, "");
   log(`📡 Listening for iMessages from ${myPhone()}`);
   for await (const [space, message] of app.messages) {
     try {
-      if (message.content?.type !== "text") continue;
       const from = String(message.sender?.id ?? "").replace(/\D/g, "");
       if (from && from !== me) { log(`ignored message from ${from}`); continue; }
-      const text = String(message.content.text ?? "").trim();
-      if (!text) continue;
-      log(`📥 ${text}`);
-      const reply = await handler(text);
+      const c = message.content;
+      let input: Inbound | null = null;
+      if (c?.type === "text") { const text = String(c.text ?? "").trim(); if (text) input = { text }; }
+      else if (c?.type === "voice") { const buf: Buffer = await c.read(); input = { audio: { data: buf.toString("base64"), mime: c.mimeType || "audio/mp4" } }; log(`📥 voice note ${c.mimeType} ${buf.length} bytes`); }
+      else if (c?.type === "attachment" && /^image\//.test(c.mimeType || "")) { const buf: Buffer = await c.read(); input = { image: { data: buf.toString("base64"), mime: c.mimeType } }; log(`📥 image ${c.mimeType} ${buf.length} bytes`); }
+      else { log(`unsupported message type: ${c?.type}`); continue; }
+      if (!input) continue;
+      if (input.text) log(`📥 ${input.text}`);
+      const reply = await handler(input);
       if (reply) { await space.send(reply); log(`📤 ${reply}`); }
     } catch (e: any) {
       log(`inbound error: ${e?.message ?? e}`);

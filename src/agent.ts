@@ -13,7 +13,7 @@ const REMIND_AT = [24, 3, 1]; // hours before due
 /** The long-running part: listen to the phone, poll Brightspace, send escalating reminders. */
 export function startAgent(log: (s: string) => void = console.log): void {
   if (hasPhoton()) {
-    startInbound(text => handleInbound(text), log).catch(e => log(`inbound stopped: ${e?.message ?? e}`));
+    startInbound(input => handleInbound(input), log).catch(e => log(`inbound stopped: ${e?.message ?? e}`));
   } else log("Photon not configured — inbound and telegrams disabled.");
 
   if (icalUrl()) {
