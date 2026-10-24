@@ -253,7 +253,7 @@ html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .blk.tall, .blk.tall small { white-space: normal; text-overflow: clip; }
 .blk.tall { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--lines, 4); }
 /* hover/focus: grow to show everything, over the neighbours */
-.blk:hover, .blk:focus, .blk.open { height: auto !important; min-height: 42px; white-space: normal; text-overflow: clip; z-index: 30 !important; display: block; -webkit-line-clamp: unset; box-shadow: 0 10px 24px -8px rgba(30,27,46,.35), 0 0 0 2px #fff; transform: none; outline: none; }
+.blk:hover, .blk:focus, .blk.open { height: auto !important; min-height: var(--h, 42px); white-space: normal; text-overflow: clip; z-index: 30 !important; display: block; -webkit-line-clamp: unset; box-shadow: 0 10px 24px -8px rgba(30,27,46,.35), 0 0 0 2px #fff; transform: none; outline: none; }
 .blk:hover small, .blk:focus small, .blk.open small { white-space: normal; text-overflow: clip; }
 .blk.tight { padding: 3px 5px; font-size: 10.5px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
 .blk .tm { font: 500 10px var(--sans); color: var(--ink-2); opacity: .8; }
@@ -956,7 +956,7 @@ function renderWeekView(items) {
       const shortTitle = i.title.split(/\s[·(（]|\s-\s/)[0].trim(); // "Office hours · Prof. (EST 393)" → "Office hours"
       const range = `${timeOf(i.start)}–${timeOf(i.end)}`;
       const lines = Math.floor((hpx - 10) / 15), tall = !tight && lines >= 4;
-      col += `<div class="blk ${tight ? "tight" : ""} ${tall ? "tall" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" tabindex="0" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c};--lines:${lines}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `${esc(i.title)}<small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
+      col += `<div class="blk ${tight ? "tight" : ""} ${tall ? "tall" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" tabindex="0" style="top:${top}px;height:${hpx}px;--h:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c};--lines:${lines}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `${esc(i.title)}<small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
