@@ -41,7 +41,7 @@ textarea, input { font-family: var(--sans); }
 .tab { padding: 7px 15px; border-radius: 999px; font: 600 14px var(--disp); color: var(--ink-2); transition: background .15s, color .15s; }
 .tab:hover { color: var(--ink); }
 .tab.on { background: var(--ink); color: #fff; }
-.status { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font: 500 13px var(--sans); color: var(--ink-2); white-space: nowrap; }
+.status { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font: 500 13px var(--sans); color: var(--ink-2); white-space: nowrap; cursor: default; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(22,179,106,.18); animation: pulse-g 2s ease-in-out infinite; }
 .status.off i { background: var(--need); box-shadow: 0 0 0 3px rgba(199,121,26,.18); animation: none; }
 @keyframes pulse-g { 50% { box-shadow: 0 0 0 6px rgba(22,179,106,0); } }
@@ -263,13 +263,26 @@ textarea, input { font-family: var(--sans); }
 .legend .g { border: 1.5px dashed var(--ink-2); background: none; }
 
 /* courses */
-.courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-.course { padding: 18px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--bg-2); }
-.course h3 { font: 700 17px var(--disp); }
-.course p { margin: 2px 0 12px; color: var(--muted); font-size: 13px; }
-.course .next { font-size: 13.5px; color: var(--ink-2); }
-.course .next b { color: var(--ink); font-weight: 600; }
-.course .n { float: right; font: 700 20px var(--disp); color: var(--accent); }
+.courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.course { padding: 20px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--bg-2); display: flex; flex-direction: column; gap: 12px; }
+.course-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.course h3 { font: 700 20px var(--disp); }
+.course p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.course .n { min-width: 34px; height: 34px; padding: 0 10px; border-radius: 17px; display: grid; place-items: center; font: 700 15px var(--disp); color: var(--accent); background: var(--deadline-bg); }
+.course-meta { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.course-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.course-meta svg { color: var(--c, var(--class)); }
+.course-meta [data-kind="meeting"] svg { color: var(--meeting); }
+.course-dl { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.cdl { display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.cdl:last-child { border-bottom: 0; }
+.cdl i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
+.cdl.urgent i { background: var(--urgent); } .cdl.urgent span { color: var(--urgent); }
+.cdl span { font: 600 14px var(--disp); min-width: 0; } .cdl span small { display: block; font: 400 12px var(--sans); color: var(--muted); }
+.cdl b { text-align: right; font: 600 13px var(--disp); color: var(--ink-2); } .cdl b small { display: block; font: 400 11.5px var(--sans); color: var(--muted); }
+.cdl:hover span { text-decoration: underline; }
+.course-foot { margin: 0; font-size: 12.5px; color: var(--muted); }
+.muted { color: var(--muted); font-size: 13px; margin: 0; }
 
 /* setup */
 .steps { display: grid; gap: 10px; margin: 6px 0 16px; counter-reset: s; }
@@ -384,10 +397,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
       <h1 id="greeting"></h1>
       <p id="summary"></p>
     </div>
-    <a class="btn" href="#" id="openNext" target="_blank" rel="noopener"></a>
   </section>
-
-  <div class="stats" id="stats"></div>
 
   <section class="view" id="view-today">
     <div class="grid">
@@ -404,6 +414,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
   </section>
 
   <section class="view" id="view-week" hidden>
+    <div class="stats" id="stats"></div>
     <div class="card"><div class="card-h"><h2 data-i18n="h.weekview">Week view</h2><span class="more" id="weekRange2"></span></div><div class="wkwrap" id="wkwrap"><div class="wk" id="wk"></div></div>
       <div class="legend" id="legend"></div></div>
   </section>
@@ -497,7 +508,7 @@ const I18N = {
     "feed.n": "{n} actions logged", "quiet.text": "items in your Brightspace feed the agent judged not worth a message — old-semester work, campus notices, availability windows.", "quiet.show": "Show items →", "quiet.hide": "Hide ↑", "quiet.more": "…and {n} more",
     "q.urgent": "urgent", "q.need": "need-to-know", "q.ignore": "ignored",
     "ag.n": "{n} upcoming", "ag.flag": "⚠ Overlaps {t} — agent flagged this", "mile": "⏱ {t}",
-    "legend.sugg": "Agent suggestion — click to accept", "wk.sugg": "suggested", "course.next": "Next:",
+    "legend.sugg": "Agent suggestion — click to accept", "wk.sugg": "suggested", "course.next": "Next:", "course.notime": "No class time yet — tell the agent", "course.nodue": "Nothing due", "course.ignored": "{n} old or past items filtered out",
     "sugg.title": "Work on {t}", "sugg.note": "Agent suggestion · 2 h before it's due {d}",
     "ans.start": "Start with <b>{t}</b> ({c}) — {r}. Then {rest}.", "ans.clear": "you're clear", "ans.none": "Nothing is due — you're clear.", "ans.by": "<b>{t}</b> by {d}",
     "ans.free": "I found {n} free 2-hour slots before your deadlines, e.g. <b>{d}</b> for {t}. They're the dashed blocks in Week view — click to accept.", "ans.nofree": "No free 2-hour slots found before the next deadlines.",
@@ -539,7 +550,7 @@ const I18N = {
     "feed.n": "已记录 {n} 条行为", "quiet.text": "条 Brightspace 里的内容被 agent 判定不值得发消息——旧学期作业、校园通知、开放时间提示。", "quiet.show": "展开条目 →", "quiet.hide": "收起 ↑", "quiet.more": "…还有 {n} 条",
     "q.urgent": "紧急", "q.need": "需知", "q.ignore": "忽略",
     "ag.n": "{n} 个即将到来", "ag.flag": "⚠ 与 {t} 重叠——agent 已标记", "mile": "⏱ {t}",
-    "legend.sugg": "Agent 建议——点击接受", "wk.sugg": "建议", "course.next": "下一个：",
+    "legend.sugg": "Agent 建议——点击接受", "wk.sugg": "建议", "course.next": "下一个：", "course.notime": "还没有上课时间——告诉 agent", "course.nodue": "没有待办", "course.ignored": "已过滤 {n} 条旧的或过期的内容",
     "sugg.title": "做 {t}", "sugg.note": "Agent 建议 · 截止（{d}）前留 2 小时",
     "ans.start": "先做 <b>{t}</b>（{c}）——{r}。然后 {rest}。", "ans.clear": "就没别的了", "ans.none": "没有要交的——你是空的。", "ans.by": "<b>{t}</b>（{d} 前）",
     "ans.free": "我在截止前找到 {n} 段空闲的 2 小时，比如 <b>{d}</b> 做 {t}。就是周视图里的虚线块，点一下接受。", "ans.nofree": "下一个截止前没有空闲的 2 小时。",
@@ -676,16 +687,17 @@ function renderHero(items) {
   const c = k => wk.filter(i => i.kind === k).length, dl = wk.filter(i => i.kind === "deadline");
   const urgent = dl.filter(i => i.tri?.level === "urgent").length, ignored = state.triage.filter(x => x.level === "ignore").length;
   $("summary").hidden = true;
-  const next = items.find(i => i.start >= n && i.link && i.kind !== "focus");
-  const a = $("openNext"); if (next) { a.href = next.link; a.textContent = t("next", { t: next.title }); a.hidden = false; } else a.hidden = true;
   $("stats").innerHTML = [["deadline", dl.length], ["class", c("class")], ["meeting", c("meeting")], ["event", c("event")]]
     .map(([k, v]) => `<div class="stat" data-kind="${k}"><span class="dot">${kicon(k)}</span><span><span class="num">${v}</span><small>${t("stat." + k)} · ${t("stat.days")}</small></span></div>`).join("");
   const courses = new Set(state.items.filter(i => /^[A-Z]{3}\s\d{3}.*Fall 2026/.test(i.course)).map(i => code(i.course))).size;
   const last = state.agentLog.find(e => e.type === "poll");
   const ago = last ? Math.max(0, Math.round((n - Date.parse(last.at)) / 60000)) : null;
   const connected = !!state.setup?.ical;
+  const agoTxt = ago === null ? "" : ago < 1 ? t("just now") : ago < 60 ? t("min ago", { n: ago }) : t("h ago", { n: Math.round(ago / 60) });
   $("status").className = "status" + (connected ? "" : " off");
-  $("status").innerHTML = `<i></i><span><b>${t(connected ? "status.online" : "status.off")}</b><span class="hide-m">${connected ? t("status.watch", { n: courses }) : ""}${ago !== null ? t("status.checked", { t: ago < 1 ? t("just now") : ago < 60 ? t("min ago", { n: ago }) : t("h ago", { n: Math.round(ago / 60) }) }) : ""}</span></span>`;
+  $("status").title = `${t(connected ? "status.online" : "status.off")}${connected ? t("status.watch", { n: courses }) : ""}${ago !== null ? t("status.checked", { t: agoTxt }) : ""}`;
+  $("status").innerHTML = `<i></i><b>Agent</b>`;
+  $("feedCount").textContent = `${connected ? t("status.watch", { n: courses }).replace(/^ · /, "") : t("status.off")}${ago !== null ? t("status.checked", { t: agoTxt }) : ""}`;
 }
 function itemHtml(i) {
   const n = now(), u = i.kind === "deadline" && i.tri?.level === "urgent" ? 1 : 0, past = i.end < n && !i.ongoing;
@@ -732,7 +744,6 @@ function tick() {
 }
 function renderFeed() {
   const n = now(), log = state.agentLog.slice(0, 8);
-  $("feedCount").textContent = t("feed.n", { n: state.agentLog.length });
   if (!log.length) { $("feed").innerHTML = emptyHtml("empty.feed", "empty.feed.sub"); return; }
   const rel = ms => { const m = Math.round((n - ms) / 60000); return m < 1 ? t("just now") : m < 60 ? t("min ago", { n: m }) : m < 1440 ? t("h ago", { n: Math.round(m / 60) }) : fmt(ms, { month: "short", day: "numeric" }); };
   $("feed").innerHTML = log.map(e => `<div class="fe" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${feedText(e)}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
@@ -784,8 +795,9 @@ function dlHtml(i) {
     ${i.link ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
 }
 function renderDeadlines(items) {
-  const list = items.filter(i => i.kind === "deadline" && i.start >= now() && visible(i));
-  $("deadlines").innerHTML = list.slice(0, 5).map(dlHtml).join("") || emptyHtml("empty.dl", "empty.dl.sub");
+  const n = now(), week = etMidnight(n) + 7 * D;
+  const list = items.filter(i => i.kind === "deadline" && i.start >= n);
+  $("deadlines").innerHTML = list.filter(i => i.start < week).map(dlHtml).join("") || emptyHtml("empty.dl", "empty.dl.sub");
   $("deadlinesAll").innerHTML = list.map(dlHtml).join("") || emptyHtml("empty.dl", "empty.dl.sub");
 }
 function renderAgenda(items) {
@@ -841,14 +853,29 @@ function renderWeekView(items) {
   $("wk").innerHTML = head + allday + body + cols.join("");
   const wrap = $("wkwrap"); if (wrap && !wrap.dataset.scrolled) { wrap.scrollTop = (8 - H0) * PX; wrap.dataset.scrolled = "1"; }
 }
+/* One card per current course: class times, every upcoming deadline, and what the agent filtered out for it. */
 function renderCourses() {
-  const m = new Map();
-  for (const i of state.items) if (/^[A-Z]{3}\s\d{3}/.test(i.course) && i.isDue && Date.parse(i.due) >= now() && triOf(i.uid)?.level !== "ignore") {
-    const e = m.get(i.course) || { n: 0, next: null }; e.n++; if (!e.next || Date.parse(i.due) < Date.parse(e.next.due)) e.next = i; m.set(i.course, e);
+  const n = now(), m = new Map();
+  for (const i of state.items) {
+    if (!/^[A-Z]{3}\s\d{3}.*Fall 2026/.test(i.course)) continue;
+    const e = m.get(i.course) || { due: [], ignored: 0 };
+    const tr = triOf(i.uid);
+    if (tr?.level === "ignore") e.ignored++;
+    else if (i.isDue && Date.parse(i.due) >= n) e.due.push({ ...i, tri: tr });
+    m.set(i.course, e);
   }
-  const cls = state.schedule?.classes || [];
-  $("courses").innerHTML = [...m].sort().map(([c, e]) => { const k = cls.find(x => x.course === c);
-    return `<div class="course"><span class="n">${e.n}</span><h3>${esc(code(c))}</h3><p>${esc(courseName(c))}${k ? ` · ${k.days.join("/")} ${k.start}–${k.end}` : ""}</p><div class="next">${t("course.next")} <b>${esc(e.next.title)}</b> · ${esc(fmt(Date.parse(e.next.due), { weekday: "short", month: "short", day: "numeric" }))}</div></div>`; }).join("") || emptyHtml("empty.courses", "");
+  const cls = state.schedule?.classes || [], mt = (state.schedule?.meetings || []).filter(x => x.course);
+  const KT = { assignment: lang === "zh" ? "作业" : "assignment", discussion: lang === "zh" ? "讨论" : "discussion", quiz: lang === "zh" ? "测验" : "quiz", exam: lang === "zh" ? "考试" : "exam" };
+  $("courses").innerHTML = [...m].sort().map(([c, e]) => {
+    const k = cls.find(x => x.course === c), meet = mt.filter(x => x.course === c && etToMs(x.start) >= n);
+    e.due.sort((a, b) => Date.parse(a.due) - Date.parse(b.due));
+    return `<div class="course" data-kind="class">
+      <div class="course-h"><div><h3>${esc(code(c))}</h3><p>${esc(courseName(c))}</p></div><span class="n">${e.due.length}</span></div>
+      <div class="course-meta">${k ? `<span>${kicon("class").replace("<svg", '<svg width="14" height="14"')} ${k.days.map(d => lang === "zh" ? "周" + "日一二三四五六"["Sun Mon Tue Wed Thu Fri Sat".split(" ").indexOf(d)] : d).join(" / ")} ${k.start}–${k.end}${k.location ? " · " + esc(k.location) : ""}${k.sample ? ' <span class="sample">sample</span>' : ""}</span>` : `<span class="muted">${t("course.notime")}</span>`}
+        ${meet.map(x => `<span data-kind="meeting">${kicon("meeting").replace("<svg", '<svg width="14" height="14"')} ${esc(x.title)} · ${esc(fmt(etToMs(x.start), { weekday: "short", hour: "numeric", minute: "2-digit" }))}</span>`).join("")}</div>
+      <div class="course-dl">${e.due.length ? e.due.map(d => { const ms = Date.parse(d.due), u = d.tri?.level === "urgent"; return `<a class="cdl ${u ? "urgent" : ""}" href="${esc(d.link || "#")}" target="_blank" rel="noopener"><i></i><span>${esc(d.title)}<small>${esc(KT[d.kind] || d.kind)}</small></span><b>${esc(fmt(ms, { month: "short", day: "numeric" }))}<small>${timeOf(ms)}</small></b></a>`; }).join("") : `<p class="muted">${t("course.nodue")}</p>`}</div>
+      ${e.ignored ? `<p class="course-foot">${t("course.ignored", { n: e.ignored })}</p>` : ""}
+    </div>`; }).join("") || emptyHtml("empty.courses", "");
 }
 function renderSetup() {
   const s = state.setup || {};
