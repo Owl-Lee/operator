@@ -1,6 +1,8 @@
-# Brass Telegraph 🚂📠
+# Operator 🚂📠 (formerly Brass Telegraph)
 
 > SBUHacks 2026 · Theme: Steel and Steam · Submission due **Sun Oct 25, 9:00 AM** on Devpost
+
+**Name:** Operator — the telegraph operator who watches every course line for you.
 
 **One line:** You never log in to Brightspace again. An agent watches every course for you and only "sends a telegram" (iMessage) when something actually matters.
 

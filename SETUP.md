@@ -35,7 +35,7 @@
    ```
    npm run ping
    ```
-   手机应收到：`TELEGRAM: BRASS TELEGRAPH ONLINE. STOP. THE LINE IS OPEN. STOP.`
+   手机应收到：`TELEGRAM: OPERATOR ONLINE. STOP. THE LINE IS OPEN. STOP.`
 6. 重启 `npm run web`，设置页「iMessage（Photon）」应显示 **就绪**。之后 `npm run poll` 发现截止时间变动会自动发电报到手机。
 
 > 免费版用共享号码池，发件号码可能每次不同，正常。手机必须是 iPhone 且开着 iMessage（或 Android 开 RCS）。
