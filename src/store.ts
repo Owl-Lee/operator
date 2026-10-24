@@ -26,3 +26,18 @@ export function logTelegram(text: string, sent: boolean): void {
   log.unshift({ at: new Date().toISOString(), text, sent });
   writeFileSync(LOG, JSON.stringify(log.slice(0, 200), null, 2));
 }
+
+/** Everything the agent decided or did, newest first. Shown on the dashboard as "what I did". */
+export interface AgentEntry { at: string; type: "poll" | "change" | "telegram" | "triage" | "reminder"; text: string; meta?: Record<string, unknown> }
+const AGENT = `${DIR}/agent-log.json`;
+
+export function loadAgentLog(): AgentEntry[] {
+  return existsSync(AGENT) ? JSON.parse(readFileSync(AGENT, "utf8")) : [];
+}
+
+export function logAgent(type: AgentEntry["type"], text: string, meta?: Record<string, unknown>): void {
+  mkdirSync(DIR, { recursive: true });
+  const log = loadAgentLog();
+  log.unshift({ at: new Date().toISOString(), type, text, ...(meta ? { meta } : {}) });
+  writeFileSync(AGENT, JSON.stringify(log.slice(0, 300), null, 2));
+}

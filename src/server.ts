@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
-import { loadSnapshot, loadTelegrams } from "./store.js";
+import { loadSnapshot, loadTelegrams, loadAgentLog } from "./store.js";
+import { triage } from "./triage.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
@@ -20,9 +21,13 @@ createServer((req, res) => {
     res.end(JSON.stringify(data));
   };
   if (url.pathname === "/api/state") {
+    const now = process.env.FAKE_NOW ?? new Date().toISOString();
+    const items = loadSnapshot();
     return json({
-      now: process.env.FAKE_NOW ?? new Date().toISOString(),
-      items: loadSnapshot(),
+      now,
+      items,
+      triage: triage(items, new Date(now)),
+      agentLog: loadAgentLog(),
       telegrams: loadTelegrams(),
       schedule: loadSchedule(),
     });
