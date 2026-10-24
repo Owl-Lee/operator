@@ -659,8 +659,14 @@ const tagz = i => `${i.sample ? '<span class="sample">sample</span>' : ""}${i.pa
 function renderHero(items) {
   const n = now(), p = etParts(n);
   $("kicker").textContent = fmt(n, { weekday: "long", month: "long", day: "numeric" });
-  const g = p.h < 5 ? "greet.night" : p.h < 12 ? "greet.morning" : p.h < 18 ? "greet.afternoon" : "greet.evening";
-  $("greeting").innerHTML = lang === "zh" ? `<span>Lee</span>，${t(g)}。` : `${t(g)}, <span>Lee</span>.`;
+  // Greeting follows the clock (ET) and rotates by date so it stays put for the whole day.
+  const G = {
+    en: { night: ["Still up, {n}?", "Burning the midnight oil, {n}", "Late one, {n}"], morning: ["Good morning, {n}", "Have a great day, {n}", "Fresh start, {n}"], afternoon: ["Good afternoon, {n}", "Keep it rolling, {n}", "Halfway there, {n}"], evening: ["Good evening, {n}", "Nice work today, {n}", "Winding down, {n}"] },
+    zh: { night: ["{n}，还没睡呢", "{n}，熬夜辛苦了", "{n}，夜深了"], morning: ["{n}，早上好", "{n}，祝你今天顺利", "{n}，新的一天开始了"], afternoon: ["{n}，下午好", "{n}，继续加油", "{n}，过半了"], evening: ["{n}，晚上好", "{n}，今天辛苦了", "{n}，该收工了"] }
+  };
+  const period = p.h < 5 ? "night" : p.h < 12 ? "morning" : p.h < 18 ? "afternoon" : "evening";
+  const pool = G[lang][period], line = pool[(p.y * 366 + p.m * 31 + p.d) % pool.length];
+  $("greeting").innerHTML = line.replace("{n}", "<span>Lee</span>") + (lang === "zh" ? "。" : ".");
   const wk = items.filter(i => i.end >= n && i.start < n + 7 * D && i.kind !== "focus");
   const c = k => wk.filter(i => i.kind === k).length, dl = wk.filter(i => i.kind === "deadline");
   const urgent = dl.filter(i => i.tri?.level === "urgent").length, ignored = state.triage.filter(x => x.level === "ignore").length;
