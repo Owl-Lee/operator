@@ -244,8 +244,8 @@ textarea, input { font-family: var(--sans); }
 html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .wk .hd b { display: block; font-size: 18px; color: var(--ink); }
 .wk .hd.today b { color: var(--accent); }
-.wk .col { position: relative; height: 960px; border-left: 1px solid var(--line); background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
-.wk .hours { position: relative; height: 960px; }
+.wk .col { position: relative; height: 960px; margin-top: 12px; border-left: 1px solid var(--line); background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
+.wk .hours { position: relative; height: 960px; margin-top: 12px; }
 .wk .hours span { position: absolute; right: 8px; transform: translateY(-50%); font: 500 11px var(--sans); color: var(--muted); }
 .blk { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font: 600 11.5px/1.25 var(--disp); color: var(--c); background-color: #fff; background-image: linear-gradient(var(--cbg), var(--cbg)); border-left: 3px solid var(--c); overflow: hidden; }
 .blk small { display: block; font: 500 10.5px var(--sans); color: var(--ink-2); opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -944,8 +944,9 @@ function renderWeekView(items) {
       if (top < -PX || top > (H1 - H0) * PX) continue;
       if (i.kind === "deadline") { col += `<div class="pin ${i.tri?.level === "urgent" ? "u1" : ""}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}">${esc(i.title)}</div>`; continue; }
       // Later overlapping items step in from the left and sit on top (Google-Calendar style) so every block keeps its width.
-      const { col: c } = lay.get(i), hpx = Math.max(22, (i.end - i.start) / H * PX - 2), inset = Math.min(60, c * 30);
-      const tight = hpx < 44 || c > 0;
+      // short items get two lines of room anyway (like every calendar app); only stacked overlaps go single-line
+      const { col: c } = lay.get(i), hpx = Math.max(42, (i.end - i.start) / H * PX - 2), inset = Math.min(60, c * 30);
+      const tight = c > 0;
       const shortTitle = i.title.split(/\s[·(（]|\s-\s/)[0].trim(); // "Office hours · Prof. (EST 393)" → "Office hours"
       const range = `${timeOf(i.start)}–${timeOf(i.end)}`;
       col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `${esc(i.title)}<small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
