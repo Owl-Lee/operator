@@ -47,7 +47,7 @@ async function decide(inp: InboundInput, now: Date, lang: "zh" | "en"): Promise<
   const open = openDeadlines(now);
   const today = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
   const text = inp.text ?? "";
-  const what = inp.audio ? "The user just sent a VOICE NOTE (attached audio). First transcribe it faithfully into \"transcript\", then treat the transcript as their message." : inp.image ? "The user just sent a PHOTO (attached image) — a timetable, a poster, an email screenshot. Describe what matters in \"transcript\" and treat it as their message (usually intent add)." : `The user just texted: "${text}"`;
+  const what = inp.audio ? "The user just sent a VOICE NOTE (attached audio). First transcribe it faithfully into \"transcript\", then treat the transcript as their message. If the audio is silent, garbled or you cannot actually hear words, you MUST return {\"intent\":\"chat\",\"transcript\":\"\",\"reply\":\"<say you couldn't hear it and ask them to type>\"} — never guess a transcript and never mark anything done from audio you didn't clearly hear." : inp.image ? "The user just sent a PHOTO (attached image) — a timetable, a poster, an email screenshot. Describe what matters in \"transcript\" and treat it as their message (usually intent add)." : `The user just texted: "${text}"`;
   const parts: any[] = [{ text: `You are Brass Telegraph, a Stony Brook student's schedule agent, replying over iMessage. Now: ${nowET(now)} (America/New_York, today=${today}).
 ${what}
 

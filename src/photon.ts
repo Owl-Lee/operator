@@ -37,6 +37,29 @@ export async function sendVoice(audio: Buffer, mimeType = "audio/mpeg", name = "
   await dm.send(voice(audio, { mimeType, name }));
 }
 
+/**
+ * iMessage voice notes arrive as Apple CAF (Opus), which Gemini cannot decode — and when it can't decode
+ * audio it may invent a transcript. So: convert to MP3 with ffmpeg, or refuse. Never hand Gemini raw CAF.
+ */
+async function toGeminiAudio(buf: Buffer, mime: string): Promise<{ data: string; mime: string } | null> {
+  const ok = /^audio\/(mpeg|mp3|wav|x-wav|aac|ogg|flac|aiff)$/i.test(mime);
+  if (ok) return { data: buf.toString("base64"), mime };
+  const { execFile } = await import("node:child_process");
+  const { writeFileSync, readFileSync, mkdtempSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = mkdtempSync(join(tmpdir(), "bt-voice-"));
+  const src = join(dir, "in.caf"), out = join(dir, "out.mp3");
+  writeFileSync(src, buf);
+  try {
+    await new Promise<void>((res, rej) => execFile(process.env.FFMPEG || "ffmpeg", ["-y", "-loglevel", "error", "-i", src, "-ac", "1", "-ar", "16000", "-b:a", "48k", out], { timeout: 20_000 }, e => e ? rej(e) : res()));
+    return { data: readFileSync(out).toString("base64"), mime: "audio/mpeg" };
+  } catch (e: any) {
+    console.log(`[agent] ffmpeg unavailable or failed: ${e?.message ?? e}`);
+    return null;
+  } finally { try { rmSync(dir, { recursive: true, force: true }); } catch {} }
+}
+
 export interface Inbound { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }
 
 /** Run `handler` for every text / voice note / photo the user sends to the line; whatever it returns is sent back. */
@@ -51,7 +74,12 @@ export async function startInbound(handler: (input: Inbound) => Promise<string |
       const c = message.content;
       let input: Inbound | null = null;
       if (c?.type === "text") { const text = String(c.text ?? "").trim(); if (text) input = { text }; }
-      else if (c?.type === "voice") { const buf: Buffer = await c.read(); input = { audio: { data: buf.toString("base64"), mime: c.mimeType || "audio/mp4" } }; log(`📥 voice note ${c.mimeType} ${buf.length} bytes`); }
+      else if (c?.type === "voice") {
+        const buf: Buffer = await c.read(); log(`📥 voice note ${c.mimeType} ${buf.length} bytes`);
+        const conv = await toGeminiAudio(buf, c.mimeType || "audio/x-caf");
+        if (!conv) { await space.send("语音格式暂不支持（需要 ffmpeg），请打字或再试一次。"); log("voice: no converter, asked for text"); continue; }
+        input = { audio: conv };
+      }
       else if (c?.type === "attachment" && /^image\//.test(c.mimeType || "")) { const buf: Buffer = await c.read(); input = { image: { data: buf.toString("base64"), mime: c.mimeType } }; log(`📥 image ${c.mimeType} ${buf.length} bytes`); }
       else { log(`unsupported message type: ${c?.type}`); continue; }
       if (!input) continue;
