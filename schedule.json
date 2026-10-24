@@ -1,18 +1,99 @@
 {
-  "_readme": "Classes, meetings and events that are not in Brightspace. Edit freely. Times are America/New_York. Items with \"sample\": true are placeholders — replace them with your real schedule.",
   "classes": [
-    { "course": "EST 391.30 Technology Assessment - Fall 2026", "days": ["Mon", "Wed"], "start": "14:00", "end": "15:20", "location": "Frey Hall 102", "sample": true },
-    { "course": "EST 393.01 Project Management - Fall 2026", "days": ["Tue", "Thu"], "start": "11:00", "end": "12:20", "location": "Harriman Hall 112", "sample": true },
-    { "course": "POL 304.01 Comparative Political Institutions - Fall 2026", "days": ["Tue", "Thu"], "start": "14:30", "end": "15:50", "location": "SBS N310", "sample": true },
-    { "course": "ANT 102.01 What Makes Us Human? - Fall 2026", "days": ["Mon", "Wed", "Fri"], "start": "10:00", "end": "10:53", "location": "Javits 100", "sample": true }
+    {
+      "course": "EST 391.30 Technology Assessment - Fall 2026",
+      "days": [
+        "Mon",
+        "Wed"
+      ],
+      "start": "14:00",
+      "end": "15:20",
+      "location": "Frey Hall 102",
+      "sample": true
+    },
+    {
+      "course": "EST 393.01 Project Management - Fall 2026",
+      "days": [
+        "Tue",
+        "Thu"
+      ],
+      "start": "11:00",
+      "end": "12:20",
+      "location": "Harriman Hall 112",
+      "sample": true
+    },
+    {
+      "course": "POL 304.01 Comparative Political Institutions - Fall 2026",
+      "days": [
+        "Tue",
+        "Thu"
+      ],
+      "start": "14:30",
+      "end": "15:50",
+      "location": "SBS N310",
+      "sample": true
+    },
+    {
+      "course": "ANT 102.01 What Makes Us Human? - Fall 2026",
+      "days": [
+        "Mon",
+        "Wed",
+        "Fri"
+      ],
+      "start": "10:00",
+      "end": "10:53",
+      "location": "Javits 100",
+      "sample": true
+    }
   ],
   "meetings": [
-    { "title": "Office hours · Prof. (EST 393)", "course": "EST 393.01 Project Management - Fall 2026", "start": "2026-10-27T15:00", "end": "2026-10-27T15:30", "location": "Harriman Hall 212", "note": "Ask about the risk-transfer question in HW#3", "sample": true },
-    { "title": "Academic advising appointment", "start": "2026-10-29T13:00", "end": "2026-10-29T13:30", "location": "Melville Library, Academic Advising", "note": "Spring registration plan", "sample": true },
-    { "title": "Brass Telegraph team sync", "start": "2026-10-24T10:00", "end": "2026-10-24T10:30", "location": "SBUHacks, CEWIT", "note": "Divide Gemini + Photon work", "sample": true }
+    {
+      "title": "Office hours · Prof. (EST 393)",
+      "course": "EST 393.01 Project Management - Fall 2026",
+      "start": "2026-10-27T15:00",
+      "end": "2026-10-27T15:30",
+      "location": "Harriman Hall 212",
+      "note": "Ask about the risk-transfer question in HW#3",
+      "sample": true
+    },
+    {
+      "title": "Academic advising appointment",
+      "start": "2026-10-29T13:00",
+      "end": "2026-10-29T13:30",
+      "location": "Melville Library, Academic Advising",
+      "note": "Spring registration plan",
+      "sample": true
+    },
+    {
+      "title": "Brass Telegraph team sync",
+      "start": "2026-10-24T10:00",
+      "end": "2026-10-24T10:30",
+      "location": "SBUHacks, CEWIT",
+      "note": "Divide Gemini + Photon work",
+      "sample": true
+    }
   ],
   "events": [
-    { "title": "SBUHacks 2026 · Steel and Steam", "start": "2026-10-23T18:00", "end": "2026-10-25T12:00", "location": "Stony Brook University", "link": "https://hack.sbcs.io/", "milestone": { "title": "Devpost submission closes", "at": "2026-10-25T09:00" } },
-    { "title": "CEAS Career Expo", "start": "2026-11-04T11:00", "end": "2026-11-04T15:00", "location": "SAC Ballroom", "note": "Bring résumé · talk to Photon & BAE", "sample": true }
-  ]
+    {
+      "title": "SBUHacks 2026 · Steel and Steam",
+      "start": "2026-10-23T18:00",
+      "end": "2026-10-25T12:00",
+      "location": "Stony Brook University",
+      "link": "https://hack.sbcs.io/",
+      "milestone": {
+        "title": "Devpost submission closes",
+        "at": "2026-10-25T09:00"
+      }
+    },
+    {
+      "title": "CEAS Career Expo",
+      "start": "2026-11-04T11:00",
+      "end": "2026-11-04T15:00",
+      "location": "SAC Ballroom",
+      "note": "Bring résumé · talk to Photon & BAE",
+      "sample": true
+    }
+  ],
+  "deadlines": [],
+  "_readme": "Classes, meetings and events that are not in Brightspace. Edit freely. Times are America/New_York. Items with \"sample\": true are placeholders — replace them with your real schedule."
 }
