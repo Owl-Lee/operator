@@ -995,7 +995,7 @@ function renderWeekView(items) {
   $("wk").innerHTML = head + allday + body + cols.join("");
   const wrap = $("wkwrap"); if (wrap && !wrap.dataset.scrolled) { wrap.scrollTop = (8 - H0) * PX; wrap.dataset.scrolled = "1"; }
 }
-/* One card per current course: class times, every upcoming deadline, and what the agent filtered out for it. */
+/* One card per current course: class times and every upcoming deadline. */
 function renderCourses() {
   const n = now(), m = new Map();
   for (const i of state.items) {
@@ -1016,7 +1016,6 @@ function renderCourses() {
       <div class="course-meta">${k ? `<span>${kicon("class").replace("<svg", '<svg width="14" height="14"')} ${k.days.map(d => lang === "zh" ? "周" + "日一二三四五六"["Sun Mon Tue Wed Thu Fri Sat".split(" ").indexOf(d)] : d).join(" / ")} ${k.start}–${k.end}${k.location ? " · " + esc(k.location) : ""}${k.sample ? ' <span class="sample">sample</span>' : ""}</span>` : `<span class="muted">${t("course.notime")}</span>`}
         ${meet.map(x => `<span data-kind="meeting">${kicon("meeting").replace("<svg", '<svg width="14" height="14"')} ${esc(x.title)} · ${esc(fmt(etToMs(x.start), { weekday: "short", hour: "numeric", minute: "2-digit" }))}</span>`).join("")}</div>
       <div class="course-dl">${e.due.length ? e.due.map(d => { const ms = Date.parse(d.due), u = d.tri?.level === "urgent"; return `<a class="cdl ${u ? "urgent" : ""}" href="${esc(d.link || "#")}" target="_blank" rel="noopener"><i></i><span>${esc(d.title)}<small>${esc(KT[d.kind] || d.kind)}</small></span><b>${esc(fmt(ms, { month: "short", day: "numeric" }))}<small>${timeOf(ms)}</small></b></a>`; }).join("") : `<p class="muted">${t("course.nodue")}</p>`}</div>
-      ${e.ignored ? `<p class="course-foot">${t("course.ignored", { n: e.ignored })}</p>` : ""}
     </div>`; }).join("") || emptyHtml("empty.courses", "");
 }
 function renderSetup() {
