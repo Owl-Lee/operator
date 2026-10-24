@@ -496,7 +496,9 @@ button:active, .btn:active, .fab:active { transform: scale(.97); }
       <h1 id="greeting"></h1>
       <p id="summary"></p>
     </div>
+    <button class="btn ghost" id="briefBtn" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="brief.play">Morning telegram</span></button>
   </section>
+  <audio id="briefAudio" hidden></audio>
 
   <section class="view" id="view-today">
     <div class="grid">
@@ -532,6 +534,7 @@ button:active, .btn:active, .fab:active { transform: scale(.97); }
         <div class="card-h"><h2 data-i18n="setup.ch">Channels</h2></div>
         <div class="conn" id="connPhoton"></div>
         <div class="conn" id="connGemini"></div>
+        <div class="conn" id="connEleven"></div>
         <p class="msg" data-i18n="setup.ch.note">Keys live in .env on the machine running the agent. The dashboard never shows them.</p>
         <button class="btn ghost" id="pollBtn" data-i18n="setup.poll">Check Brightspace now</button>
         <div class="msg" id="pollMsg"></div>
@@ -590,7 +593,8 @@ const I18N = {
     "feed.telegram": "<b>{s} telegram:</b> {t}", "feed.sent": "Sent", "feed.drafted": "Drafted", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
     "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
     "feed.done.text": "<b>Marked done</b> from your text: {t} (“{q}”). Reminders off.", "feed.done.web": "<b>Marked done</b> from the dashboard: {t}. Reminders off.", "feed.reopen": "<b>Re-opened</b> {t}.", "feed.clarify": "<b>Asked</b> which item you meant by “{q}”.", "feed.answered.im": "<b>Answered over iMessage</b> “{q}”.",
-    "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
+    "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}",
+    "brief.play": "Morning telegram", "brief.loading": "Composing…", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -634,7 +638,8 @@ const I18N = {
     "feed.telegram": "<b>{s}电报：</b>{t}", "feed.sent": "已发送", "feed.drafted": "已起草", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
     "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
     "feed.done.text": "<b>按你的短信标为完成</b>：{t}（“{q}”）。提醒已关。", "feed.done.web": "<b>在页面上标为完成</b>：{t}。提醒已关。", "feed.reopen": "<b>重新打开</b> {t}。", "feed.clarify": "<b>反问了</b>“{q}”指的是哪一项。", "feed.answered.im": "<b>在 iMessage 里回答了</b>“{q}”。",
-    "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
+    "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}",
+    "brief.play": "今日早报", "brief.loading": "正在撰写…", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -1013,7 +1018,23 @@ function renderSetup() {
   $("icalConn").innerHTML = `<i></i><span>${t(s.ical ? "setup.connected" : "setup.notconnected")}${s.ical ? ` · <code>${esc(s.ical)}</code>${s.icalFromEnv ? ` <small>(${t("setup.env")})</small>` : ""}` : ""}</span>`;
   $("connPhoton").className = "conn " + (s.photon ? "ok" : "warn"); $("connPhoton").innerHTML = `<i></i><span>${t("setup.photon")} · ${t(s.photon ? "setup.ready" : "setup.missing")}${s.phone ? ` · ${esc(s.phone)}` : ""}</span>`;
   $("connGemini").className = "conn " + (s.gemini ? "ok" : ""); $("connGemini").innerHTML = `<i></i><span>${t("setup.gemini")} · ${t(s.gemini ? "setup.ready" : "setup.rules")}</span>`;
+  $("connEleven").className = "conn " + (s.elevenlabs ? "ok" : ""); $("connEleven").innerHTML = `<i></i><span>${t("setup.eleven")} · ${t(s.elevenlabs ? "setup.ready" : "setup.missing")}</span>`;
   $("dsub").textContent = t(s.gemini ? "drawer.sub.g" : "drawer.sub.r");
+  $("briefBtn").hidden = !s.elevenlabs;
+}
+/* ▶ Morning telegram: fetch the mp3 (ElevenLabs reads Gemini's briefing), play it, show the words as a toast */
+async function playBriefing() {
+  const b = $("briefBtn"), a = $("briefAudio");
+  if (!a.paused) { a.pause(); a.currentTime = 0; b.classList.remove("on"); return; }
+  b.disabled = true; b.querySelector("span").textContent = t("brief.loading");
+  try {
+    const r = await fetch(`/api/briefing?lang=${lang}`); if (!r.ok) throw new Error((await r.json()).error || r.status);
+    const text = decodeURIComponent(r.headers.get("x-briefing-text") || "");
+    a.src = URL.createObjectURL(await r.blob()); await a.play(); b.classList.add("on");
+    toast(text.slice(0, 140));
+    a.onended = () => { b.classList.remove("on"); };
+  } catch (e) { toast(t("drawer.err", { e: e.message })); }
+  b.disabled = false; b.querySelector("span").textContent = t("brief.play");
 }
 
 /* ---------------- questions (rule-based until Gemini answers them) ---------------- */
@@ -1098,6 +1119,7 @@ document.addEventListener("click", async e => {
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
   const blk = e.target.closest(".blk, .pin"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open, .pin.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
+  if (e.target.closest("#briefBtn")) return playBriefing();
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
   const dn = e.target.closest("[data-done]"); if (dn) { e.preventDefault(); e.stopPropagation(); await fetch("/api/done", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid: dn.dataset.done, title: dn.dataset.title, undo: !!dn.dataset.undo }) }); toast(t(dn.dataset.undo ? "done.reopened" : "done.marked", { t: dn.dataset.title })); return load(); }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); toast(t("removed")); return load(); }

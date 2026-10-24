@@ -48,3 +48,12 @@
 - `npm run ping` 报错：把完整报错贴给我。常见是 ID/Secret 复制时多了空格，或手机号没加 `+1`。
 - Gemini 报 `403/400`：key 复制不全，或 AI Studio 里项目没启用 API，重新 Create 一个。
 - Photon 卡住：直接去黑客松现场 Photon 赞助商摊位问，他们会帮你看。
+
+---
+
+## 三、ElevenLabs（语音早报，可选）
+
+1. MLH 奖项页 ElevenLabs 那格点 **Log In To Claim Code** 领兑换码（送额度）。
+2. https://elevenlabs.io 注册 → 右上角头像 → **API Keys** → Create → 复制。
+3. `.env` 填 `ELEVENLABS_API_KEY=…`，重启 `npm run web`。
+4. 验证：主页问候语旁出现 ▶「今日早报」；手机发「早报」会收到一条语音。

@@ -1,14 +1,15 @@
 import "dotenv/config";
 import { createServer, type IncomingMessage } from "node:http";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent, loadDone, markDone, unmarkDone } from "./store.js";
+import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent, logTelegram, loadDone, markDone, unmarkDone } from "./store.js";
 import { triage } from "./triage.js";
 import { runPoll, loadConfig, saveConfig, icalUrl } from "./poll.js";
 import { parseText } from "./parse.js";
 import { geminiExtract, geminiAsk, hasGemini, type GItem } from "./gemini.js";
 import { loadSchedule, saveSchedule, scheduleContext, type Schedule } from "./schedule.js";
 import { startAgent } from "./agent.js";
-import { hasPhoton } from "./photon.js";
+import { hasPhoton, sendVoice } from "./photon.js";
+import { hasElevenLabs, briefingText, speak } from "./voice.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
@@ -26,7 +27,23 @@ createServer(async (req, res) => {
       const now = process.env.FAKE_NOW ?? new Date().toISOString();
       const items = loadSnapshot();
       return json({ now, items, triage: triage(items, new Date(now)), agentLog: loadAgentLog(), telegrams: loadTelegrams(), schedule: loadSchedule(), done: loadDone(),
-        setup: { ical: mask(icalUrl()), icalFromEnv: !!process.env.BRIGHTSPACE_ICAL_URL, photon: hasPhoton(), gemini: !!process.env.GEMINI_API_KEY, phone: process.env.MY_PHONE && process.env.MY_PHONE !== "+1" ? process.env.MY_PHONE.replace(/\d(?=\d{2})/g, "•") : null } });
+        setup: { ical: mask(icalUrl()), icalFromEnv: !!process.env.BRIGHTSPACE_ICAL_URL, photon: hasPhoton(), gemini: !!process.env.GEMINI_API_KEY, elevenlabs: hasElevenLabs(), phone: process.env.MY_PHONE && process.env.MY_PHONE !== "+1" ? process.env.MY_PHONE.replace(/\d(?=\d{2})/g, "•") : null } });
+    }
+    /* Morning telegram, read aloud. GET → mp3 for the dashboard player; POST {send:true} → also push to the phone. */
+    if (url.pathname === "/api/briefing") {
+      if (!hasElevenLabs()) return json({ error: "ElevenLabs not connected." }, 503);
+      const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
+      const lang = (url.searchParams.get("lang") === "en" ? "en" : "zh") as "zh" | "en";
+      const text = await briefingText(lang, now);
+      const audio = await speak(text);
+      logAgent("telegram", `Read the morning briefing aloud: “${text.slice(0, 80)}…”`, { voice: true });
+      if (req.method === "POST") {
+        const { send } = await body(req);
+        if (send && hasPhoton()) { await sendVoice(audio); logTelegram(`[voice] ${text}`, true); }
+        return json({ ok: true, text });
+      }
+      res.writeHead(200, { "content-type": "audio/mpeg", "x-briefing-text": encodeURIComponent(text), "cache-control": "no-store" });
+      return res.end(audio);
     }
     /* Mark a deadline done / not done from the dashboard. */
     if (url.pathname === "/api/done" && req.method === "POST") {

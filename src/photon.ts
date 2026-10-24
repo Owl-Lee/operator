@@ -3,7 +3,7 @@ import { imessage } from "spectrum-ts/providers/imessage";
 
 /** One Spectrum connection shared by outbound telegrams and the inbound listener. */
 let appPromise: Promise<any> | null = null;
-let dmPromise: Promise<{ send(text: string): Promise<unknown> }> | null = null;
+let dmPromise: Promise<{ send(content: any): Promise<unknown> }> | null = null;
 
 export const hasPhoton = () => !!(process.env.IMESSAGE_PROJECT_ID && process.env.IMESSAGE_PROJECT_SECRET && process.env.MY_PHONE && process.env.MY_PHONE !== "+1");
 export const myPhone = () => process.env.MY_PHONE!;
@@ -28,6 +28,13 @@ function getDm() {
 export async function sendTelegram(text: string): Promise<void> {
   const dm = await getDm();
   await dm.send(text);
+}
+
+/** Send an audio buffer as an iMessage voice-note bubble. */
+export async function sendVoice(audio: Buffer, mimeType = "audio/mpeg", name = "briefing.mp3"): Promise<void> {
+  const { voice } = await import("spectrum-ts");
+  const dm = await getDm();
+  await dm.send(voice(audio, { mimeType, name }));
 }
 
 export interface Inbound { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }

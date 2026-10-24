@@ -1,7 +1,9 @@
 import { geminiJson, hasGemini, type GItem } from "./gemini.js";
 import { openDeadlines, scheduleContext, loadSchedule, saveSchedule } from "./schedule.js";
-import { logAgent, markDone, unmarkDone } from "./store.js";
+import { logAgent, logTelegram, markDone, unmarkDone } from "./store.js";
 import { telegram } from "./telegram.js";
+import { hasElevenLabs, briefingText, speak } from "./voice.js";
+import { sendVoice } from "./photon.js";
 
 /**
  * The phone-side brain. Every iMessage goes through ONE Gemini call that decides what it means against
@@ -23,6 +25,15 @@ export async function handleInbound(input: string | InboundInput, now = new Date
   const inp: InboundInput = typeof input === "string" ? { text: input } : input;
   const text = inp.text ?? "";
   const lang: "zh" | "en" = /[一-龥]/.test(text) || (!text && true) ? "zh" : "en"; // voice/photo without text: default to Chinese for this user
+  // "早报" / "briefing": read today's telegram aloud as a voice note (ElevenLabs)
+  if (/^(早报|今日早报|念一下|briefing|morning telegram|read it to me)[!！。.]?$/i.test(text)) {
+    if (!hasElevenLabs()) return lang === "zh" ? "语音早报需要先接上 ElevenLabs。" : "Voice briefings need ElevenLabs connected.";
+    try {
+      const t = await briefingText(lang, now); const audio = await speak(t);
+      await sendVoice(audio); logTelegram(`[voice] ${t}`, true); logAgent("telegram", `Sent the morning briefing as a voice note: “${t.slice(0, 80)}…”`, { voice: true });
+      return null as any; // the voice note is the reply
+    } catch (e: any) { return busy(lang, String(e?.message ?? e).slice(0, 40)); }
+  }
   if (!hasGemini()) return text ? rulesFallback(text, now, lang) : (lang === "zh" ? "接上 Gemini 后才能听语音、看图片。" : "Voice and photos need Gemini connected.");
   try {
     return await decide(inp, now, lang);
