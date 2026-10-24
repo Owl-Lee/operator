@@ -403,6 +403,30 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 .dc .prev img { height: 44px; border-radius: 8px; border: 1px solid var(--line); }
 .dc .hint { margin: 8px 4px 0; font-size: 11.5px; color: var(--muted); }
 
+/* ---------- micro-interactions ---------- */
+.view { animation: view-in .28s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes view-in { from { opacity: 0; transform: translateY(10px); } }
+button, .btn, .tab, .fab, .icon-btn, .skin, .lang button, .undo { transition: transform .12s ease, background .15s, color .15s, box-shadow .15s, opacity .15s; }
+button:active, .btn:active, .fab:active { transform: scale(.97); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.item, .ag .row, .cdl { transition: background .15s, transform .15s, box-shadow .15s; }
+.item:has(a.cover):hover, .ag .row:has(a):hover, .cdl:hover { transform: translateY(-1px); background: var(--bg-2); }
+.item:has(a.cover)::after, .ag .row:has(a)::after { content: "↗"; position: absolute; right: 12px; top: 10px; font: 600 13px var(--disp); color: var(--muted); opacity: 0; transition: opacity .15s, transform .15s; transform: translate(-4px, 4px); pointer-events: none; }
+.item:has(a.cover):hover::after, .ag .row:has(a):hover::after { opacity: 1; transform: none; }
+.ag .row:has(a) { padding-right: 32px; }
+.cd b.tick { animation: tick .3s cubic-bezier(.2,.8,.2,1); }
+@keyframes tick { 0% { transform: translateY(-6px); opacity: .3; } 100% { transform: none; opacity: 1; } }
+.fe.new { animation: fe-in .4s ease-out both; background: var(--event-bg); border-radius: 10px; }
+@keyframes fe-in { from { opacity: 0; transform: translateX(-8px); } }
+.blk { transition: transform .12s, box-shadow .12s; }
+.blk:hover { transform: translateY(-1px) scale(1.01); box-shadow: 0 6px 16px -6px rgba(30,27,46,.3); z-index: 5 !important; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); z-index: 50; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; font: 600 13.5px var(--disp); box-shadow: 0 12px 30px -10px rgba(30,27,46,.5); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; display: flex; gap: 12px; align-items: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast button { color: var(--accent-2); font: 600 13px var(--disp); }
+.kbd-hint { font: 500 10px var(--sans); color: var(--muted); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 4px; margin-left: 6px; vertical-align: 1px; }
+@media (max-width: 980px) { .kbd-hint { display: none; } .toast { bottom: calc(84px + env(safe-area-inset-bottom)); } }
+@media (prefers-reduced-motion: reduce) { .view, .cd b.tick, .fe.new { animation: none; } .item:hover, .ag .row:hover, .blk:hover { transform: none; } }
+
 .tabbar { display: none; }
 .view[hidden] { display: none; }
 [hidden] { display: none !important; }
@@ -439,10 +463,10 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
   <header class="nav">
     <a class="brand" href="#"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="16" r="3"/></svg></i>Brass Telegraph</a>
     <nav class="tabs" id="tabs">
-      <button class="tab on" data-view="today" data-i18n="nav.today">Today</button>
-      <button class="tab" data-view="week" data-i18n="nav.week">Week</button>
-      <button class="tab" data-view="deadlines" data-i18n="nav.deadlines">Deadlines</button>
-      <button class="tab" data-view="courses" data-i18n="nav.courses">Courses</button>
+      <button class="tab on" data-view="today" title="1"><span data-i18n="nav.today">Today</span></button>
+      <button class="tab" data-view="week" title="2"><span data-i18n="nav.week">Week</span></button>
+      <button class="tab" data-view="deadlines" title="3"><span data-i18n="nav.deadlines">Deadlines</span></button>
+      <button class="tab" data-view="courses" title="4"><span data-i18n="nav.courses">Courses</span></button>
     </nav>
     <span class="status" id="status"><i></i><span><b>…</b></span></span>
     <span class="lang" id="lang"><button data-lang="en">EN</button><button data-lang="zh">中</button></span>
@@ -503,7 +527,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
   </section>
 </div>
 
-<button class="fab" data-open-drawer><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span data-i18n="drawer.fab">Agent</span></button>
+<button class="fab" data-open-drawer title="A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span data-i18n="drawer.fab">Agent</span></button>
 <div class="scrim" data-close-drawer></div>
 <aside class="drawer" id="drawer" aria-label="Agent">
   <div class="dh"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/></svg></span>
@@ -522,6 +546,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
   </div>
 </aside>
 
+<div class="toast" id="toast" role="status"></div>
 <nav class="tabbar" id="tabbar">
   <button class="on" data-view="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg><span data-i18n="nav.today">Today</span></button>
   <button data-view="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><span data-i18n="nav.week">Week</span></button>
@@ -798,13 +823,29 @@ function tick() {
   let s = Math.max(0, Math.floor((+el.dataset.due - now()) / 1000));
   const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
   const L = lang === "zh" ? ["天", "时", "分", "秒"] : ["DAYS", "HRS", "MIN", "SEC"];
-  el.innerHTML = [d, h, m, s].map((v, k) => `<div><b>${String(v).padStart(2, "0")}</b><small>${L[k]}</small></div>`).join("");
+  const vals = [d, h, m, s].map(v => String(v).padStart(2, "0"));
+  if (el.children.length !== 4) { el.innerHTML = vals.map((v, k) => `<div><b>${v}</b><small>${L[k]}</small></div>`).join(""); return; }
+  // only touch digits that changed, and let them tick
+  [...el.querySelectorAll("b")].forEach((b, k) => { if (b.textContent !== vals[k]) { b.textContent = vals[k]; b.classList.remove("tick"); void b.offsetWidth; b.classList.add("tick"); } });
+}
+/* count a big number up from 0 the first time it appears */
+function countUp(el, to, ms = 700) {
+  if (!el || el.dataset.counted === String(to)) return; el.dataset.counted = String(to);
+  const t0 = performance.now(); const step = t => { const p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(to * e); if (p < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+}
+let toastTimer;
+function toast(msg, action) {
+  const el = $("toast"); el.innerHTML = `<span>${msg}</span>${action ? `<button type="button" id="toastAct">${action.label}</button>` : ""}`;
+  if (action) $("toastAct").onclick = () => { action.fn(); el.classList.remove("show"); };
+  el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), action ? 6000 : 2500);
 }
 function renderFeed() {
   const n = now(), log = state.agentLog.slice(0, 8);
   if (!log.length) { $("feed").innerHTML = emptyHtml("empty.feed", "empty.feed.sub"); return; }
   const rel = ms => { const m = Math.round((n - ms) / 60000); return m < 1 ? t("just now") : m < 60 ? t("min ago", { n: m }) : m < 1440 ? t("h ago", { n: Math.round(m / 60) }) : fmt(ms, { month: "short", day: "numeric" }); };
-  $("feed").innerHTML = log.map(e => `<div class="fe" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${feedText(e)}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
+  const seen = renderFeed.seen || (renderFeed.seen = new Set(state.agentLog.map(e => e.at)));
+  $("feed").innerHTML = log.map(e => `<div class="fe ${seen.has(e.at) ? "" : "new"}" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${feedText(e)}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
+  for (const e of state.agentLog) seen.add(e.at);
 }
 /* The server logs in English; render each known template in the current language. */
 function feedText(e) {
@@ -829,12 +870,13 @@ function renderQuiet() {
   const sum = { urgent: 0, need: 0, ignore: 0 }; for (const x of state.triage) sum[x.level]++;
   const total = state.triage.length || 1, groups = {};
   for (const x of ig) { const k = reason(x.reason).replace(/\(.*\)/, "").trim(); groups[k] = (groups[k] || 0) + 1; }
-  $("quiet").innerHTML = `<div class="quiet-h"><span class="big">${ig.length}</span><p>${t("quiet.text")}</p></div>
+  $("quiet").innerHTML = `<div class="quiet-h"><span class="big" id="quietBig">${ig.length}</span><p>${t("quiet.text")}</p></div>
     <div class="tri-bars"><i style="width:${sum.urgent / total * 100}%;background:var(--urgent)"></i><i style="width:${sum.need / total * 100}%;background:var(--need)"></i><i style="width:${sum.ignore / total * 100}%;background:var(--line-2)"></i></div>
     <div class="tri-leg"><span><i style="background:var(--urgent)"></i>${sum.urgent} ${t("q.urgent")}</span><span><i style="background:var(--need)"></i>${sum.need} ${t("q.need")}</span><span><i style="background:var(--line-2)"></i>${sum.ignore} ${t("q.ignore")}</span></div>
     <div class="quiet-list show" style="margin-top:18px">${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([r, c]) => `<div class="ql"><span>${esc(r)}</span><small><b>${c}</b></small></div>`).join("")}</div>
     <div class="quiet-list ${quietOpen ? "show" : ""}">${ig.slice(0, 12).map(x => { const i = byUid.get(x.uid); return `<div class="ql"><span>${esc(i?.title)} <small>· ${esc(code(i?.course))}</small></span><small>${esc(reason(x.reason))}</small></div>`; }).join("")}${ig.length > 12 ? `<div class="ql"><small>${t("quiet.more", { n: ig.length - 12 })}</small></div>` : ""}</div>`;
   $("quietToggle").textContent = t(quietOpen ? "quiet.hide" : "quiet.show");
+  countUp($("quietBig"), ig.length);
 }
 function renderWeekStrip() {
   const today = etMidnight(now());
@@ -986,6 +1028,7 @@ async function sendToAgent() {
     if (r.queued) { wait.innerHTML = `${t("drawer.queued")}<br><span class="eng">${t("eng.queued")}</span>`; load(); return; }
     if (!r.items.length) { wait.innerHTML = `${t("drawer.none")}<br><span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`; return; }
     wait.innerHTML = `${r.summary && r.engine === "gemini" ? esc(r.summary) + "<br>" : ""}${t("drawer.added", { n: t("items", { n: r.items.length }) })}${r.items.map(itemLine).join("")}${r.notes?.length ? `<small style="color:var(--muted)">${esc(r.notes.join(" "))}</small><br>` : ""}<span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`;
+    toast(t("drawer.added", { n: t("items", { n: r.items.length }) }).replace(/[:：]$/, ""));
     load();
   } catch (e) { wait.innerHTML = t("drawer.err", { e: esc(e.message) }); }
 }
@@ -1003,7 +1046,7 @@ async function load() {
 function go(view) {
   document.querySelectorAll(".tab, .tabbar button").forEach(x => x.classList.toggle("on", x.dataset.view === view));
   $("setupBtn").classList.toggle("on", view === "setup");
-  document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + view);
+  document.querySelectorAll(".view").forEach(v => { const show = v.id === "view-" + view; if (show && v.hidden) { v.style.animation = "none"; void v.offsetWidth; v.style.animation = ""; } v.hidden = !show; });
   if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled) { w.scrollTop = 60; w.dataset.scrolled = "1"; } }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1012,7 +1055,7 @@ document.addEventListener("click", async e => {
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
-  const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); return load(); }
+  const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); toast(t("removed")); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();
   if (e.target.closest("[data-close-drawer]")) return closeDrawer();
@@ -1042,7 +1085,13 @@ const dc = $("dc");
 dc.addEventListener("dragover", e => { e.preventDefault(); dc.classList.add("drag"); });
 dc.addEventListener("dragleave", () => dc.classList.remove("drag"));
 dc.addEventListener("drop", e => { e.preventDefault(); dc.classList.remove("drag"); setImage(e.dataTransfer.files[0]); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") return closeDrawer();
+  if ((e.target?.matches && e.target.matches("input, textarea, [contenteditable]")) || e.metaKey || e.ctrlKey || e.altKey) return;
+  const views = { "1": "today", "2": "week", "3": "deadlines", "4": "courses" };
+  if (views[e.key]) { e.preventDefault(); return go(views[e.key]); }
+  if (e.key.toLowerCase() === "a") { e.preventDefault(); return openDrawer(); }
+});
 /* Steam skin atmosphere: a few slow steam puffs low on the screen and a handful of embers. Cheap (CSS transforms only). */
 function steamFx() {
   const host = $("steamfx");
