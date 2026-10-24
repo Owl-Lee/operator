@@ -7,10 +7,12 @@ export interface GItem {
   title: string; course?: string; date?: string; days?: string[];
   start?: string; end?: string; location?: string; note?: string;
 }
-export interface GResult { items: GItem[]; summary: string }
+export interface GResult { items: GItem[]; summary: string; model?: string }
 
 export const hasGemini = () => !!process.env.GEMINI_API_KEY;
-const MODEL = () => process.env.GEMINI_MODEL || "gemini-2.5-flash";
+/** Preferred model first; the rest are fallbacks for 429/503/timeouts (all available on the free tier). */
+const MODELS = () => [...new Set([process.env.GEMINI_MODEL || "gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.7-flash", "gemini-flash-latest"])];
+const TIMEOUT_MS = 20_000;
 
 function prompt(now: Date) {
   const today = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
@@ -25,13 +27,26 @@ export async function geminiExtract(input: { text?: string; image?: { data: stri
   const parts: any[] = [{ text: prompt(now) }];
   if (input.text) parts.push({ text: `USER TEXT:\n${input.text}` });
   if (input.image) parts.push({ inline_data: { mime_type: input.image.mime, data: input.image.data } });
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL()}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
-    method: "POST", headers: { "content-type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2 } }),
-  });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const data: any = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "{}";
-  const parsed = JSON.parse(text.replace(/^```json|```$/g, "").trim());
-  return { items: Array.isArray(parsed.items) ? parsed.items : [], summary: String(parsed.summary ?? "") };
+  const body = JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2 } });
+  let lastErr = "";
+  for (const model of MODELS()) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+          method: "POST", headers: { "content-type": "application/json" }, body, signal: AbortSignal.timeout(TIMEOUT_MS),
+        });
+        if (res.status === 503 || res.status === 429) { lastErr = `${model} ${res.status}`; await new Promise(r => setTimeout(r, 1500)); continue; }
+        if (res.status === 403 || res.status === 404) { lastErr = `${model} ${res.status}`; break; } // model not available to this key → next model
+        if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        const data: any = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "{}";
+        const parsed = JSON.parse(text.replace(/^```json|```$/g, "").trim());
+        return { items: Array.isArray(parsed.items) ? parsed.items : [], summary: String(parsed.summary ?? ""), model };
+      } catch (e: any) {
+        if (e?.name === "TimeoutError" || e?.name === "AbortError") { lastErr = `${model} timeout`; break; }
+        throw e;
+      }
+    }
+  }
+  throw new Error(`Gemini busy (${lastErr}). Try again in a moment.`);
 }

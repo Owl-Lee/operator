@@ -59,19 +59,25 @@ createServer(async (req, res) => {
         imgPath = `data/inbox/${Date.now().toString(36)}.${(mime || "image/png").split("/")[1].replace("jpeg", "jpg")}`;
         writeFileSync(imgPath, Buffer.from(image, "base64"));
       }
-      let items: GItem[], summary = "", engine: "gemini" | "rules" | "queued", notes: string[] = [];
+      let items: GItem[] | null = null, summary = "", engine: "gemini" | "rules" | "queued" = "rules", notes: string[] = [];
       if (hasGemini()) {
-        const g = await geminiExtract({ text, image: image ? { data: image, mime: mime || "image/png" } : undefined }, now);
-        items = g.items; summary = g.summary; engine = "gemini";
-      } else if (image && !text?.trim()) {
+        try {
+          const g = await geminiExtract({ text, image: image ? { data: image, mime: mime || "image/png" } : undefined }, now);
+          items = g.items; summary = g.summary; engine = "gemini";
+        } catch (e: any) {
+          notes.push(e?.message ?? "Gemini failed"); // fall through to rules / queue
+        }
+      }
+      if (items) { /* Gemini answered */ }
+      else if (image && !text?.trim()) {
         const inbox = existsSync("data/inbox.json") ? JSON.parse(readFileSync("data/inbox.json", "utf8")) : [];
         inbox.push({ at: new Date().toISOString(), path: imgPath });
         writeFileSync("data/inbox.json", JSON.stringify(inbox, null, 2));
         logAgent("triage", `Received an image. I'll read it as soon as Gemini is connected (${inbox.length} waiting).`, { path: imgPath });
-        return json({ ok: true, queued: true, engine: "queued", items: [], summary: "" });
+        return json({ ok: true, queued: true, engine: "queued", items: [], summary: "", notes });
       } else {
         const p = parseText(text, now);
-        notes = p.notes; engine = "rules";
+        notes = [...notes, ...p.notes]; engine = "rules";
         items = p.grounded ? [{ kind: p.kind, title: p.title, date: p.start.slice(0, 10), start: p.start.slice(11), end: p.end?.slice(11), location: p.location, course: p.kind === "class" ? p.title : undefined }] : [];
         summary = p.grounded ? `${p.kind}: ${p.title}` : "";
       }

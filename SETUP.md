@@ -16,7 +16,7 @@
 5. 验证：打开 http://localhost:4242 → 右上角 ⚙ 设置 → 「Gemini（判断与问答）」应显示 **就绪**；右下角 Agent 抽屉副标题变成「Gemini 读文字和图片」。
 6. 试一下：把课表截图粘进 Agent 抽屉发送，应该直接解析出每门课的时间。
 
-> 免费层够用，不绑卡。想换模型在 `.env` 加 `GEMINI_MODEL=gemini-2.5-pro`，默认是 `gemini-2.5-flash`。
+> 免费层够用，不绑卡。想换模型在 `.env` 加 `GEMINI_MODEL=…`，默认是 `gemini-3.8-flash`。
 
 ---
 
