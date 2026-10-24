@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brass Telegraph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1b2430;
+  --iron: #1d1915;
+  --iron-2: #262019;
+  --panel: rgba(22, 18, 14, 0.82);
+  --edge: #5a4127;
+  --brass: #d9a45b;
+  --brass-hi: #f4c77d;
+  --copper: #b8652f;
+  --glow: rgba(255, 170, 70, 0.55);
+  --text: #f1e4cf;
+  --muted: #a8977f;
+  --red: #e2553a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 30%, #2b3644 0%, var(--bg) 55%, #10151c 100%);
+  color: var(--text);
+  font: 15px/1.45 Inter, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---------- gears ---------- */
+#gears { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+#gears svg { position: absolute; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+.spin { animation: spin var(--d, 60s) linear infinite; transform-box: fill-box; transform-origin: center; }
+.spin.rev { animation-direction: reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+
+/* ---------- frame ---------- */
+.frame {
+  position: relative; z-index: 1;
+  max-width: 1080px; margin: 28px auto; padding: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.012) 0 2px, transparent 2px 6px),
+    var(--iron);
+  border: 2px solid var(--edge);
+  border-radius: 14px;
+  box-shadow: 0 0 0 6px #0e0b09, 0 0 0 8px #3c2b1a, 0 30px 80px rgba(0,0,0,.7), inset 0 0 60px rgba(0,0,0,.6);
+}
+.rivet {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f6d49a, #8a5b2c 60%, #3a2512);
+  box-shadow: 0 1px 2px rgba(0,0,0,.8);
+}
+
+/* ---------- top bar ---------- */
+.top { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
+.knob {
+  flex: none; width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center; color: var(--brass-hi);
+  background: radial-gradient(circle at 40% 35%, #6b4524, #2a1a0e 70%);
+  box-shadow: 0 0 0 3px #a8733b, 0 0 0 6px #2a1d12, 0 0 18px var(--glow), inset 0 2px 6px rgba(255,220,160,.25);
+}
+.knob:hover { box-shadow: 0 0 0 3px var(--brass-hi), 0 0 0 6px #2a1d12, 0 0 28px var(--glow), inset 0 2px 6px rgba(255,220,160,.3); }
+.knob svg { width: 30px; height: 30px; }
+.search {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  height: 54px; padding: 0 8px 0 22px; border-radius: 30px;
+  background: linear-gradient(180deg, #120e0b, #221a13);
+  box-shadow: 0 0 0 2px #b9803f, 0 0 0 4px #2b1f14, 0 0 16px rgba(255,170,70,.35), inset 0 3px 8px rgba(0,0,0,.8);
+}
+.search input {
+  flex: 1; min-width: 0; background: none; border: 0; outline: 0;
+  color: var(--text); font: 500 18px Inter, sans-serif;
+}
+.search input::placeholder { color: #cdb894; }
+.search .mini { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: var(--text); background: #1a140f; box-shadow: inset 0 0 0 1px #5e4329; }
+
+/* ---------- nav tiles ---------- */
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.tile {
+  position: relative; height: 128px; border-radius: 10px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  color: var(--text); font: 600 22px Inter, sans-serif; border: 1px solid #4a3622;
+  background: linear-gradient(180deg, #2c241c, #1a1511);
+  box-shadow: inset 0 1px 0 rgba(255,220,170,.08), inset 0 -10px 30px rgba(0,0,0,.4);
+}
+.tile svg { width: 52px; height: 52px; color: var(--brass-hi); filter: drop-shadow(0 0 6px rgba(255,180,90,.5)); }
+.tile.on {
+  background: radial-gradient(ellipse at 50% 40%, #c0733a, #7a3f1d 70%);
+  border-color: #e3a25e; box-shadow: 0 0 22px rgba(255,140,60,.45), inset 0 1px 0 rgba(255,230,190,.4);
+}
+.tile.on svg { color: #fff1dc; }
+.tile::before, .tile::after { content: "❖"; position: absolute; top: 6px; font-size: 11px; color: #8a6440; }
+.tile::before { left: 8px; } .tile::after { right: 8px; }
+
+/* ---------- panels ---------- */
+.grid { display: grid; grid-template-columns: 1.15fr 1.15fr .8fr; gap: 14px; }
+.panel {
+  background: var(--panel); border: 1px solid #4a3622; border-radius: 10px; padding: 16px 18px;
+  box-shadow: inset 0 1px 0 rgba(255,220,170,.06), inset 0 0 30px rgba(0,0,0,.5);
+  min-width: 0;
+}
+.panel h2 { margin: 0 0 10px; font: 600 17px Inter, sans-serif; letter-spacing: .02em; text-transform: uppercase; color: #f3e6d2; }
+.span2 { grid-column: span 2; }
+
+.dl { display: flex; flex-direction: column; gap: 12px; }
+.dl-item h3 { margin: 0; font: 500 17px Inter, sans-serif; }
+.dl-meta { color: var(--muted); font-size: 13px; margin: 2px 0 6px; }
+.dl-bar { height: 34px; border-radius: 4px; background: linear-gradient(180deg, #5d4a38, #3d3024); display: flex; align-items: center; padding: 0 12px; gap: 8px; font-size: 13px; color: #f1dcc0; }
+.dl-bar.hot { background: linear-gradient(180deg, #8e3a24, #5b2214); box-shadow: 0 0 12px rgba(226,85,58,.4); }
+.btn {
+  display: inline-block; margin-top: 8px; padding: 5px 14px; border-radius: 14px; font: 500 12px Inter, sans-serif;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--text); text-decoration: none;
+  background: #2a221b; box-shadow: inset 0 0 0 1px #6a4c30;
+}
+.btn:hover { box-shadow: inset 0 0 0 1px var(--brass); color: var(--brass-hi); }
+
+/* waveform = 14-day load */
+.wave { display: flex; align-items: center; gap: 3px; height: 110px; margin: 6px 0 10px; }
+.wave i { flex: 1; border-radius: 2px; background: linear-gradient(180deg, #ffd59a, #c07a3a); box-shadow: 0 0 6px rgba(255,170,80,.5); min-height: 3px; }
+.wave i.hot { background: linear-gradient(180deg, #ffb08a, var(--red)); }
+.gauge-row { display: flex; align-items: center; gap: 14px; }
+.gauge { width: 130px; flex: none; }
+.gauge-txt b { font: 700 22px Cinzel, serif; color: var(--brass-hi); display: block; }
+.gauge-txt span { color: var(--muted); font-size: 13px; }
+.steam { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: rgba(240,240,240,.5); filter: blur(4px); animation: puff 2.4s ease-out infinite; opacity: 0; }
+@keyframes puff { 0% { transform: translate(0,0) scale(.6); opacity: .8; } 100% { transform: translate(-10px,-46px) scale(2.4); opacity: 0; } }
+
+.chips { display: flex; flex-direction: column; gap: 9px; align-items: flex-start; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 6px; border-radius: 16px; background: #231c16; box-shadow: inset 0 0 0 1px #4f3a25; font-size: 15px; cursor: pointer; color: var(--text); border: 0; font-family: inherit; }
+.chip svg { width: 18px; height: 18px; color: var(--brass); }
+.chip small { color: var(--muted); }
+.chip.on { box-shadow: inset 0 0 0 1px var(--brass); background: #3a2a1b; }
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.card .ph { height: 78px; border-radius: 4px; display: grid; place-items: center; background: linear-gradient(180deg, #66523f, #43362a); color: #f3e3cb; }
+.card .ph svg { width: 34px; height: 34px; }
+.card h3 { margin: 8px 0 2px; font: 500 15px Inter, sans-serif; }
+.card p { margin: 0; font-size: 12px; color: var(--muted); }
+
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; }
+.log li { color: #e8dac4; border-left: 2px solid #6a4c30; padding-left: 8px; }
+.log time { display: block; color: var(--muted); font-size: 11px; }
+.empty { color: var(--muted); font-size: 13px; }
+
+.brand { text-align: center; margin: 4px 0 18px; font: 700 15px Cinzel, serif; letter-spacing: .3em; color: var(--brass); }
+.view[hidden] { display: none; }
+
+@media (max-width: 820px) {
+  .frame { margin: 12px 16px; padding: 14px; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .tile { height: 92px; font-size: 17px; }
+  .tile svg { width: 36px; height: 36px; }
+  .grid { grid-template-columns: 1fr; }
+  .span2 { grid-column: auto; }
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .knob { width: 48px; height: 48px; }
+  .search { height: 46px; }
+  .search input { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+<div id="gears"></div>
+
+<main class="frame">
+  <span class="rivet" style="top:8px;left:8px"></span><span class="rivet" style="top:8px;right:8px"></span>
+  <span class="rivet" style="bottom:8px;left:8px"></span><span class="rivet" style="bottom:8px;right:8px"></span>
+
+  <div class="brand">BRASS · TELEGRAPH</div>
+
+  <div class="top">
+    <button class="knob" title="Refresh feed" onclick="load()"><svg viewBox="0 0 24 24" fill="currentColor"><path id="gearIcon"/></svg></button>
+    <label class="search">
+      <input id="q" placeholder="Ask the telegraph… e.g. HW, quiz, EST 393" autocomplete="off">
+      <span class="mini"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+    </label>
+    <button class="knob" title="Search" onclick="document.getElementById('q').focus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+  </div>
+
+  <nav class="tiles">
+    <button class="tile on" data-view="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg>Station</button>
+    <button class="tile" data-view="deadlines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>Deadlines</button>
+    <button class="tile" data-view="telegrams"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>Telegrams</button>
+    <button class="tile" data-view="boiler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/><circle cx="12" cy="16" r="1.6" fill="currentColor"/></svg>Boiler</button>
+  </nav>
+
+  <section class="view" id="view-home">
+    <div class="grid">
+      <div class="panel"><h2>Next Deadlines</h2><div class="dl" id="next"></div></div>
+      <div class="panel" style="position:relative"><h2>Boiler Pressure</h2><div id="boiler"></div></div>
+      <div class="panel"><h2>Courses</h2><div class="chips" id="courses"></div></div>
+      <div class="panel span2"><h2>On The Line</h2><div class="cards" id="cards"></div></div>
+      <div class="panel"><h2>Telegram Log</h2><ul class="log" id="log"></ul></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-deadlines" hidden>
+    <div class="panel"><h2>All Upcoming Deadlines</h2><div class="dl" id="all"></div></div>
+  </section>
+
+  <section class="view" id="view-telegrams" hidden>
+    <div class="panel"><h2>Every Telegram Sent</h2><ul class="log" id="logAll"></ul></div>
+  </section>
+
+  <section class="view" id="view-boiler" hidden>
+    <div class="panel" style="position:relative"><h2>Boiler Pressure · Next 72 Hours</h2><div id="boilerBig"></div></div>
+  </section>
+</main>
+
+<script>
+const ET = "America/New_York";
+const WEIGHT = { exam: 4, quiz: 2, assignment: 2, discussion: 1, content: 0, other: 1 };
+const MAX_LOAD = 8;
+let state = { items: [], telegrams: [], now: new Date().toISOString() };
+let courseFilter = null;
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const code = c => (c.match(/^[A-Z]{3}\s\d{3}/) || [c.split(" - ")[0]])[0];
+const fmt = iso => new Date(iso).toLocaleString("en-US", { timeZone: ET, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+function left(iso) {
+  const h = (Date.parse(iso) - Date.parse(state.now)) / 3.6e6;
+  if (h < 1) return `${Math.max(0, Math.round(h * 60))} min left`;
+  if (h < 48) return `${Math.round(h)} h left`;
+  return `${Math.round(h / 24)} days left`;
+}
+const KIND_ICON = {
+  assignment: '<path d="M6 3h9l4 4v14H6z M14 3v5h5 M9 13h7M9 17h5"/>',
+  discussion: '<path d="M4 5h12v8H9l-5 4z M10 16h6l4 3v-9h-2"/>',
+  quiz: '<circle cx="12" cy="12" r="8"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5M12 16.5v.5"/>',
+  exam: '<path d="M12 3 3 8l9 5 9-5z M7 10.5V15c0 1.5 2.5 3 5 3s5-1.5 5-3v-4.5"/>',
+  content: '<path d="M4 5h7v14H4z M13 5h7v14h-7z"/>',
+  other: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'
+};
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${KIND_ICON[k] || KIND_ICON.other}</svg>`;
+
+function gearPath(teeth, ro, ri, hole, cx = 0, cy = 0) {
+  let d = "";
+  const step = Math.PI * 2 / teeth;
+  for (let i = 0; i < teeth; i++) {
+    const a = i * step;
+    const pts = [[ri, a], [ro, a + step * .12], [ro, a + step * .45], [ri, a + step * .57]];
+    for (const [r, t] of pts) d += (d ? "L" : "M") + (cx + r * Math.cos(t)).toFixed(2) + "," + (cy + r * Math.sin(t)).toFixed(2);
+  }
+  d += "Z";
+  // hole (counter-clockwise for evenodd)
+  d += `M${cx + hole},${cy}A${hole},${hole} 0 1,0 ${cx - hole},${cy}A${hole},${hole} 0 1,0 ${cx + hole},${cy}Z`;
+  return d;
+}
+
+/* ---------- background gears ---------- */
+function drawGears() {
+  const spots = [
+    [-60, -50, 230, 18, 70, 0], [150, 120, 120, 12, 40, 1], [-40, 300, 160, 14, 55, 0],
+    [60, 520, 210, 16, 80, 1], [-70, 760, 180, 15, 60, 0],
+    ["r-60", -40, 220, 18, 75, 1], ["r140", 150, 130, 12, 45, 0], ["r-50", 330, 170, 14, 60, 1],
+    ["r60", 560, 200, 16, 70, 0], ["r-40", 790, 190, 15, 65, 1]
+  ];
+  const host = $("gears");
+  host.innerHTML = spots.map(([x, y, size, teeth, dur, rev], i) => {
+    const pos = typeof x === "string" ? `right:${x.slice(1)}px` : `left:${x}px`;
+    const r = size / 2;
+    return `<svg style="${pos};top:${y}px;width:${size}px;height:${size}px;opacity:.9" viewBox="${-r} ${-r} ${size} ${size}">
+      <defs><radialGradient id="g${i}" cx="35%" cy="30%"><stop offset="0" stop-color="#f0c386"/><stop offset=".55" stop-color="#a8692f"/><stop offset="1" stop-color="#4a2c14"/></radialGradient></defs>
+      <g class="spin ${rev ? "rev" : ""}" style="--d:${dur}s">
+        <path fill="url(#g${i})" fill-rule="evenodd" stroke="#3a220f" stroke-width="1.5" d="${gearPath(teeth, r * .98, r * .82, r * .16)}"/>
+        <circle r="${r * .62}" fill="none" stroke="#5a3718" stroke-width="${r * .08}"/>
+        ${[0, 1, 2, 3, 4, 5].map(k => `<circle cx="${(r * .4 * Math.cos(k * Math.PI / 3)).toFixed(1)}" cy="${(r * .4 * Math.sin(k * Math.PI / 3)).toFixed(1)}" r="${r * .1}" fill="#3a220f" opacity=".7"/>`).join("")}
+        <circle r="${r * .22}" fill="none" stroke="#e8b878" stroke-width="2" opacity=".6"/>
+      </g></svg>`;
+  }).join("");
+  $("gearIcon").setAttribute("d", gearPath(10, 11, 8.6, 3.2, 12, 12));
+  $("gearIcon").setAttribute("fill-rule", "evenodd");
+}
+
+/* ---------- data views ---------- */
+function upcoming(days = 365) {
+  const now = Date.parse(state.now), end = now + days * 864e5;
+  return state.items.filter(i => i.isDue && Date.parse(i.due) >= now && Date.parse(i.due) <= end
+    && (!courseFilter || i.course === courseFilter) && matches(i));
+}
+function matches(i) {
+  const q = $("q").value.trim().toLowerCase();
+  if (!q) return true;
+  return `${i.title} ${i.course} ${i.kind}`.toLowerCase().includes(q);
+}
+function currentCourses() {
+  const now = Date.parse(state.now);
+  const m = new Map();
+  for (const i of state.items) {
+    if (!/^[A-Z]{3}\s\d{3}/.test(i.course)) continue;
+    if (!m.has(i.course)) m.set(i.course, 0);
+    if (i.isDue && Date.parse(i.due) >= now) m.set(i.course, m.get(i.course) + 1);
+  }
+  return [...m].filter(([, n]) => n > 0).sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+function dlHtml(i) {
+  const hot = (Date.parse(i.due) - Date.parse(state.now)) < 24 * 3.6e6;
+  return `<div class="dl-item">
+    <h3>${esc(i.title)}</h3>
+    <div class="dl-meta">${esc(code(i.course))} · ${esc(i.kind)}</div>
+    <div class="dl-bar ${hot ? "hot" : ""}">${icon(i.kind).replace("<svg", '<svg width="18" height="18"')} ${esc(fmt(i.due))} · ${left(i.due)}</div>
+    ${i.link ? `<a class="btn" href="${esc(i.link)}" target="_blank" rel="noopener">Open in Brightspace</a>` : ""}
+  </div>`;
+}
+
+function boilerHtml(big) {
+  const now = Date.parse(state.now);
+  const load = state.items.filter(i => i.isDue && Date.parse(i.due) >= now && Date.parse(i.due) <= now + 72 * 3.6e6)
+    .reduce((s, i) => s + (WEIGHT[i.kind] ?? 1), 0);
+  const pct = Math.min(1, load / MAX_LOAD);
+  const ang = -120 + pct * 240;
+  const label = pct > .7 ? "Overpressure" : pct > .35 ? "Building steam" : "Calm";
+  // 14-day load as a waveform: 3 bars per day
+  const bars = [];
+  for (let d = 0; d < 14; d++) {
+    const s = now + d * 864e5, e = s + 864e5;
+    const v = state.items.filter(i => i.isDue && Date.parse(i.due) >= s && Date.parse(i.due) < e).reduce((a, i) => a + (WEIGHT[i.kind] ?? 1), 0);
+    for (let k = 0; k < 3; k++) bars.push({ v: v ? v * (k === 1 ? 1 : .55 + (Math.sin(d * 7 + k * 3) + 1) * .15) : .15 + (Math.sin(d * 5 + k * 11) + 1) * .12, hot: v >= 3 });
+  }
+  const peak = Math.max(4, ...bars.map(b => b.v));
+  const sz = big ? 260 : 130;
+  const ticks = Array.from({ length: 13 }, (_, k) => {
+    const a = (-120 + k * 20 - 90) * Math.PI / 180;
+    return `<line x1="${50 + 38 * Math.cos(a)}" y1="${50 + 38 * Math.sin(a)}" x2="${50 + (k % 3 ? 34 : 31) * Math.cos(a)}" y2="${50 + (k % 3 ? 34 : 31) * Math.sin(a)}" stroke="#f1dcc0" stroke-width="${k % 3 ? .8 : 1.6}"/>`;
+  }).join("");
+  const redArc = (() => { const a1 = (48 - 90) * Math.PI / 180, a2 = (120 - 90) * Math.PI / 180; return `<path d="M${50 + 36 * Math.cos(a1)},${50 + 36 * Math.sin(a1)} A36,36 0 0,1 ${50 + 36 * Math.cos(a2)},${50 + 36 * Math.sin(a2)}" stroke="#e2553a" stroke-width="4" fill="none"/>`; })();
+  return `
+    <div class="wave">${bars.map(b => `<i class="${b.hot ? "hot" : ""}" style="height:${Math.max(4, b.v / peak * 100)}%"></i>`).join("")}</div>
+    <div class="gauge-row">
+      <svg class="gauge" style="width:${sz}px" viewBox="0 0 100 100">
+        <defs><radialGradient id="face" cx="45%" cy="40%"><stop offset="0" stop-color="#3a2c1f"/><stop offset="1" stop-color="#140f0b"/></radialGradient></defs>
+        <circle cx="50" cy="50" r="46" fill="#a8733b"/><circle cx="50" cy="50" r="42" fill="url(#face)"/>
+        ${redArc}${ticks}
+        <g style="transform:rotate(${ang}deg);transform-origin:50px 50px;transition:transform 1s cubic-bezier(.3,1.6,.5,1)">
+          <path d="M49 52 L50 16 L51 52 Z" fill="#ffb066"/></g>
+        <circle cx="50" cy="50" r="5" fill="#d9a45b" stroke="#3a220f"/>
+        <text x="50" y="76" text-anchor="middle" fill="#cdb894" font-size="7" font-family="Cinzel">PSI ${load}</text>
+      </svg>
+      <div class="gauge-txt"><b>${label}</b><span>Workload due in the next 72h. Bars show the next 14 days.</span></div>
+    </div>
+    ${pct > .7 ? [0, .8, 1.6].map((d, k) => `<span class="steam" style="right:${30 + k * 14}px;top:44px;animation-delay:${d}s"></span>`).join("") : ""}`;
+}
+
+function logHtml(list) {
+  if (!list.length) return `<li class="empty">No telegrams yet. Run <code>npm run poll</code> again after a change.</li>`;
+  return list.map(t => `<li>${esc(t.text.replace(/^TELEGRAM:\s*/, ""))}<time>${esc(fmt(t.at))}${t.sent ? " · sent" : " · not sent"}</time></li>`).join("");
+}
+
+function render() {
+  const next = upcoming(14);
+  $("next").innerHTML = next.slice(0, 2).map(dlHtml).join("") || `<p class="empty">Nothing due in the next 14 days. Full steam ahead.</p>`;
+  $("all").innerHTML = upcoming().map(dlHtml).join("") || `<p class="empty">No upcoming deadlines.</p>`;
+  $("boiler").innerHTML = boilerHtml(false);
+  $("boilerBig").innerHTML = boilerHtml(true);
+  $("courses").innerHTML = currentCourses().map(([c, n]) =>
+    `<button class="chip ${courseFilter === c ? "on" : ""}" data-course="${esc(c)}"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="${gearPath(8, 11, 8.5, 3.4, 12, 12)}"/></svg>${esc(code(c))} <small>${n}</small></button>`).join("");
+  $("cards").innerHTML = upcoming().slice(0, 4).map(i => `<div class="card">
+      <div class="ph">${icon(i.kind)}</div>
+      <h3>${esc(i.title)}</h3><p>${esc(code(i.course))} · ${esc(fmt(i.due))}</p></div>`).join("") || `<p class="empty">The line is quiet.</p>`;
+  $("log").innerHTML = logHtml(state.telegrams.slice(0, 5));
+  $("logAll").innerHTML = logHtml(state.telegrams);
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/state");
+    state = await r.json();
+  } catch { /* keep last state */ }
+  render();
+}
+
+document.querySelector(".tiles").addEventListener("click", e => {
+  const t = e.target.closest(".tile"); if (!t) return;
+  document.querySelectorAll(".tile").forEach(x => x.classList.toggle("on", x === t));
+  document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + t.dataset.view);
+});
+$("courses").addEventListener("click", e => {
+  const c = e.target.closest(".chip"); if (!c) return;
+  courseFilter = courseFilter === c.dataset.course ? null : c.dataset.course;
+  render();
+});
+$("q").addEventListener("input", render);
+
+drawGears();
+load();
+setInterval(load, 60_000);
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@ import "dotenv/config";
 import { readFileSync } from "node:fs";
 import { fetchIcs, parseIcs, upcoming } from "./ical.js";
 import { diffSnapshots } from "./diff.js";
-import { loadSnapshot, saveSnapshot } from "./store.js";
+import { loadSnapshot, saveSnapshot, logTelegram } from "./store.js";
 import { changeTelegram, fmtTime } from "./telegram.js";
 import { sendTelegram } from "./send.js";
 
@@ -35,7 +35,9 @@ async function main() {
     for (const c of changes) {
       const text = changeTelegram(c);
       console.log("  " + text);
-      if (process.env.IMESSAGE_PROJECT_ID) await sendTelegram(text);
+      const send = !!process.env.IMESSAGE_PROJECT_ID;
+      if (send) await sendTelegram(text);
+      logTelegram(text, send);
     }
   }
 }

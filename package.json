@@ -6,6 +6,7 @@
   "scripts": {
     "poll": "tsx src/index.ts",
     "ping": "tsx src/ping.ts",
+    "web": "tsx src/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
