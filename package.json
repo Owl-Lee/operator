@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "poll": "tsx src/index.ts",
+    "ping": "tsx src/ping.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -12,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^18.0.9",
-    "node-ical": "^0.27.3"
+    "node-ical": "^0.27.3",
+    "spectrum-ts": "^12.14.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

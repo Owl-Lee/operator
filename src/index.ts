@@ -4,6 +4,7 @@ import { fetchIcs, parseIcs, upcoming } from "./ical.js";
 import { diffSnapshots } from "./diff.js";
 import { loadSnapshot, saveSnapshot } from "./store.js";
 import { changeTelegram, fmtTime } from "./telegram.js";
+import { sendTelegram } from "./send.js";
 
 /**
  * One polling cycle:
@@ -31,7 +32,11 @@ async function main() {
   else if (!changes.length) console.log("\nNo changes since last poll.");
   else {
     console.log(`\n🔔 ${changes.length} change(s):`);
-    for (const c of changes) console.log("  " + changeTelegram(c)); // TODO: send via Photon
+    for (const c of changes) {
+      const text = changeTelegram(c);
+      console.log("  " + text);
+      if (process.env.IMESSAGE_PROJECT_ID) await sendTelegram(text);
+    }
   }
 }
 
