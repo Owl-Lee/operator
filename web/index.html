@@ -280,6 +280,51 @@ textarea, input { font-family: var(--sans); }
 .msg { margin-top: 10px; font-size: 14px; color: var(--ink-2); min-height: 20px; }
 .msg.err { color: var(--urgent); }
 
+/* filter banner */
+.fbar { display: none; align-items: center; gap: 10px; margin: -10px 0 20px; padding: 10px 14px; border-radius: 12px; background: var(--cbg); border: 1px solid transparent; font: 600 14px var(--disp); color: var(--c); }
+.fbar.show { display: flex; animation: rise .2s ease-out; }
+.fbar button { margin-left: auto; font: 600 13px var(--disp); color: var(--c); border: 1px solid currentColor; border-radius: 999px; padding: 3px 10px; opacity: .8; }
+
+/* agent drawer */
+.fab { position: fixed; right: 24px; bottom: 24px; z-index: 30; display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 20px 0 16px; border-radius: 999px; color: #fff; font: 600 15px var(--disp); background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 14px 34px -8px rgba(255,94,58,.6); transition: transform .15s; }
+.fab:hover { transform: translateY(-2px); }
+.fab svg { width: 22px; height: 22px; }
+.scrim { position: fixed; inset: 0; z-index: 39; background: rgba(30,27,46,.25); backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 40; width: min(440px, 100vw); background: var(--bg); border-left: 1px solid var(--line); box-shadow: -20px 0 60px -20px rgba(30,27,46,.3); transform: translateX(100%); transition: transform .25s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; }
+body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity: 1; pointer-events: auto; } body.drawer-open .fab { display: none; }
+.dh { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: #fff; }
+.dh .av { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.dh .av svg { width: 18px; height: 18px; }
+.dh h3 { font: 700 16px var(--disp); } .dh p { margin: 0; font-size: 12px; color: var(--muted); }
+.dh .x { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); }
+.dh .x:hover { background: var(--bg); color: var(--ink); }
+.dm { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.bub { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; animation: rise .2s ease-out; }
+.bub.me { align-self: flex-end; background: var(--ink); color: #fff; border-bottom-right-radius: 6px; white-space: pre-wrap; }
+.bub.me img { display: block; max-width: 100%; border-radius: 10px; margin-top: 6px; }
+.bub.ai { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.bub.ai .it { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.bub.ai .it:first-of-type { border-top: 0; }
+.bub.ai .it b { display: block; font: 600 14px var(--disp); } .bub.ai .it small { color: var(--muted); font-size: 12.5px; }
+.bub.ai .eng { display: inline-block; margin-top: 8px; font: 600 10px var(--disp); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 8px; }
+.bub.ai .eng.g { color: var(--event); border-color: #9ad9cc; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 10px; }
+.chips button { font: 500 12px var(--sans); color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; text-align: left; }
+.chips button:hover { border-color: var(--line-2); color: var(--ink); }
+.dc { padding: 12px 14px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #fff; }
+.dc.drag { background: var(--event-bg); }
+.dc .box { display: flex; align-items: flex-end; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 22px; border: 1px solid var(--line-2); background: var(--bg-2); }
+.dc .box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,94,58,.12); }
+.dc textarea { flex: 1; min-width: 0; max-height: 140px; border: 0; outline: 0; background: none; resize: none; font-size: 14px; line-height: 1.45; padding: 6px 0; }
+.dc .ib { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); flex: none; }
+.dc .ib:hover { background: var(--bg); color: var(--ink); }
+.dc .ib svg { width: 18px; height: 18px; }
+.dc .send { background: var(--ink); color: #fff; } .dc .send:hover { background: #000; }
+.dc .prev { display: none; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--ink-2); }
+.dc .prev.show { display: flex; }
+.dc .prev img { height: 44px; border-radius: 8px; border: 1px solid var(--line); }
+.dc .hint { margin: 8px 4px 0; font-size: 11.5px; color: var(--muted); }
+
 .tabbar { display: none; }
 .view[hidden] { display: none; }
 [hidden] { display: none !important; }
@@ -342,6 +387,7 @@ textarea, input { font-family: var(--sans); }
   </section>
 
   <div class="stats" id="stats"></div>
+  <div class="fbar" id="fbar"></div>
 
   <section class="view" id="view-today">
     <div class="grid">
@@ -349,12 +395,6 @@ textarea, input { font-family: var(--sans); }
       <div class="card focus" style="--c:5" id="focus"></div>
       <div class="card" style="--c:7"><div class="card-h"><h2><span data-i18n="h.feed">What the agent did</span> <span class="kind" style="--c:#16b36a;--cbg:#e6f7ee" data-i18n="h.live">live</span></h2><span class="more" id="feedCount"></span></div><div id="feed"></div></div>
       <div class="card" style="--c:5"><div class="card-h"><h2 data-i18n="h.quiet">Didn't bother you with</h2><button class="more" id="quietToggle"></button></div><div id="quiet"></div></div>
-      <div class="card" style="--c:12" id="pasteCard"><div class="card-h"><h2 data-i18n="h.paste">Paste anything</h2><span class="more" data-i18n="h.paste.sub">email · chat · poster · one sentence</span></div>
-        <div class="paste">
-          <textarea id="pasteText" data-i18n-ph="paste.ph"></textarea>
-          <div class="row2"><div class="ex" id="examples"></div><button class="btn" id="pasteBtn" data-i18n="paste.btn">Understand &amp; add</button></div>
-          <div class="result" id="pasteResult"></div>
-        </div></div>
       <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.week">This week</h2><span class="more" id="weekRange"></span></div><div class="week" id="weekstrip"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.deadlines">Deadlines</h2><a class="more" href="#" data-go="deadlines" data-i18n="h.all">All →</a></div><div class="dl" id="deadlines"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.agenda">Meetings &amp; events</h2><span class="more" id="agCount"></span></div><div class="ag" id="agenda"></div></div>
@@ -385,15 +425,31 @@ textarea, input { font-family: var(--sans); }
         <button class="btn ghost" id="pollBtn" data-i18n="setup.poll">Check Brightspace now</button>
         <div class="msg" id="pollMsg"></div>
       </div>
-      <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.paste">Paste anything</h2><span class="more" data-i18n="setup.paste.sub">no format required — the agent reads it</span></div>
-        <div class="paste">
-          <textarea id="pasteText2" data-i18n-ph="paste.ph"></textarea>
-          <div class="row2"><span class="hint" data-i18n="paste.hint">Dates, times, places, English or 中文. Wrong guess? Undo on the item.</span><button class="btn" id="pasteBtn2" data-i18n="paste.btn">Understand &amp; add</button></div>
-          <div class="result" id="pasteResult2"></div>
-        </div></div>
+      <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.paste">Tell the agent anything</h2><span class="more" data-i18n="setup.paste.sub">no format required — the agent reads it</span></div>
+        <p class="msg" data-i18n="paste.hint">Timetable screenshot, an email, a poster, one sentence — English or 中文. Wrong guess? Undo on the item.</p>
+        <button class="btn" data-open-drawer data-i18n="drawer.open">Open the agent →</button></div>
     </div>
   </section>
 </div>
+
+<button class="fab" data-open-drawer><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span data-i18n="drawer.fab">Agent</span></button>
+<div class="scrim" data-close-drawer></div>
+<aside class="drawer" id="drawer" aria-label="Agent">
+  <div class="dh"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/></svg></span>
+    <div><h3>Brass Telegraph</h3><p id="dsub"></p></div><button class="x" data-close-drawer aria-label="Close">✕</button></div>
+  <div class="dm" id="dm"></div>
+  <div class="chips" id="chips"></div>
+  <div class="dc" id="dc">
+    <div class="prev" id="prev"><img id="prevImg" alt=""><span id="prevName"></span><button class="undo" id="prevX">✕</button></div>
+    <div class="box">
+      <textarea id="dtext" rows="1" data-i18n-ph="drawer.ph"></textarea>
+      <input type="file" id="dfile" accept="image/*" hidden>
+      <button class="ib" id="dattach" title="Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg></button>
+      <button class="ib send" id="dsend" title="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </div>
+    <div class="hint" data-i18n="drawer.hint">Paste or drop a screenshot · Enter to send · Shift+Enter for a new line</div>
+  </div>
+</aside>
 
 <nav class="tabbar" id="tabbar">
   <button class="on" data-view="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg><span data-i18n="nav.today">Today</span></button>
@@ -412,8 +468,15 @@ const I18N = {
     "h.timeline": "Timeline", "h.fullweek": "Full week →", "h.feed": "What the agent did", "h.live": "live", "h.quiet": "Didn't bother you with",
     "h.paste": "Paste anything", "h.paste.sub": "email · chat · poster · one sentence", "h.week": "This week", "h.deadlines": "Deadlines", "h.all": "All →",
     "h.agenda": "Meetings & events", "h.weekview": "Week view", "h.alldl": "Every upcoming deadline",
-    "paste.ph": "e.g. “Office hours with Prof. Pinto next Tuesday 3–4pm at Harriman 212”, or paste a whole email…", "paste.btn": "Understand & add",
-    "paste.hint": "Dates, times, places, English or 中文. Wrong guess? Undo on the item.", "paste.reading": "Reading…", "paste.added": "Added as", "paste.sure": "sure", "paste.undo": "Undo",
+    "paste.hint": "Timetable screenshot, an email, a poster, one sentence — English or 中文. Wrong guess? Undo on the item.", "paste.undo": "Undo",
+    "drawer.open": "Open the agent →", "drawer.fab": "Agent", "drawer.ph": "Type or paste anything… a timetable screenshot, an email, “office hours Tue 3pm Harriman 212”", "drawer.hint": "Paste or drop a screenshot · Enter to send · Shift+Enter for a new line",
+    "drawer.sub.g": "Gemini reads text & images", "drawer.sub.r": "rules for text · images wait for Gemini", "drawer.hello": "Send me anything with a time in it — a screenshot of your timetable, an email from a professor, a poster, one sentence. I'll put it on your schedule and you can undo.",
+    "drawer.reading": "Reading…", "drawer.added": "Added {n} to your schedule:", "drawer.none": "I read it but found nothing with a date or time.", "drawer.queued": "Got the image. I'll read it the moment Gemini is connected — it's in the inbox.", "drawer.err": "Something went wrong: {e}", "drawer.ask": "Question? Ask in the bar at the top; here I add things to your schedule.",
+    "eng.gemini": "Gemini", "eng.rules": "rules", "eng.queued": "queued",
+    "filter.only": "Showing only {k}", "filter.clear": "Show everything",
+    "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
+    "feed.telegram": "<b>{s} telegram:</b> {t}", "feed.sent": "Sent", "feed.drafted": "Drafted", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
+    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -447,8 +510,15 @@ const I18N = {
     "h.timeline": "时间线", "h.fullweek": "完整一周 →", "h.feed": "Agent 做了什么", "h.live": "实时", "h.quiet": "没打扰你的",
     "h.paste": "随便粘贴", "h.paste.sub": "邮件 · 群消息 · 海报 · 一句话", "h.week": "本周", "h.deadlines": "截止时间", "h.all": "全部 →",
     "h.agenda": "会议与活动", "h.weekview": "周视图", "h.alldl": "所有待办截止",
-    "paste.ph": "比如 “周二下午3点和 Pinto 教授 office hours 在 Harriman 212”，或者整封邮件贴进来…", "paste.btn": "理解并加入",
-    "paste.hint": "日期、时间、地点，中英文都行。看错了点条目上的撤销。", "paste.reading": "正在读…", "paste.added": "已加入为", "paste.sure": "把握", "paste.undo": "撤销",
+    "paste.hint": "课表截图、一封邮件、一张海报、一句话——中英文都行。看错了点条目上的撤销。", "paste.undo": "撤销",
+    "drawer.open": "打开 agent →", "drawer.fab": "Agent", "drawer.ph": "随便输入或粘贴…课表截图、邮件、“周二下午3点 office hours 在 Harriman 212”", "drawer.hint": "粘贴或拖入截图 · Enter 发送 · Shift+Enter 换行",
+    "drawer.sub.g": "Gemini 读文字和图片", "drawer.sub.r": "文字用规则 · 图片等 Gemini", "drawer.hello": "把任何带时间的东西发给我——课表截图、教授的邮件、海报、一句话。我会放进你的日程，看错了可以撤销。",
+    "drawer.reading": "正在读…", "drawer.added": "已加入 {n}：", "drawer.none": "读完了，但没找到带日期或时间的内容。", "drawer.queued": "图片收到了。接上 Gemini 我马上读——已放进收件箱。", "drawer.err": "出错了：{e}", "drawer.ask": "想提问？用顶部的提问栏；这里我负责往日程里加东西。",
+    "eng.gemini": "Gemini", "eng.rules": "规则", "eng.queued": "排队中",
+    "filter.only": "只看：{k}", "filter.clear": "显示全部",
+    "feed.poll": "<b>检查了 Brightspace：</b>{n} 条。{u} 条紧急，{k} 条需知，{i} 条已过滤。", "feed.change.moved": "<b>发现</b> {c} · {t} 从 {a} 挪到 {b}。", "feed.change.new": "<b>发现</b> {c} · {t} 新增，{a} 截止。", "feed.change": "<b>发现</b> {c} · {t} {w}。",
+    "feed.telegram": "<b>{s}电报：</b>{t}", "feed.sent": "已发送", "feed.drafted": "已起草", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
+    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -496,7 +566,9 @@ function applyLang() {
   document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
   document.querySelectorAll("#lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
   $("bsSteps").innerHTML = ["setup.s1", "setup.s2", "setup.s3"].map(k => `<div>${t(k)}</div>`).join("");
-  $("examples").innerHTML = ["ex1", "ex2", "ex3", "ex4"].map(k => `<button data-ex="${k}">${esc(t(k)).slice(0, 36)}…</button>`).join("");
+  $("chips").innerHTML = ["ex1", "ex2", "ex3", "ex4"].map(k => `<button data-ex="${k}">${esc(t(k)).slice(0, 34)}…</button>`).join("");
+  $("dsub").textContent = t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r");
+  if ($("dm").children.length <= 1) $("dm").innerHTML = `<div class="bub ai">${t("drawer.hello")}</div>`;
   $("legend").innerHTML = ["class", "meeting", "event", "deadline"].map(k => `<span data-kind="${k}"><i></i>${t("kind." + k)}</span>`).join("") + `<span><i class="g"></i>${t("legend.sugg")}</span>`;
 }
 
@@ -512,7 +584,7 @@ const code = c => (c?.match(/^[A-Z]{3}\s\d{3}/) || [c?.split(" - ")[0] || ""])[0
 const courseName = c => (c || "").replace(/^[A-Z]{3}\s[\d.]+\s*/, "").replace(/\s*-\s*(Fall|Spring|Summer|Winter)\s\d{4}$/, "");
 const now = () => Date.now() + clockOffset;
 const fmt = (ms, o) => new Date(ms).toLocaleString(LOC(), { timeZone: ET, ...o });
-const timeOf = ms => fmt(ms, { hour: "numeric", minute: "2-digit" }).replace(":00", "");
+const timeOf = ms => { const s = fmt(ms, { hour: "numeric", minute: "2-digit" }); return lang === "zh" ? s : s.replace(":00", ""); };
 const H = 3.6e6, D = 864e5;
 function etParts(ms) {
   const p = new Intl.DateTimeFormat("en-US", { timeZone: ET, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", weekday: "short" }).formatToParts(new Date(ms));
@@ -602,6 +674,8 @@ function renderHero(items) {
   const a = $("openNext"); if (next) { a.href = next.link; a.textContent = t("next", { t: next.title }); a.hidden = false; } else a.hidden = true;
   $("stats").innerHTML = [["deadline", dl.length], ["class", c("class")], ["meeting", c("meeting")], ["event", c("event")]]
     .map(([k, v]) => `<button class="stat ${kindFilter === k ? "on" : ""}" data-kind="${k}" data-filter="${k}"><span class="dot">${kicon(k)}</span><span><span class="num">${v}</span><small>${t("stat." + k)} · ${t("stat.days")}</small></span></button>`).join("");
+  const fb = $("fbar"); fb.className = "fbar" + (kindFilter ? " show" : ""); fb.dataset.kind = kindFilter || "";
+  fb.innerHTML = kindFilter ? `${kicon(kindFilter).replace("<svg", '<svg width="18" height="18"')} ${t("filter.only", { k: t("stat." + kindFilter) })}<button data-filter="${kindFilter}">${t("filter.clear")} ✕</button>` : "";
   const courses = new Set(state.items.filter(i => /^[A-Z]{3}\s\d{3}.*Fall 2026/.test(i.course)).map(i => code(i.course))).size;
   const last = state.agentLog.find(e => e.type === "poll");
   const ago = last ? Math.max(0, Math.round((n - Date.parse(last.at)) / 60000)) : null;
@@ -659,7 +733,25 @@ function renderFeed() {
   $("feedCount").textContent = t("feed.n", { n: state.agentLog.length });
   if (!log.length) { $("feed").innerHTML = emptyHtml("empty.feed", "empty.feed.sub"); return; }
   const rel = ms => { const m = Math.round((n - ms) / 60000); return m < 1 ? t("just now") : m < 60 ? t("min ago", { n: m }) : m < 1440 ? t("h ago", { n: Math.round(m / 60) }) : fmt(ms, { month: "short", day: "numeric" }); };
-  $("feed").innerHTML = log.map(e => `<div class="fe" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${esc(e.text).replace(/^(Detected|Sent|Drafted|Scheduled reminders for|Checked Brightspace:|Read your pasted text|Connected|You removed)/, "<b>$1</b>")}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
+  $("feed").innerHTML = log.map(e => `<div class="fe" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${feedText(e)}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
+}
+/* The server logs in English; render each known template in the current language. */
+function feedText(e) {
+  const x = e.text, m = e.meta || {}; let r;
+  const kindWord = s => s.replace(/\b(deadline|class|meeting|event)\b/g, k => t("kind." + k));
+  const when = s => lang === "zh" ? s.replace(/\b(MON|TUE|WED|THU|FRI|SAT|SUN), (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d+), (\d+:\d+ [AP]M)/g, (_, w, mo, d, tm) => `${"JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split(" ").indexOf(mo) + 1}月${d}日 周${"日一二三四五六"["SUN MON TUE WED THU FRI SAT".split(" ").indexOf(w)]} ${tm}`) : s;
+  if (e.type === "poll" && (r = x.match(/^Checked Brightspace: (\d+) items\. (\d+) urgent, (\d+) need-to-know, (\d+) filtered/))) return t("feed.poll", { n: r[1], u: r[2], k: r[3], i: r[4] });
+  if (e.type === "poll" && /^Connected/.test(x)) return t("feed.connected");
+  if (e.type === "change" && (r = x.match(/^Detected (.+?) · (.+?) moved from (.+?) to (.+?)\.$/))) return t("feed.change.moved", { c: esc(r[1]), t: esc(r[2]), a: when(r[3]), b: when(r[4]) });
+  if (e.type === "change" && (r = x.match(/^Detected (.+?) · (.+?) added, due (.+?)\.$/))) return t("feed.change.new", { c: esc(r[1]), t: esc(r[2]), a: when(r[3]) });
+  if (e.type === "change" && (r = x.match(/^Detected (.+?) · (.+?) (\w+)\.$/))) return t("feed.change", { c: esc(r[1]), t: esc(r[2]), w: esc(r[3]) });
+  if (e.type === "telegram" && (r = x.match(/^(Sent|Drafted) telegram: (.+)$/))) return t("feed.telegram", { s: t(r[1] === "Sent" ? "feed.sent" : "feed.drafted"), t: esc(r[2]) });
+  if (e.type === "reminder" && (r = x.match(/^Scheduled reminders for (.+?) · (.+?): 24 h, 3 h and 1 h before (.+?)\.$/))) return t("feed.reminder", { c: esc(r[1]), t: esc(r[2]), d: when(r[3]) });
+  if (e.type === "triage" && (r = x.match(/^Understood (your image|your text) as (\d+) items? — (.+?) \((\w+)\)\.$/))) return t("feed.read", { src: t(r[1] === "your image" ? "src.image" : "src.text"), n: t("items", { n: r[2] }), w: esc(kindWord(r[3])), e: t("eng." + r[4]) });
+  if (e.type === "triage" && (r = x.match(/^Read (your image|your text) but found nothing/))) return t("feed.read.none", { src: t(r[1] === "your image" ? "src.image" : "src.text") });
+  if (e.type === "triage" && (r = x.match(/^Received an image.*\((\d+) waiting\)/))) return t("feed.image", { n: r[1] });
+  if (e.type === "triage" && /^You removed/.test(x)) return t("feed.removed");
+  return esc(x);
 }
 function renderQuiet() {
   const ig = state.triage.filter(x => x.level === "ignore"), byUid = new Map(state.items.map(i => [i.uid, i]));
@@ -685,7 +777,7 @@ function renderWeekStrip(items) {
 function dlHtml(i) {
   const elapsed = Math.min(1, Math.max(0, 1 - (i.start - now()) / (14 * D)));
   return `<div class="item" data-kind="deadline">
-    <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(i.type) : ""}${i.tri ? " · " + esc(reason(i.tri.reason)) : ""}</p><div class="bar"><i style="width:${Math.round(elapsed * 100)}%"></i></div></div>
+    <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(t("kind." + i.type) === "kind." + i.type ? i.type : (lang === "zh" ? { assignment: "作业", discussion: "讨论", quiz: "测验", exam: "考试" }[i.type] || i.type : i.type)) : ""}</p><div class="bar"><i style="width:${Math.round(elapsed * 100)}%"></i></div></div>
     <div class="date">${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric" }))}<small>${timeOf(i.start)}</small><div style="margin-top:6px">${triChip(i, true)} ${undoBtn(i)}</div></div>
     ${i.link ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
 }
@@ -744,6 +836,7 @@ function renderSetup() {
   $("icalConn").innerHTML = `<i></i><span>${t(s.ical ? "setup.connected" : "setup.notconnected")}${s.ical ? ` · <code>${esc(s.ical)}</code>${s.icalFromEnv ? ` <small>(${t("setup.env")})</small>` : ""}` : ""}</span>`;
   $("connPhoton").className = "conn " + (s.photon ? "ok" : "warn"); $("connPhoton").innerHTML = `<i></i><span>${t("setup.photon")} · ${t(s.photon ? "setup.ready" : "setup.missing")}${s.phone ? ` · ${esc(s.phone)}` : ""}</span>`;
   $("connGemini").className = "conn " + (s.gemini ? "ok" : ""); $("connGemini").innerHTML = `<i></i><span>${t("setup.gemini")} · ${t(s.gemini ? "setup.ready" : "setup.rules")}</span>`;
+  $("dsub").textContent = t(s.gemini ? "drawer.sub.g" : "drawer.sub.r");
 }
 
 /* ---------------- ask ---------------- */
@@ -762,15 +855,37 @@ function answer(q, items) {
   const el = $("answer"); el.innerHTML = `<p>${text}</p><div class="used">${used.map(u => `<span>${t("ans.used", { x: esc(u) })}</span>`).join("")}<span style="color:var(--muted)">${t("ans.rules")}</span></div>`; el.classList.add("show");
 }
 
-/* ---------------- paste ---------------- */
-async function pasteAdd(taId, resId) {
-  const ta = $(taId), res = $(resId), text = ta.value.trim(); if (!text) return;
-  res.className = "result show"; res.innerHTML = t("paste.reading");
-  const r = await (await fetch("/api/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) })).json();
-  if (r.error) { res.innerHTML = `<span style="color:var(--urgent)">${esc(r.error)}</span>`; return; }
-  const p = r.parsed;
-  res.innerHTML = `<span class="conf">${Math.round(p.confidence * 100)}% ${t("paste.sure")}</span>${t("paste.added")} <span class="kind" data-kind="${p.kind}">${t("kind." + p.kind)}</span> <b>${esc(p.title)}</b> · ${esc(fmt(etToMs(p.start), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}${p.end ? " – " + esc(timeOf(etToMs(p.end))) : ""}${p.location ? " · " + esc(p.location) : ""} <button class="undo" data-remove="${esc(r.id)}">↩ ${t("paste.undo")}</button>${p.notes.length ? `<div class="notes">${esc(p.notes.join(" "))}</div>` : ""}`;
-  ta.value = ""; load();
+/* ---------------- agent drawer ---------------- */
+let pending = null; // { data: base64, mime, name, url }
+function openDrawer() { document.body.classList.add("drawer-open"); setTimeout(() => $("dtext").focus(), 250); }
+function closeDrawer() { document.body.classList.remove("drawer-open"); }
+function bubble(html, me) { const d = document.createElement("div"); d.className = "bub " + (me ? "me" : "ai"); d.innerHTML = html; $("dm").appendChild(d); $("dm").scrollTop = $("dm").scrollHeight; return d; }
+function setImage(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  const rd = new FileReader();
+  rd.onload = () => { pending = { data: rd.result.split(",")[1], mime: file.type, name: file.name || "screenshot", url: rd.result }; $("prevImg").src = rd.result; $("prevName").textContent = pending.name; $("prev").classList.add("show"); $("dtext").focus(); };
+  rd.readAsDataURL(file);
+}
+function clearImage() { pending = null; $("prev").classList.remove("show"); $("dfile").value = ""; }
+function itemLine(a) {
+  const when = a.kind === "class" ? `${(a.days || []).join("/")} ${a.start || ""}${a.end ? "–" + a.end : ""}` : a.start ? esc(fmt(etToMs(a.start), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + (a.end ? " – " + esc(timeOf(etToMs(a.end))) : "") : "";
+  return `<div class="it" data-kind="${a.kind}"><span class="kind">${t("kind." + a.kind)}</span><div style="flex:1;min-width:0"><b>${esc(a.title)}</b><small>${when}${a.location ? " · " + esc(a.location) : ""}${a.course && a.kind !== "class" ? " · " + esc(a.course) : ""}</small></div><button class="undo" data-remove="${esc(a.id)}">↩</button></div>`;
+}
+async function sendToAgent() {
+  const text = $("dtext").value.trim(); if (!text && !pending) return;
+  if (text && !pending && /[?？]$/.test(text)) { bubble(esc(text), true); $("dtext").value = ""; bubble(t("drawer.ask")); answer(text, allItems()); $("q").value = text; return; }
+  bubble(`${esc(text)}${pending ? `<img src="${pending.url}" alt="">` : ""}`, true);
+  const payload = { text, image: pending?.data, mime: pending?.mime };
+  $("dtext").value = ""; $("dtext").style.height = ""; clearImage();
+  const wait = bubble(t("drawer.reading"));
+  try {
+    const r = await (await fetch(payload.image ? "/api/add-image" : "/api/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) })).json();
+    if (r.error) { wait.innerHTML = t("drawer.err", { e: esc(r.error) }); return; }
+    if (r.queued) { wait.innerHTML = `${t("drawer.queued")}<br><span class="eng">${t("eng.queued")}</span>`; load(); return; }
+    if (!r.items.length) { wait.innerHTML = `${t("drawer.none")}<br><span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`; return; }
+    wait.innerHTML = `${r.summary && r.engine === "gemini" ? esc(r.summary) + "<br>" : ""}${t("drawer.added", { n: t("items", { n: r.items.length }) })}${r.items.map(itemLine).join("")}${r.notes?.length ? `<small style="color:var(--muted)">${esc(r.notes.join(" "))}</small><br>` : ""}<span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`;
+    load();
+  } catch (e) { wait.innerHTML = t("drawer.err", { e: esc(e.message) }); }
 }
 
 /* ---------------- wiring ---------------- */
@@ -796,10 +911,13 @@ document.addEventListener("click", async e => {
   const f = e.target.closest("[data-filter]"); if (f) { kindFilter = kindFilter === f.dataset.filter ? null : f.dataset.filter; return render(); }
   const a = e.target.closest("[data-accept]"); if (a) { accepted.add(a.dataset.accept); localStorage.setItem("bt.accepted", JSON.stringify([...accepted])); return render(); }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); return load(); }
-  const ex = e.target.closest("[data-ex]"); if (ex) { $("pasteText").value = t(ex.dataset.ex); $("pasteText").focus(); return; }
+  const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); $("dtext").focus(); return; }
+  if (e.target.closest("[data-open-drawer]")) return openDrawer();
+  if (e.target.closest("[data-close-drawer]")) return closeDrawer();
+  if (e.target.closest("#dsend")) return sendToAgent();
+  if (e.target.closest("#dattach")) return $("dfile").click();
+  if (e.target.closest("#prevX")) return clearImage();
   if (e.target.closest("#quietToggle")) { quietOpen = !quietOpen; return renderQuiet(); }
-  if (e.target.closest("#pasteBtn")) return pasteAdd("pasteText", "pasteResult");
-  if (e.target.closest("#pasteBtn2")) return pasteAdd("pasteText2", "pasteResult2");
   if (e.target.closest("#icalBtn")) {
     const u = $("icalInput").value.trim(), m = $("icalMsg"); m.className = "msg"; m.textContent = t("setup.importing"); $("icalBtn").disabled = true;
     const r = await (await fetch("/api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ icalUrl: u }) })).json();
@@ -814,7 +932,16 @@ document.addEventListener("click", async e => {
 });
 $("q").addEventListener("input", () => { if (!/[?？]/.test($("q").value)) { $("answer").classList.remove("show"); render(); } });
 $("q").addEventListener("keydown", e => { if (e.key === "Enter" && $("q").value.trim()) answer($("q").value, allItems()); });
-for (const id of ["pasteText", "pasteText2"]) $(id).addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) pasteAdd(id, id === "pasteText" ? "pasteResult" : "pasteResult2"); });
+$("dtext").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendToAgent(); } });
+$("dtext").addEventListener("input", e => { e.target.style.height = ""; e.target.style.height = Math.min(140, e.target.scrollHeight) + "px"; });
+$("dfile").addEventListener("change", e => setImage(e.target.files[0]));
+document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files || [])].find(x => x.type.startsWith("image/")); if (f) { openDrawer(); setImage(f); } });
+const dc = $("dc");
+dc.addEventListener("dragover", e => { e.preventDefault(); dc.classList.add("drag"); });
+dc.addEventListener("dragleave", () => dc.classList.remove("drag"));
+dc.addEventListener("drop", e => { e.preventDefault(); dc.classList.remove("drag"); setImage(e.dataTransfer.files[0]); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+document.addEventListener("click", e => { const f = e.target.closest("[data-filter]"); if (f && f.classList.contains("stat") && kindFilter) setTimeout(() => $("timeline").scrollIntoView({ behavior: "smooth", block: "start" }), 50); });
 applyLang(); load(); setInterval(tick, 1000); setInterval(load, 60_000);
 </script>
 </body>

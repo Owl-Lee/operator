@@ -1,10 +1,11 @@
 import "dotenv/config";
 import { createServer, type IncomingMessage } from "node:http";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent } from "./store.js";
 import { triage } from "./triage.js";
 import { runPoll, loadConfig, saveConfig, icalUrl } from "./poll.js";
 import { parseText } from "./parse.js";
+import { geminiExtract, hasGemini, type GItem } from "./gemini.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
@@ -20,7 +21,7 @@ function saveSchedule(s: Schedule): void {
   writeFileSync(schedulePath, JSON.stringify(s, null, 2));
 }
 function body(req: IncomingMessage): Promise<any> {
-  return new Promise(res => { let d = ""; req.on("data", c => d += c); req.on("end", () => { try { res(JSON.parse(d || "{}")); } catch { res({}); } }); });
+  return new Promise(res => { const chunks: Buffer[] = []; req.on("data", c => chunks.push(c)); req.on("end", () => { try { res(JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}")); } catch { res({}); } }); });
 }
 const mask = (u?: string) => u ? u.replace(/token=([^&]{4})[^&]*/, "token=$1…") : null;
 
@@ -47,29 +48,55 @@ createServer(async (req, res) => {
       const r = await runPoll();
       return json({ ok: true, imported: r.items.length, changes: r.changes.length, summary: r.summary });
     }
-    /* "Paste anything": free text → parsed item → schedule.json, with an undo id. */
-    if (url.pathname === "/api/add" && req.method === "POST") {
-      const { text } = await body(req);
-      if (!text?.trim()) return json({ error: "Nothing to read." }, 400);
+    /* Agent intake: text and/or image → schedule items (Gemini when a key exists, rules otherwise). */
+    if ((url.pathname === "/api/add" || url.pathname === "/api/add-image") && req.method === "POST") {
+      const { text, image, mime } = await body(req);
+      if (!text?.trim() && !image) return json({ error: "Nothing to read." }, 400);
       const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
-      const p = parseText(text, now);
-      const s = loadSchedule();
-      const id = `p-${Date.now().toString(36)}`;
-      const item: any = { id, title: p.title, start: p.start, end: p.end, location: p.location, source: "pasted", raw: text.trim().slice(0, 500), confidence: p.confidence };
-      if (p.kind === "class") { item.course = p.title; item.days = [new Date(p.start).toLocaleDateString("en-US", { weekday: "short", timeZone: "America/New_York" })]; item.start = p.start.slice(11); item.end = (p.end || p.start).slice(11); s.classes.push(item); }
-      else if (p.kind === "deadline") s.deadlines.push(item);
-      else if (p.kind === "meeting") s.meetings.push(item);
-      else s.events.push(item);
+      let imgPath: string | undefined;
+      if (image) {
+        mkdirSync("data/inbox", { recursive: true });
+        imgPath = `data/inbox/${Date.now().toString(36)}.${(mime || "image/png").split("/")[1].replace("jpeg", "jpg")}`;
+        writeFileSync(imgPath, Buffer.from(image, "base64"));
+      }
+      let items: GItem[], summary = "", engine: "gemini" | "rules" | "queued", notes: string[] = [];
+      if (hasGemini()) {
+        const g = await geminiExtract({ text, image: image ? { data: image, mime: mime || "image/png" } : undefined }, now);
+        items = g.items; summary = g.summary; engine = "gemini";
+      } else if (image && !text?.trim()) {
+        const inbox = existsSync("data/inbox.json") ? JSON.parse(readFileSync("data/inbox.json", "utf8")) : [];
+        inbox.push({ at: new Date().toISOString(), path: imgPath });
+        writeFileSync("data/inbox.json", JSON.stringify(inbox, null, 2));
+        logAgent("triage", `Received an image. I'll read it as soon as Gemini is connected (${inbox.length} waiting).`, { path: imgPath });
+        return json({ ok: true, queued: true, engine: "queued", items: [], summary: "" });
+      } else {
+        const p = parseText(text, now);
+        notes = p.notes; engine = "rules";
+        items = [{ kind: p.kind, title: p.title, date: p.start.slice(0, 10), start: p.start.slice(11), end: p.end?.slice(11), location: p.location, course: p.kind === "class" ? p.title : undefined }];
+        summary = `${p.kind}: ${p.title}`;
+      }
+      const s = loadSchedule(), added: any[] = [];
+      for (const g of items) {
+        const id = `p-${Date.now().toString(36)}${added.length}`;
+        const base: any = { id, title: g.title, location: g.location, note: g.note, source: engine === "gemini" ? "agent" : "pasted", raw: (text || "").trim().slice(0, 500) || imgPath };
+        if (g.kind === "class") { s.classes.push({ ...base, course: g.course || g.title, days: g.days?.length ? g.days : [new Date(`${g.date || now.toISOString().slice(0, 10)}T12:00`).toLocaleDateString("en-US", { weekday: "short" })], start: g.start || "09:00", end: g.end || g.start || "10:00" }); added.push({ ...g, id }); continue; }
+        const date = g.date || now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+        const start = `${date}T${g.start || (g.kind === "deadline" ? "23:59" : "09:00")}`, end = g.end ? `${date}T${g.end}` : undefined;
+        const it = { ...base, course: g.course, start, end };
+        (g.kind === "deadline" ? s.deadlines : g.kind === "meeting" ? s.meetings : s.events).push(it);
+        added.push({ ...g, id, start, end });
+      }
       saveSchedule(s);
-      logAgent("triage", `Read your pasted text as ${p.kind === "event" ? "an" : "a"} ${p.kind}: “${p.title}” on ${p.start.replace("T", " ")}${p.location ? " at " + p.location : ""} (${Math.round(p.confidence * 100)}% sure).`, { id, kind: p.kind });
-      return json({ ok: true, id, parsed: p });
+      const what = added.map(a => `${a.kind}: “${a.title}”`).join("; ");
+      logAgent("triage", added.length ? `Understood ${image ? "your image" : "your text"} as ${added.length} item${added.length > 1 ? "s" : ""} — ${what} (${engine}).` : `Read ${image ? "your image" : "your text"} but found nothing schedulable.`, { ids: added.map(a => a.id), engine });
+      return json({ ok: true, items: added, summary, engine, notes });
     }
     if (url.pathname === "/api/remove" && req.method === "POST") {
       const { id } = await body(req);
       const s = loadSchedule();
       for (const k of ["classes", "meetings", "events", "deadlines"] as const) s[k] = s[k].filter((x: any) => x.id !== id);
       saveSchedule(s);
-      logAgent("triage", "You removed an item I added from pasted text. Noted.", { id });
+      logAgent("triage", "You removed an item I added. Noted.", { id });
       return json({ ok: true });
     }
     if (url.pathname === "/") {
