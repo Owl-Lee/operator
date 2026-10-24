@@ -1,25 +1,18 @@
 import "dotenv/config";
 import { createServer, type IncomingMessage } from "node:http";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent } from "./store.js";
+import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent, loadDone, markDone, unmarkDone } from "./store.js";
 import { triage } from "./triage.js";
 import { runPoll, loadConfig, saveConfig, icalUrl } from "./poll.js";
 import { parseText } from "./parse.js";
 import { geminiExtract, geminiAsk, hasGemini, type GItem } from "./gemini.js";
+import { loadSchedule, saveSchedule, scheduleContext, type Schedule } from "./schedule.js";
+import { startAgent } from "./agent.js";
+import { hasPhoton } from "./photon.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
 const page = new URL("../web/index.html", import.meta.url);
-const schedulePath = new URL("../schedule.json", import.meta.url);
-
-interface Schedule { classes: any[]; meetings: any[]; events: any[]; deadlines: any[]; _readme?: string }
-function loadSchedule(): Schedule {
-  const s = existsSync(schedulePath) ? JSON.parse(readFileSync(schedulePath, "utf8")) : {};
-  return { classes: [], meetings: [], events: [], deadlines: [], ...s };
-}
-function saveSchedule(s: Schedule): void {
-  writeFileSync(schedulePath, JSON.stringify(s, null, 2));
-}
 function body(req: IncomingMessage): Promise<any> {
   return new Promise(res => { const chunks: Buffer[] = []; req.on("data", c => chunks.push(c)); req.on("end", () => { try { res(JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}")); } catch { res({}); } }); });
 }
@@ -32,8 +25,16 @@ createServer(async (req, res) => {
     if (url.pathname === "/api/state") {
       const now = process.env.FAKE_NOW ?? new Date().toISOString();
       const items = loadSnapshot();
-      return json({ now, items, triage: triage(items, new Date(now)), agentLog: loadAgentLog(), telegrams: loadTelegrams(), schedule: loadSchedule(),
-        setup: { ical: mask(icalUrl()), icalFromEnv: !!process.env.BRIGHTSPACE_ICAL_URL, photon: !!process.env.IMESSAGE_PROJECT_ID, gemini: !!process.env.GEMINI_API_KEY, phone: process.env.MY_PHONE && process.env.MY_PHONE !== "+1" ? process.env.MY_PHONE.replace(/\d(?=\d{2})/g, "•") : null } });
+      return json({ now, items, triage: triage(items, new Date(now)), agentLog: loadAgentLog(), telegrams: loadTelegrams(), schedule: loadSchedule(), done: loadDone(),
+        setup: { ical: mask(icalUrl()), icalFromEnv: !!process.env.BRIGHTSPACE_ICAL_URL, photon: hasPhoton(), gemini: !!process.env.GEMINI_API_KEY, phone: process.env.MY_PHONE && process.env.MY_PHONE !== "+1" ? process.env.MY_PHONE.replace(/\d(?=\d{2})/g, "•") : null } });
+    }
+    /* Mark a deadline done / not done from the dashboard. */
+    if (url.pathname === "/api/done" && req.method === "POST") {
+      const { uid, title, undo } = await body(req);
+      if (!uid) return json({ error: "uid required" }, 400);
+      if (undo) { unmarkDone(uid); logAgent("triage", `Re-opened from the dashboard: ${title ?? uid}.`, { uid, via: "web" }); }
+      else { markDone(uid, title ?? uid, "web"); logAgent("triage", `Marked done from the dashboard: ${title ?? uid}. Reminders for it are off.`, { uid, via: "web" }); }
+      return json({ ok: true });
     }
     /* Setup page: save the Brightspace feed URL and import right away. */
     if (url.pathname === "/api/setup" && req.method === "POST") {
@@ -103,15 +104,7 @@ createServer(async (req, res) => {
       if (!question?.trim()) return json({ error: "Empty question." }, 400);
       if (!hasGemini()) return json({ error: "Gemini not connected." }, 503);
       const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
-      const n = now.getTime(), end = n + 14 * 864e5, items = loadSnapshot(), tri = triage(items, now), s = loadSchedule();
-      const fmt = (d: Date | string) => new Date(d).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-      const lines: string[] = [];
-      for (const i of items) { const t = tri.find(x => x.uid === i.uid); const due = Date.parse(i.due); if (t?.level === "ignore" || !i.isDue || due < n || due > end) continue; lines.push(`DEADLINE [${t?.level}] ${i.course.split(" - ")[0]} · ${i.title} (${i.kind}) due ${fmt(i.due)}${t ? " — " + t.reason : ""}`); }
-      for (const c of s.classes) lines.push(`CLASS ${c.course.split(" - ")[0]} every ${c.days.join("/")} ${c.start}–${c.end}${c.location ? " at " + c.location : ""}`);
-      for (const m of s.meetings) lines.push(`MEETING ${m.title} ${fmt(m.start)}${m.end ? "–" + new Date(m.end).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : ""}${m.location ? " at " + m.location : ""}${m.note ? " — " + m.note : ""}`);
-      for (const e of s.events) lines.push(`EVENT ${e.title} ${fmt(e.start)}${e.end ? " → " + fmt(e.end) : ""}${e.location ? " at " + e.location : ""}${e.milestone ? ` — milestone: ${e.milestone.title} at ${fmt(e.milestone.at)}` : ""}`);
-      for (const d of s.deadlines) lines.push(`DEADLINE [pasted] ${d.title} due ${fmt(d.start)}`);
-      const r = await geminiAsk(question, lines.join("\n") || "(empty)", lang === "zh" ? "zh" : "en", now);
+      const r = await geminiAsk(question, scheduleContext(now), lang === "zh" ? "zh" : "en", now);
       logAgent("triage", `Answered: “${question.trim().slice(0, 80)}” (${r.model}).`, { kind: "ask" });
       return json({ ok: true, ...r });
     }
@@ -138,4 +131,7 @@ createServer(async (req, res) => {
   } catch (e: any) {
     json({ error: e?.message ?? String(e) }, 500);
   }
-}).listen(PORT, () => console.log(`📠 Dashboard on http://localhost:${PORT}`));
+}).listen(PORT, () => {
+  console.log(`📠 Dashboard on http://localhost:${PORT}`);
+  startAgent(s => console.log(`[agent] ${s}`));
+});

@@ -41,3 +41,31 @@ export function logAgent(type: AgentEntry["type"], text: string, meta?: Record<s
   log.unshift({ at: new Date().toISOString(), type, text, ...(meta ? { meta } : {}) });
   writeFileSync(AGENT, JSON.stringify(log.slice(0, 300), null, 2));
 }
+
+/** Deadlines the user has marked done (from the phone or the dashboard). Reminders skip these. */
+export interface DoneEntry { uid: string; title: string; at: string; via: "imessage" | "web" }
+const DONE = `${DIR}/done.json`;
+export function loadDone(): DoneEntry[] {
+  return existsSync(DONE) ? JSON.parse(readFileSync(DONE, "utf8")) : [];
+}
+export function markDone(uid: string, title: string, via: DoneEntry["via"]): void {
+  mkdirSync(DIR, { recursive: true });
+  const list = loadDone().filter(d => d.uid !== uid);
+  list.unshift({ uid, title, at: new Date().toISOString(), via });
+  writeFileSync(DONE, JSON.stringify(list, null, 2));
+}
+export function unmarkDone(uid: string): void {
+  mkdirSync(DIR, { recursive: true });
+  writeFileSync(DONE, JSON.stringify(loadDone().filter(d => d.uid !== uid), null, 2));
+}
+
+/** Which escalating reminders (uid + hours-before) have already gone out. */
+const SENT = `${DIR}/reminders-sent.json`;
+export function loadSentReminders(): string[] {
+  return existsSync(SENT) ? JSON.parse(readFileSync(SENT, "utf8")) : [];
+}
+export function markReminderSent(key: string): void {
+  mkdirSync(DIR, { recursive: true });
+  const list = loadSentReminders(); if (!list.includes(key)) list.push(key);
+  writeFileSync(SENT, JSON.stringify(list.slice(-500), null, 2));
+}

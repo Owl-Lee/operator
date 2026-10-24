@@ -212,10 +212,16 @@ textarea, input { font-family: var(--sans); }
 .wd .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
 
 /* deadlines */
-.dl .item { grid-template-columns: 1fr auto; }
-.dl .body { border: 0; padding: 0 0 0 18px; position: relative; }
-.dl .body::before { content: ""; position: absolute; left: 0; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); }
-.dl .item.urgent .body::before { background: var(--urgent); box-shadow: 0 0 0 3px rgba(229,55,46,.15); }
+.dl .item { grid-template-columns: 28px 1fr auto; }
+.dl .body { border: 0; padding: 0; position: relative; }
+.chk { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line-2); background: #fff; color: #fff; font: 700 13px/1 var(--disp); display: grid; place-items: center; position: relative; z-index: 1; transition: background .15s, border-color .15s, transform .12s; }
+.chk:hover { border-color: var(--accent); transform: scale(1.08); }
+.chk.on { background: var(--ok); border-color: var(--ok); }
+.dl .item.urgent .chk { border-color: var(--urgent); box-shadow: 0 0 0 3px rgba(229,55,46,.12); }
+.item.done h4, .item.done .meta, .item.done .time, .item.done p { color: var(--muted) !important; }
+.item.done h4 { text-decoration: line-through; text-decoration-color: var(--line-2); }
+.item.done .kind { opacity: .5; }
+.item .side .chk { margin-right: 2px; }
 .dl .item.urgent h4 { color: var(--urgent); }
 .item.urgent .kind { color: var(--urgent); background: #fde7e4; }
 .item.urgent .kind::before { background: var(--urgent); }
@@ -582,7 +588,9 @@ const I18N = {
     "filter.only": "Showing only {k}", "filter.clear": "Show everything",
     "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
     "feed.telegram": "<b>{s} telegram:</b> {t}", "feed.sent": "Sent", "feed.drafted": "Drafted", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
-    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
+    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
+    "feed.done.text": "<b>Marked done</b> from your text: {t} (“{q}”). Reminders off.", "feed.done.web": "<b>Marked done</b> from the dashboard: {t}. Reminders off.", "feed.reopen": "<b>Re-opened</b> {t}.", "feed.clarify": "<b>Asked</b> which item you meant by “{q}”.", "feed.answered.im": "<b>Answered over iMessage</b> “{q}”.",
+    "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -624,7 +632,9 @@ const I18N = {
     "filter.only": "只看：{k}", "filter.clear": "显示全部",
     "feed.poll": "<b>检查了 Brightspace：</b>{n} 条。{u} 条紧急，{k} 条需知，{i} 条已过滤。", "feed.change.moved": "<b>发现</b> {c} · {t} 从 {a} 挪到 {b}。", "feed.change.new": "<b>发现</b> {c} · {t} 新增，{a} 截止。", "feed.change": "<b>发现</b> {c} · {t} {w}。",
     "feed.telegram": "<b>{s}电报：</b>{t}", "feed.sent": "已发送", "feed.drafted": "已起草", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
-    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
+    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
+    "feed.done.text": "<b>按你的短信标为完成</b>：{t}（“{q}”）。提醒已关。", "feed.done.web": "<b>在页面上标为完成</b>：{t}。提醒已关。", "feed.reopen": "<b>重新打开</b> {t}。", "feed.clarify": "<b>反问了</b>“{q}”指的是哪一项。", "feed.answered.im": "<b>在 iMessage 里回答了</b>“{q}”。",
+    "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -709,10 +719,11 @@ const triOf = uid => state.triage.find(x => x.uid === uid);
 
 function allItems() {
   const n = now(), start = etMidnight(n) - 7 * D, end = start + 28 * D, out = [];
+  const doneSet = new Set((state.done || []).map(d => d.uid));
   for (const i of state.items) {
     const tr = triOf(i.uid); if (!i.isDue || tr?.level === "ignore") continue;
     const ms = Date.parse(i.due);
-    if (ms >= start && ms <= end) out.push({ id: i.uid, kind: "deadline", title: i.title, course: i.course, start: ms, end: ms, link: i.link, type: i.kind, desc: i.description, tri: tr });
+    if (ms >= start && ms <= end) out.push({ id: i.uid, kind: "deadline", title: i.title, course: i.course, start: ms, end: ms, link: i.link, type: i.kind, desc: i.description, tri: tr, done: doneSet.has(i.uid) });
   }
   const sc = state.schedule || {};
   for (const c of sc.classes || []) for (let d = start; d < end; d += D) {
@@ -726,7 +737,7 @@ function allItems() {
     out.push({ id: e.id || `e-${e.start}`, rid: e.id, kind: "event", title: e.title, start: s, end: en, location: e.location, link: e.link, note: e.note, sample: e.sample, milestone: e.milestone, pasted: e.source === "pasted" });
     if (e.milestone) { const ms = etToMs(e.milestone.at); out.push({ id: `ms-${e.milestone.at}`, kind: "deadline", title: e.milestone.title, course: e.title, start: ms, end: ms, link: e.link, type: "milestone", tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: "Event milestone" } }); }
   }
-  for (const d of sc.deadlines || []) { const ms = etToMs(d.start); out.push({ id: d.id, rid: d.id, kind: "deadline", title: d.title, course: d.course || (lang === "zh" ? "粘贴" : "Pasted"), start: ms, end: ms, type: "pasted", pasted: true, tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: urgency(ms) === 3 ? `Due in ${Math.round((ms - n) / D)} days` : `Due in ${Math.round((ms - n) / H)} h` } }); }
+  for (const d of sc.deadlines || []) { const ms = etToMs(d.start); out.push({ id: d.id, rid: d.id, kind: "deadline", title: d.title, course: d.course || (lang === "zh" ? "粘贴" : "Pasted"), start: ms, end: ms, type: "pasted", pasted: true, done: doneSet.has(d.id), tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: urgency(ms) === 3 ? `Due in ${Math.round((ms - n) / D)} days` : `Due in ${Math.round((ms - n) / H)} h` } }); }
   out.sort((a, b) => a.start - b.start);
   markConflicts(out);
   return out;
@@ -763,6 +774,8 @@ const KICON = {
 const kicon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${KICON[k] || KICON.poll}</svg>`;
 const emptyHtml = (a, b) => `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg><div><b>${t(a)}</b>${t(b)}</div></div>`;
 const undoBtn = i => i.pasted && i.rid ? `<button class="undo" data-remove="${esc(i.rid)}" title="${t("paste.undo")}">↩ ${t("paste.undo")}</button>` : "";
+/* ✓ on deadlines: mark done (reminders stop); on a done item it re-opens */
+const doneBtn = i => i.kind === "deadline" && i.type !== "milestone" ? `<button class="chk ${i.done ? "on" : ""}" data-done="${esc(i.id)}" data-title="${esc(i.title)}" data-undo="${i.done ? 1 : ""}" title="${t(i.done ? "done.undo" : "done.mark")}">${i.done ? "✓" : ""}</button>` : "";
 const tagz = i => `${i.sample ? '<span class="sample">sample</span>' : ""}${i.pasted ? `<span class="pasted">${lang === "zh" ? "粘贴" : "pasted"}</span>` : ""}`;
 
 /* ---------------- renderers ---------------- */
@@ -796,8 +809,8 @@ function itemHtml(i) {
   const n = now(), u = i.kind === "deadline" && i.tri?.level === "urgent" ? 1 : 0, past = i.end < n && !i.ongoing;
   const when = i.kind === "deadline" ? `${timeOf(i.start)}<small>${t("due")}</small>` : i.ongoing ? `${t("ongoing")}<small>${t("until")} ${fmt(i.end, { weekday: "short" })} ${timeOf(i.end)}</small>` : `${timeOf(i.start)}<small>${timeOf(i.end)}</small>`;
   const sub = [i.course && i.kind !== "class" ? code(i.course) : "", i.kind === "class" ? courseName(i.course) : "", i.location, i.type && !/milestone|pasted/.test(i.type) ? i.type : "", i.kind === "focus" ? i.note : ""].filter(Boolean).join(" · ");
-  const side = `<span class="kind">${t("kind." + i.kind)}</span>${undoBtn(i)}`;
-  return `<div class="item ${u === 1 ? "urgent" : ""} ${past ? "past" : ""}" data-kind="${i.kind}">
+  const side = `${doneBtn(i)}<span class="kind">${t("kind." + i.kind)}</span>${undoBtn(i)}`;
+  return `<div class="item ${u === 1 && !i.done ? "urgent" : ""} ${past ? "past" : ""} ${i.done ? "done" : ""}" data-kind="${i.kind}">
     <div class="time">${when}</div>
     <div class="body"><h4>${esc(i.title)}${tagz(i)}</h4><p>${esc(sub)}${i.conflict ? ` · <span class="warn">⚠ ${t("overlaps")} ${esc(i.conflict)}</span>` : ""}</p></div>
     <div class="side">${side}</div>
@@ -821,7 +834,7 @@ function renderTimeline(items) {
   $("timeline").innerHTML = html;
 }
 function renderFocus(items) {
-  const i = items.find(x => x.kind === "deadline" && x.start >= now() && visible(x));
+  const i = items.find(x => x.kind === "deadline" && x.start >= now() && !x.done && visible(x));
   if (!i) { $("focus").innerHTML = `<div class="kicker">${t("focus.k")}</div><h2>${t("focus.clear")}</h2><p class="sub">${t("focus.clear.sub")}</p>`; return; }
   $("focus").innerHTML = `<div class="kicker">${t("focus.k")}</div><h2>${esc(i.title)}</h2><p class="sub">${esc(code(i.course))} · ${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</p>
     <div class="cd" id="cd" data-due="${i.start}"></div>
@@ -873,6 +886,11 @@ function feedText(e) {
   if (e.type === "triage" && (r = x.match(/^Received an image.*\((\d+) waiting\)/))) return t("feed.image", { n: r[1] });
   if (e.type === "triage" && /^You removed/.test(x)) return t("feed.removed");
   if (e.type === "triage" && (r = x.match(/^Answered: “(.+)” \((.+)\)\.$/))) return t("feed.answered", { q: esc(r[1]) });
+  if (e.type === "triage" && (r = x.match(/^Marked done from your text: (.+?) \(“(.+)”\)\./))) return t("feed.done.text", { t: esc(r[1]), q: esc(r[2]) });
+  if (e.type === "triage" && (r = x.match(/^Marked done from the dashboard: (.+?)\. /))) return t("feed.done.web", { t: esc(r[1]) });
+  if (e.type === "triage" && (r = x.match(/^Re-opened from .+?: (.+?)\.$/))) return t("feed.reopen", { t: esc(r[1]) });
+  if (e.type === "triage" && (r = x.match(/^Asked which item you meant by “(.+)”/))) return t("feed.clarify", { q: esc(r[1]) });
+  if (e.type === "triage" && (r = x.match(/^Answered over iMessage: “(.+)” \(/))) return t("feed.answered.im", { q: esc(r[1]) });
   return esc(x);
 }
 function renderQuiet() {
@@ -893,8 +911,9 @@ function renderWeekStrip() {
   $("weekRange2").textContent = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
 }
 function dlHtml(i) {
-  const lvl = i.tri?.level || "need";
+  const lvl = i.done ? "done" : (i.tri?.level || "need");
   return `<div class="item ${lvl}" data-kind="deadline" title="${esc(reason(i.tri?.reason) || "")}">
+    ${doneBtn(i)}
     <div class="body"><h4>${esc(i.title)} <span class="course-tag">${esc(code(i.course))}</span>${tagz(i)}</h4><p>${esc(i.type === "milestone" ? i.course : courseName(i.course))}${i.type && !/milestone|pasted/.test(i.type) ? " · " + esc(lang === "zh" ? { assignment: "作业", discussion: "讨论", quiz: "测验", exam: "考试" }[i.type] || i.type : i.type) : ""}</p></div>
     <div class="date">${esc(fmt(i.start, { weekday: "short", month: "short", day: "numeric" }))}<small>${timeOf(i.start)}</small>${i.pasted ? `<div style="margin-top:6px">${undoBtn(i)}</div>` : ""}</div>
     ${i.link ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
@@ -1080,6 +1099,7 @@ document.addEventListener("click", async e => {
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
   const blk = e.target.closest(".blk, .pin"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open, .pin.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
+  const dn = e.target.closest("[data-done]"); if (dn) { e.preventDefault(); e.stopPropagation(); await fetch("/api/done", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid: dn.dataset.done, title: dn.dataset.title, undo: !!dn.dataset.undo }) }); toast(t(dn.dataset.undo ? "done.reopened" : "done.marked", { t: dn.dataset.title })); return load(); }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); toast(t("removed")); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();

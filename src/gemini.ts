@@ -46,6 +46,9 @@ QUESTION: ${question}` }];
   return { answer: String(parsed.answer ?? ""), used: Array.isArray(parsed.used) ? parsed.used.map(String) : [], model: parsed.__model };
 }
 
+/** Generic JSON call for other brains (inbound iMessage interpretation). */
+export const geminiJson = (parts: any[]) => callJson(parts);
+
 async function callJson(parts: any[]): Promise<any> {
   const body = JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2 } });
   let lastErr = "";
@@ -55,7 +58,8 @@ async function callJson(parts: any[]): Promise<any> {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
           method: "POST", headers: { "content-type": "application/json" }, body, signal: AbortSignal.timeout(TIMEOUT_MS),
         });
-        if (res.status === 503 || res.status === 429) { lastErr = `${model} ${res.status}`; await new Promise(r => setTimeout(r, 1500)); continue; }
+        if (res.status === 429) { lastErr = `${model} 429`; await new Promise(r => setTimeout(r, 6000)); continue; } // free-tier per-minute quota: wait, then retry once
+        if (res.status === 503) { lastErr = `${model} 503`; await new Promise(r => setTimeout(r, 1500)); continue; }
         if (res.status === 403 || res.status === 404) { lastErr = `${model} ${res.status}`; break; } // model not available to this key → next model
         if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
         const data: any = await res.json();
