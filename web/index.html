@@ -6,334 +6,253 @@
 <title>Brass Telegraph</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Nixie+One&family=Special+Elite&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Nixie+One&display=swap" rel="stylesheet">
 <style>
 :root {
-  --night: #0f141b;
-  --brass: #c98f45;
-  --brass-hi: #f3cf8e;
-  --ink: #2b2118;
-  --text: #f0e2c8;
-  --muted: #a89274;
-  --red: #d8452b;
-  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg: #0c1118;
+  --glass: rgba(20, 17, 14, .88);
+  --card: rgba(255, 255, 255, .035);
+  --card-hi: rgba(255, 255, 255, .06);
+  --line: rgba(222, 170, 110, .18);
+  --line-hi: rgba(222, 170, 110, .42);
+  --copper: #d9a860;
+  --glow: #ff9a3c;
+  --glow-2: #ff5e3a;
+  --text: #f4ebdd;
+  --text-2: #cdbfa8;
+  --muted: #8f826f;
+  --red: #ff5a3c;
+  --r-lg: 22px; --r: 16px; --r-sm: 12px;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  min-height: 100vh;
-  color: var(--text);
-  font: 17px/1.4 "Barlow Condensed", system-ui, sans-serif;
-  background:
-    radial-gradient(ellipse at 50% -10%, rgba(255,160,70,.18), transparent 55%),
-    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,.8), transparent 60%),
-    var(--noise),
-    linear-gradient(180deg, #1c2633, var(--night));
-  background-attachment: fixed;
+  min-height: 100vh; color: var(--text);
+  font: 16px/1.5 Inter, system-ui, sans-serif;
+  background: radial-gradient(1200px 700px at 50% -10%, #223042 0%, var(--bg) 60%), var(--bg);
   overflow-x: hidden;
 }
-button { font: inherit; color: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; }
+h1, h2, h3 { font-family: Outfit, Inter, sans-serif; margin: 0; }
 
-/* ---------------- background gears ---------------- */
-#gears { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-#gears svg { position: absolute; overflow: visible; }
-.spin { animation: spin var(--d, 60s) linear infinite; transform-box: fill-box; transform-origin: center; }
-.spin.rev { animation-direction: reverse; }
+/* ---------- gears ---------- */
+#gears { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+#gears svg { position: absolute; overflow: visible; will-change: transform; animation: spin var(--d) linear infinite; }
+#gears svg.rev { animation-direction: reverse; }
+#gears svg.back { filter: blur(1.8px) brightness(.42) saturate(1.1); }
+#gears svg.front { filter: drop-shadow(0 24px 30px rgba(0,0,0,.7)); }
 @keyframes spin { to { transform: rotate(360deg); } }
+.vignette { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(5,8,12,.75) 100%); }
 
-/* ---------------- machine frame ---------------- */
+/* ---------- machine ---------- */
 .machine {
-  position: relative; z-index: 1;
-  max-width: 1180px; margin: 34px auto 48px; padding: 26px 28px 30px;
-  border-radius: 18px;
-  background:
-    var(--noise),
-    radial-gradient(ellipse at 50% 0%, rgba(255,190,110,.10), transparent 60%),
-    linear-gradient(180deg, #241d17, #15110d);
-  box-shadow:
-    0 0 0 2px #7a5228, 0 0 0 7px #120d09, 0 0 0 9px #a7733a, 0 0 0 11px #2a1c10,
-    0 40px 100px rgba(0,0,0,.75), inset 0 0 80px rgba(0,0,0,.7);
+  position: relative; z-index: 1; max-width: 1180px; margin: 40px auto 60px; padding: 28px 30px 34px;
+  background: var(--glass); backdrop-filter: blur(18px) saturate(1.1); -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  border: 1px solid var(--line-hi); border-radius: var(--r-lg);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.6), 0 40px 90px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,225,180,.14);
 }
-.rivet {
-  position: absolute; width: 14px; height: 14px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe3ae, #b07c3e 45%, #4a2e14 80%);
-  box-shadow: 0 2px 3px rgba(0,0,0,.8), inset 0 -1px 1px rgba(0,0,0,.5);
-}
-.rivet.sm { width: 9px; height: 9px; }
+.rivet { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe3ae, #b07c3e 50%, #4a2e14); box-shadow: 0 1px 2px rgba(0,0,0,.8); }
 
-/* ---------------- nameplate ---------------- */
-.nameplate { display: flex; align-items: center; justify-content: center; gap: 18px; margin-bottom: 22px; }
-.plate {
-  position: relative; padding: 10px 46px 12px; border-radius: 6px; text-align: center;
-  background: var(--noise), linear-gradient(180deg, #e7b56c 0%, #b07636 45%, #8a5524 55%, #c99050 100%);
-  box-shadow: 0 0 0 2px #4b2e13, 0 6px 16px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,240,200,.7), inset 0 -2px 4px rgba(60,30,10,.5);
-}
-.plate h1 {
-  margin: 0; font: 900 34px/1 Cinzel, serif; letter-spacing: .14em; color: #3a2210;
-  text-shadow: 0 1px 0 rgba(255,236,190,.65), 0 -1px 0 rgba(40,20,5,.35);
-}
-.plate p { margin: 5px 0 0; font: 700 12px Cinzel, serif; letter-spacing: .32em; color: #2e1a0a; text-shadow: 0 1px 0 rgba(255,236,190,.5); }
-.plate .rivet { top: 50%; margin-top: -5px; }
-.flourish { width: 120px; height: 24px; color: var(--brass); opacity: .85; }
-
-/* ---------------- control row ---------------- */
-.controls { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+/* top row */
+.top { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
 .knob {
-  position: relative; flex: none; width: 70px; height: 70px; border-radius: 50%; border: 0; cursor: pointer;
-  display: grid; place-items: center; color: #ffe0a8;
-  background:
-    radial-gradient(circle at 50% 50%, transparent 52%, rgba(0,0,0,.35) 53%, transparent 56%),
-    radial-gradient(circle at 38% 30%, #8b5a2c, #3a230f 72%);
-  box-shadow: 0 0 0 3px #c08a47, 0 0 0 7px #241810, 0 0 0 8px #6b4521, 0 0 26px rgba(255,150,60,.45), inset 0 3px 6px rgba(255,220,160,.35), inset 0 -4px 8px rgba(0,0,0,.6);
-  transition: transform .5s, box-shadow .2s;
+  flex: none; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; color: var(--glow);
+  background: radial-gradient(circle at 40% 32%, #3a2a1c, #140f0b 72%);
+  border: 2px solid var(--copper);
+  box-shadow: 0 0 0 5px rgba(0,0,0,.45), 0 0 30px rgba(255,150,60,.28), inset 0 2px 4px rgba(255,220,170,.18), inset 0 -4px 8px rgba(0,0,0,.6);
+  transition: box-shadow .2s, transform .6s cubic-bezier(.2,.8,.2,1);
 }
-.knob:hover { box-shadow: 0 0 0 3px var(--brass-hi), 0 0 0 7px #241810, 0 0 0 8px #6b4521, 0 0 36px rgba(255,160,70,.7), inset 0 3px 6px rgba(255,220,160,.35), inset 0 -4px 8px rgba(0,0,0,.6); }
-.knob:active { transform: rotate(60deg); }
-.knob svg { width: 32px; height: 32px; filter: drop-shadow(0 0 6px rgba(255,170,80,.8)); }
+.knob:hover { box-shadow: 0 0 0 5px rgba(0,0,0,.45), 0 0 40px rgba(255,150,60,.5), inset 0 2px 4px rgba(255,220,170,.18), inset 0 -4px 8px rgba(0,0,0,.6); }
+.knob:active { transform: rotate(90deg); }
+.knob svg { width: 28px; height: 28px; filter: drop-shadow(0 0 8px rgba(255,160,70,.9)); }
 .tube {
-  flex: 1; position: relative; display: flex; align-items: center; gap: 12px;
-  height: 58px; padding: 0 10px 0 26px; border-radius: 32px;
-  background: linear-gradient(180deg, #0b0806, #1e1610 60%, #2a2016);
-  box-shadow: 0 0 0 2px #d29a55, 0 0 0 5px #3a2614, 0 0 0 6px #8a5a2a, 0 0 22px rgba(255,150,60,.35), inset 0 4px 10px rgba(0,0,0,.9);
+  flex: 1; display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 12px 0 26px; border-radius: 30px;
+  background: rgba(0,0,0,.42); border: 1.5px solid var(--copper);
+  box-shadow: 0 0 26px rgba(255,160,70,.22), inset 0 3px 10px rgba(0,0,0,.7);
+  transition: box-shadow .2s;
 }
-.tube input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--text); font: 500 21px "Barlow Condensed", sans-serif; letter-spacing: .03em; }
-.tube input::placeholder { color: #c9ad80; }
-.tube .lens { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #ffd9a0; background: radial-gradient(circle at 40% 35%, #3b2a1b, #120c08); box-shadow: inset 0 0 0 1px #7b5530; }
+.tube:focus-within { box-shadow: 0 0 36px rgba(255,160,70,.42), inset 0 3px 10px rgba(0,0,0,.7); }
+.tube input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text); font: 500 18px Inter, sans-serif; }
+.tube input::placeholder { color: var(--muted); }
+.tube svg { width: 22px; height: 22px; color: var(--text-2); margin-right: 8px; }
 
-/* ---------------- levers (nav) ---------------- */
-.levers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
-.lever {
-  position: relative; height: 120px; border: 0; border-radius: 10px; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-  font: 600 23px "Barlow Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase;
-  background: var(--noise), linear-gradient(180deg, #2f271f, #1a1511);
-  box-shadow: 0 0 0 1px #5b4128, 0 0 0 4px #15100c, 0 0 0 5px #3d2c1b, inset 0 1px 0 rgba(255,220,170,.12), inset 0 -16px 30px rgba(0,0,0,.45), 0 8px 18px rgba(0,0,0,.5);
-  transition: transform .15s, box-shadow .2s;
+/* nav */
+.nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.tile {
+  position: relative; height: 112px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  font: 600 17px/1 Outfit, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2);
+  background: var(--card); border: 1px solid var(--line);
+  transition: background .2s, border-color .2s, color .2s, box-shadow .2s, transform .15s;
 }
-.lever:hover { transform: translateY(-2px); }
-.lever svg { width: 50px; height: 50px; color: var(--brass-hi); filter: drop-shadow(0 0 8px rgba(255,170,80,.55)); }
-.lever.on {
-  background: var(--noise), radial-gradient(ellipse at 50% 35%, #d98a48, #8a431c 65%, #5a2a10);
-  box-shadow: 0 0 0 1px #f0b06a, 0 0 0 4px #15100c, 0 0 0 5px #c47b3c, 0 0 30px rgba(255,130,50,.55), inset 0 1px 0 rgba(255,235,200,.5), inset 0 -16px 30px rgba(80,20,0,.4);
-  color: #fff4e2;
+.tile:hover { background: var(--card-hi); border-color: var(--line-hi); transform: translateY(-1px); }
+.tile svg { width: 38px; height: 38px; color: var(--copper); transition: color .2s, filter .2s; }
+.tile.on {
+  color: #fff6ea; border-color: rgba(255,175,95,.75);
+  background: radial-gradient(ellipse 80% 90% at 50% 20%, rgba(255,150,60,.55), rgba(150,65,20,.28) 60%, rgba(60,30,15,.2));
+  box-shadow: 0 0 46px rgba(255,140,50,.32), inset 0 1px 0 rgba(255,230,190,.35);
 }
-.lever.on svg { color: #fff6e6; }
-.lever .corner { position: absolute; width: 20px; height: 20px; color: #9a6c3e; filter: none; }
-.corner.tl { top: 5px; left: 5px; } .corner.tr { top: 5px; right: 5px; transform: scaleX(-1); }
-.corner.bl { bottom: 5px; left: 5px; transform: scaleY(-1); } .corner.br { bottom: 5px; right: 5px; transform: scale(-1); }
-.lever.on .corner { color: #ffd8a6; }
+.tile.on svg { color: #fff1dc; filter: drop-shadow(0 0 10px rgba(255,170,80,.9)); }
 
-/* ---------------- panels ---------------- */
-.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
-.panel {
-  position: relative; min-width: 0; padding: 20px 22px 22px; border-radius: 10px;
-  background: var(--noise), linear-gradient(180deg, rgba(42,34,27,.95), rgba(20,16,12,.95));
-  box-shadow: 0 0 0 1px #5b4128, 0 0 0 4px #120e0a, 0 0 0 5px #3a2a1a, inset 0 1px 0 rgba(255,220,170,.08), inset 0 0 40px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.45);
-}
-.panel > .rivet { top: 9px; } .panel > .rivet.l { left: 9px; } .panel > .rivet.r { right: 9px; }
-.label {
-  display: flex; align-items: center; gap: 10px; margin: 0 0 16px;
-  font: 700 15px Cinzel, serif; letter-spacing: .2em; text-transform: uppercase; color: var(--brass-hi);
-}
-.label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, #7a5530, transparent); }
-.c-7 { grid-column: span 7; } .c-5 { grid-column: span 5; } .c-4 { grid-column: span 4; } .c-8 { grid-column: span 8; }
+/* grid + panels */
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+.panel { grid-column: span var(--c, 12); min-width: 0; padding: 26px 28px 28px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); }
+.label { display: block; margin: 0 0 18px; font: 600 12px/1 Outfit, sans-serif; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.label b { color: var(--copper); font-weight: 600; }
+.empty { color: var(--muted); font-size: 15px; }
 
-/* hero: nixie countdown */
-.hero-title { margin: 0 0 4px; font: 700 34px/1.1 Cinzel, serif; color: #fff1d8; }
-.hero-meta { color: var(--muted); font-size: 18px; letter-spacing: .05em; margin-bottom: 18px; }
-.hero-meta b { color: var(--brass-hi); font-weight: 600; }
-.nixies { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; min-height: 108px; }
-.nx-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+/* hero */
+.hero { display: grid; gap: 22px; }
+.hero h1 { font: 800 clamp(34px, 4vw, 48px)/1.05 Outfit, sans-serif; letter-spacing: -.01em; color: #fff6ea; }
+.hero h1 small { display: block; margin-top: 8px; font: 500 18px/1.3 Inter, sans-serif; letter-spacing: 0; color: var(--text-2); }
+.hero h1 small b { color: var(--copper); font-weight: 600; }
+.nixies { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.nx-group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .nx-row { display: flex; gap: 5px; }
 .nx {
-  position: relative; width: 52px; height: 84px; border-radius: 26px 26px 8px 8px;
-  display: grid; place-items: center;
-  font: 64px/1 "Nixie One", monospace; color: #ffb35a;
-  text-shadow: 0 0 4px #ff7a1a, 0 0 12px #ff6a00, 0 0 26px rgba(255,90,0,.7);
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 6px),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 6px),
-    radial-gradient(ellipse at 50% 40%, rgba(255,120,30,.18), transparent 70%),
-    linear-gradient(90deg, #120c08, #2a1d14 30%, #1a120c 70%, #0c0805);
-  box-shadow: inset 0 0 0 1px rgba(255,220,180,.18), inset 8px 0 12px rgba(255,255,255,.05), 0 0 0 3px #3a2816, 0 0 0 4px #9a6a36, 0 6px 12px rgba(0,0,0,.6);
+  width: 48px; height: 78px; border-radius: 24px 24px 8px 8px; display: grid; place-items: center; position: relative;
+  font: 58px/1 "Nixie One", monospace; color: #ffb35a;
+  text-shadow: 0 0 4px #ff7a1a, 0 0 12px #ff6a00, 0 0 26px rgba(255,90,0,.6);
+  background: radial-gradient(ellipse at 50% 42%, rgba(255,120,30,.16), transparent 70%), linear-gradient(90deg, #0d0906, #241911 32%, #15100a 70%, #0a0705);
+  box-shadow: inset 0 0 0 1px rgba(255,220,180,.14), 0 0 0 2px #2c2015, 0 0 0 3px rgba(217,168,96,.6), 0 8px 16px rgba(0,0,0,.6);
 }
-.nx::after { content: ""; position: absolute; top: 6px; left: 10px; width: 9px; height: 46px; border-radius: 6px; background: linear-gradient(180deg, rgba(255,255,255,.22), transparent); }
-.nx-cap { font: 600 13px "Barlow Condensed"; letter-spacing: .25em; color: var(--muted); }
-.colon { font: 52px "Nixie One"; color: #ff9a3c; text-shadow: 0 0 10px #ff6a00; padding-bottom: 34px; animation: blink 1s steps(2) infinite; }
+.nx::after { content: ""; position: absolute; top: 6px; left: 9px; width: 8px; height: 42px; border-radius: 6px; background: linear-gradient(180deg, rgba(255,255,255,.2), transparent); }
+.nx-cap { font: 600 11px Outfit, sans-serif; letter-spacing: .26em; color: var(--muted); }
+.colon { font: 46px "Nixie One"; color: #ff9a3c; text-shadow: 0 0 10px #ff6a00; padding-bottom: 30px; animation: blink 1s steps(2) infinite; }
 @keyframes blink { 50% { opacity: .25; } }
-
-.brass-btn {
-  display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border-radius: 24px; text-decoration: none; cursor: pointer;
-  font: 700 13px Cinzel, serif; letter-spacing: .14em; text-transform: uppercase; color: #3a2210;
-  background: linear-gradient(180deg, #f4cd8a, #c48a45 55%, #a06a30);
-  box-shadow: 0 0 0 1px #5a3616, 0 4px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,245,215,.8);
-  border: 0;
+.hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.cta {
+  display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 22px; border-radius: 23px; text-decoration: none;
+  font: 600 15px Outfit, sans-serif; letter-spacing: .02em; color: #fff;
+  background: linear-gradient(90deg, var(--glow), var(--glow-2));
+  box-shadow: 0 8px 26px rgba(255,120,50,.35), inset 0 1px 0 rgba(255,255,255,.3);
+  transition: transform .15s, box-shadow .2s;
 }
-.brass-btn:hover { filter: brightness(1.1); }
-.orders { margin-top: 22px; }
-.orders .slip { --r: -.4deg; font-size: 14px; }
-.orders .slip p { margin: 0; white-space: pre-line; }
+.cta:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(255,120,50,.5), inset 0 1px 0 rgba(255,255,255,.3); }
+.cta svg { width: 18px; height: 18px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 18px; border-radius: 23px; border: 1px solid var(--line-hi); color: var(--text-2); font-size: 15px; }
+.pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 10px var(--glow); }
+.orders { padding: 2px 0 0 18px; border-left: 2px solid var(--line-hi); color: var(--text-2); font-size: 15px; line-height: 1.55; white-space: pre-line; max-width: 62ch; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* gauge */
 .gauge-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
-.gauge { width: 100%; max-width: 260px; filter: drop-shadow(0 10px 18px rgba(0,0,0,.6)); }
-.gauge-state { margin-top: 8px; font: 700 22px Cinzel, serif; letter-spacing: .12em; color: var(--brass-hi); text-transform: uppercase; }
-.gauge-state.hot { color: #ff7b52; text-shadow: 0 0 12px rgba(255,80,40,.6); }
-.gauge-sub { color: var(--muted); font-size: 16px; text-align: center; }
-.steam { position: absolute; top: 18%; width: 26px; height: 26px; border-radius: 50%; background: rgba(235,235,235,.55); filter: blur(7px); opacity: 0; animation: puff 2.6s ease-out infinite; z-index: 2; }
+.gauge { width: 100%; max-width: 240px; }
+.gauge-state { margin-top: 2px; font: 700 22px Outfit, sans-serif; letter-spacing: .02em; color: #fff6ea; }
+.gauge-state.hot { color: #ff8a66; text-shadow: 0 0 14px rgba(255,90,40,.6); }
+.gauge-sub { color: var(--muted); font-size: 14px; text-align: center; }
+.steam { position: absolute; top: 14%; width: 26px; height: 26px; border-radius: 50%; background: rgba(235,235,235,.5); filter: blur(7px); opacity: 0; animation: puff 2.6s ease-out infinite; }
 @keyframes puff { 0% { transform: translate(0,0) scale(.5); opacity: .9; } 100% { transform: translate(var(--dx, -14px), -90px) scale(3); opacity: 0; } }
-
-/* 14-day forecast vials */
-.forecast { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; margin-top: 18px; width: 100%; }
-.day { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.vial { position: relative; width: 100%; max-width: 18px; height: 64px; border-radius: 9px; background: linear-gradient(90deg, #0d0906, #2b2017 50%, #0d0906); box-shadow: inset 0 0 0 1px rgba(255,220,180,.15), 0 0 0 2px #3a2816; overflow: hidden; }
-.vial i { position: absolute; left: 3px; right: 3px; bottom: 3px; border-radius: 6px; background: linear-gradient(180deg, #ffd08a, #e08a3a); box-shadow: 0 0 10px rgba(255,150,60,.8); }
+.forecast { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; margin-top: 22px; width: 100%; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.vial { width: 100%; max-width: 14px; height: 54px; border-radius: 7px; background: rgba(0,0,0,.4); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.vial i { position: absolute; left: 2px; right: 2px; bottom: 2px; border-radius: 5px; background: linear-gradient(180deg, #ffd08a, #ff9a3c); box-shadow: 0 0 10px rgba(255,150,60,.8); }
 .vial i.hot { background: linear-gradient(180deg, #ffab8a, var(--red)); box-shadow: 0 0 12px rgba(255,70,40,.8); }
-.day span { font: 600 12px "Barlow Condensed"; color: var(--muted); }
-.day.today span { color: var(--brass-hi); }
+.day span { font: 600 11px Outfit, sans-serif; color: var(--muted); }
+.day.today span { color: var(--copper); }
 
-/* tickets (deadlines) */
-.tickets { display: flex; flex-direction: column; gap: 12px; }
-.ticket {
-  position: relative; display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 14px;
-  padding: 12px 18px 12px 12px; border-radius: 8px;
-  background: var(--noise), linear-gradient(180deg, #3a2f25, #2a2119);
-  box-shadow: inset 0 0 0 1px #5e4430, 0 4px 10px rgba(0,0,0,.4);
+/* rows (deadlines) */
+.rows { display: flex; flex-direction: column; gap: 10px; }
+.row {
+  position: relative; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px;
+  padding: 12px 16px 12px 12px; border-radius: var(--r-sm); background: rgba(255,255,255,.025); border: 1px solid transparent;
+  transition: background .15s, border-color .15s;
 }
-.ticket.hot { background: var(--noise), linear-gradient(180deg, #5c271a, #3a1810); box-shadow: inset 0 0 0 1px #b0533a, 0 0 18px rgba(216,69,43,.35); }
-.medal { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; color: #3a2210; background: radial-gradient(circle at 38% 32%, #ffe2a8, #c4883f 60%, #7a4a1c); box-shadow: 0 0 0 2px #4a2c12, inset 0 -3px 5px rgba(0,0,0,.35); }
-.medal svg { width: 26px; height: 26px; }
-.ticket h3 { margin: 0; font: 600 21px/1.15 "Barlow Condensed"; letter-spacing: .02em; color: #fff0d6; }
-.ticket .meta { color: var(--muted); font-size: 15px; letter-spacing: .04em; text-transform: capitalize; }
-.ticket .when { text-align: right; }
-.ticket .when b { display: block; font: 700 20px Cinzel, serif; color: var(--brass-hi); }
-.ticket.hot .when b { color: #ffb08f; }
-.ticket .when small { color: var(--muted); font-size: 15px; }
-.ticket a { position: absolute; inset: 0; border-radius: 8px; }
-.ticket a:hover { box-shadow: inset 0 0 0 1px var(--brass-hi); }
+.row:hover { background: var(--card-hi); border-color: var(--line); }
+.row.hot { border-color: rgba(255,90,60,.45); background: rgba(255,90,60,.08); }
+.ico { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--copper); border: 1px solid var(--line-hi); background: rgba(0,0,0,.3); }
+.ico svg { width: 20px; height: 20px; }
+.row.hot .ico { color: #ff8a66; border-color: rgba(255,120,90,.6); }
+.row h3 { font: 600 17px/1.2 Outfit, sans-serif; color: #fff6ea; }
+.row .meta, .card .meta { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+.row .when { text-align: right; }
+.row .when b { display: block; font: 700 16px Outfit, sans-serif; color: var(--copper); }
+.row.hot .when b { color: #ff8a66; }
+.row .when small { color: var(--muted); font-size: 13px; }
+.row a { position: absolute; inset: 0; border-radius: var(--r-sm); }
 
-/* course plaques */
-.plaques { display: flex; flex-direction: column; gap: 10px; }
-.plaque {
-  display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; text-align: left;
-  background: var(--noise), linear-gradient(180deg, #2f261e, #1f1914);
-  box-shadow: inset 0 0 0 1px #5a412a, 0 3px 8px rgba(0,0,0,.4);
+/* courses */
+.chips { display: flex; flex-direction: column; gap: 10px; }
+.chip {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: var(--r-sm); text-align: left;
+  background: rgba(255,255,255,.025); border: 1px solid transparent; transition: background .15s, border-color .15s, box-shadow .15s;
 }
-.plaque:hover { box-shadow: inset 0 0 0 1px #a7733a, 0 3px 8px rgba(0,0,0,.4); }
-.plaque.on { background: var(--noise), linear-gradient(180deg, #6b3a1c, #43230f); box-shadow: inset 0 0 0 1px #e2a05c, 0 0 16px rgba(255,130,50,.35); }
-.plaque svg { width: 26px; height: 26px; color: var(--brass); flex: none; }
-.plaque .nm { flex: 1; min-width: 0; }
-.plaque .nm b { display: block; font: 700 17px Cinzel, serif; letter-spacing: .06em; color: #fbe8c8; }
-.plaque .nm small { display: block; color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lamp { flex: none; min-width: 34px; height: 34px; padding: 0 6px; border-radius: 17px; display: grid; place-items: center; font: 22px "Nixie One"; color: #ffb35a; text-shadow: 0 0 8px #ff6a00; background: radial-gradient(circle, #2c1c10, #0d0805); box-shadow: inset 0 0 0 1px #7a5530; }
+.chip:hover { background: var(--card-hi); border-color: var(--line); }
+.chip.on { border-color: rgba(255,175,95,.6); background: rgba(255,150,60,.12); box-shadow: 0 0 22px rgba(255,140,50,.18); }
+.chip svg { width: 22px; height: 22px; color: var(--copper); flex: none; }
+.chip .nm { flex: 1; min-width: 0; }
+.chip .nm b { display: block; font: 600 16px Outfit, sans-serif; color: #fff6ea; }
+.chip .nm small { display: block; color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.count { flex: none; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 14px; display: grid; place-items: center; font: 600 13px Outfit, sans-serif; color: var(--copper); border: 1px solid var(--line-hi); }
 
-/* telegram slips */
-.wire { display: flex; flex-direction: column; gap: 14px; }
-.slip {
-  position: relative; padding: 13px 16px 14px; color: var(--ink);
-  font: 14.5px/1.5 "Special Elite", monospace; letter-spacing: .02em;
-  background: var(--noise), linear-gradient(180deg, #efe3c4, #dccaa0);
-  box-shadow: 0 6px 14px rgba(0,0,0,.55), inset 0 0 30px rgba(140,100,40,.25);
-  transform: rotate(var(--r, -.6deg));
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 96% 97%, 92% 100%, 88% 97%, 84% 100%, 80% 97%, 76% 100%, 72% 97%, 68% 100%, 64% 97%, 60% 100%, 56% 97%, 52% 100%, 48% 97%, 44% 100%, 40% 97%, 36% 100%, 32% 97%, 28% 100%, 24% 97%, 20% 100%, 16% 97%, 12% 100%, 8% 97%, 4% 100%, 0 97%);
-}
-.slip header { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .14em; color: #6b5233; border-bottom: 1px dashed #a88c5e; padding-bottom: 5px; margin-bottom: 7px; }
-.slip .stamp { color: #a3301c; border: 1.5px solid #a3301c; padding: 0 5px; border-radius: 3px; transform: rotate(-4deg); }
-.slip .stamp.q { color: #2f5a7a; border-color: #2f5a7a; }
+/* wire */
+.wire { display: flex; flex-direction: column; gap: 12px; }
+.msg { padding: 12px 14px; border-radius: var(--r-sm); background: rgba(255,255,255,.025); border-left: 2px solid var(--line-hi); }
+.msg header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
+.tag { font: 600 10px Outfit, sans-serif; letter-spacing: .14em; padding: 3px 8px; border-radius: 10px; border: 1px solid var(--line-hi); color: var(--copper); }
+.tag.sent { color: #ffb08f; border-color: rgba(255,120,90,.5); }
+.msg p { margin: 0; font: 500 13.5px/1.5 Inter, sans-serif; letter-spacing: .03em; color: var(--text-2); }
 
 /* cards */
-.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.card {
-  position: relative; padding: 18px 14px 16px; border-radius: 8px; text-align: center;
-  background: var(--noise), linear-gradient(180deg, #33291f, #201a14);
-  box-shadow: inset 0 0 0 1px #5b4128, 0 6px 14px rgba(0,0,0,.45);
-}
-.card .medal { margin: 0 auto 10px; width: 60px; height: 60px; }
-.card h3 { margin: 0; font: 600 20px/1.15 "Barlow Condensed"; color: #fff0d6; }
-.card .meta { color: var(--muted); font-size: 15px; }
-.card .big { margin-top: 8px; font: 32px "Nixie One"; color: #ffb35a; text-shadow: 0 0 10px #ff6a00; }
-.card .big small { font: 600 13px "Barlow Condensed"; letter-spacing: .2em; color: var(--muted); text-shadow: none; }
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.card { padding: 20px 16px 18px; border-radius: var(--r-sm); background: rgba(255,255,255,.025); border: 1px solid var(--line); text-align: center; transition: background .15s, border-color .15s; }
+.card:hover { background: var(--card-hi); border-color: var(--line-hi); }
+.card .ico { margin: 0 auto 12px; width: 50px; height: 50px; }
+.card h3 { font: 600 16px/1.25 Outfit, sans-serif; color: #fff6ea; }
+.card .big { margin-top: 10px; font: 34px/1 "Nixie One"; color: #ffb35a; text-shadow: 0 0 10px #ff6a00; }
+.card .big small { font: 600 11px Outfit, sans-serif; letter-spacing: .22em; color: var(--muted); text-shadow: none; margin-left: 4px; }
 
-.empty { color: var(--muted); font-size: 16px; font-style: italic; }
 .view[hidden] { display: none; }
 
-@media (max-width: 900px) {
-  .machine { margin: 14px 16px 30px; padding: 18px 14px 20px; }
-  .plate { padding: 8px 22px 10px; } .plate h1 { font-size: 22px; } .plate p { font-size: 9px; letter-spacing: .2em; }
-  .flourish { display: none; }
-  .knob { width: 50px; height: 50px; } .knob svg { width: 24px; height: 24px; }
-  .tube { height: 48px; padding-left: 16px; } .tube input { font-size: 17px; }
-  .levers { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .lever { height: 84px; font-size: 18px; } .lever svg { width: 32px; height: 32px; }
-  .grid > * { grid-column: span 12 !important; }
+@media (max-width: 960px) {
+  .machine { margin: 14px 14px 30px; padding: 18px 16px 22px; }
+  .knob { width: 50px; height: 50px; } .knob svg { width: 22px; height: 22px; }
+  .tube { height: 50px; padding-left: 18px; } .tube input { font-size: 16px; }
+  .nav { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .tile { height: 84px; font-size: 14px; gap: 6px; } .tile svg { width: 28px; height: 28px; }
+  .panel { --c: 12 !important; padding: 20px 18px 22px; }
   .cards { grid-template-columns: repeat(2, 1fr); }
-  .nx { width: 36px; height: 58px; font-size: 42px; border-radius: 18px 18px 6px 6px; }
-  .colon { font-size: 36px; padding-bottom: 28px; }
-  .nixies { min-height: 82px; }
-  .hero-title { font-size: 26px; }
-  .ticket { grid-template-columns: 44px 1fr; } .ticket .when { grid-column: 2; text-align: left; } .ticket .medal { width: 44px; height: 44px; }
+  .nx { width: 34px; height: 56px; font-size: 40px; border-radius: 17px 17px 6px 6px; } .colon { font-size: 32px; padding-bottom: 24px; }
+  .row { grid-template-columns: 40px 1fr; } .row .when { grid-column: 2; text-align: left; } .ico { width: 40px; height: 40px; }
 }
-@media (prefers-reduced-motion: reduce) { .spin, .colon, .steam { animation: none; } }
+@media (prefers-reduced-motion: reduce) { #gears svg, .colon, .steam { animation: none; } }
 </style>
 </head>
 <body>
-<div id="gears"></div>
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="corner" viewBox="0 0 24 24"><path d="M2 22V8a6 6 0 0 1 6-6h14" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 22V11a5 5 0 0 1 5-5h11" fill="none" stroke="currentColor" stroke-width=".9" opacity=".7"/><circle cx="8" cy="8" r="1.8" fill="currentColor"/></symbol>
-  <symbol id="flourish" viewBox="0 0 120 24"><path d="M2 12h44M74 12h44" stroke="currentColor" stroke-width="1.4"/><path d="M46 12c6-10 12-10 14 0 2 10 8 10 14 0" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="60" cy="12" r="3" fill="currentColor"/><circle cx="2" cy="12" r="2" fill="currentColor"/><circle cx="118" cy="12" r="2" fill="currentColor"/></symbol>
-</svg>
+<div id="gears"></div><div class="vignette"></div>
 
 <main class="machine">
   <span class="rivet" style="top:10px;left:10px"></span><span class="rivet" style="top:10px;right:10px"></span>
   <span class="rivet" style="bottom:10px;left:10px"></span><span class="rivet" style="bottom:10px;right:10px"></span>
 
-  <header class="nameplate">
-    <svg class="flourish"><use href="#flourish"/></svg>
-    <div class="plate">
-      <span class="rivet sm" style="left:14px"></span><span class="rivet sm" style="right:14px"></span>
-      <h1>BRASS TELEGRAPH</h1>
-      <p>BRIGHTSPACE WIRE SERVICE · EST. 2026</p>
-    </div>
-    <svg class="flourish"><use href="#flourish"/></svg>
-  </header>
-
-  <div class="controls">
-    <button class="knob" title="Refresh the wire" onclick="load()"><svg viewBox="0 0 24 24"><path id="gearIcon" fill="currentColor" fill-rule="evenodd"/></svg></button>
+  <div class="top">
+    <button class="knob" title="Refresh" onclick="load()"><svg viewBox="0 0 24 24"><path id="gearIcon" fill="currentColor" fill-rule="evenodd"/></svg></button>
     <label class="tube">
       <input id="q" placeholder="Ask the telegraph… try HW, quiz, EST 393" autocomplete="off">
-      <span class="lens"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     </label>
-    <button class="knob" title="Search" onclick="document.getElementById('q').focus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    <button class="knob" title="Search" onclick="document.getElementById('q').focus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
   </div>
 
-  <nav class="levers" id="levers">
-    <button class="lever on" data-view="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5 1.5 12H5v9h5.5v-6h3v6H19v-9h3.5z"/></svg>Station</button>
-    <button class="lever" data-view="deadlines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17M8.5 15.5l2.2 2.2 4.8-4.8"/></svg>Deadlines</button>
-    <button class="lever" data-view="telegrams"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 5h18v12H9l-6 4z"/><path d="M7.5 9.5h9M7.5 13h6"/></svg>Telegrams</button>
-    <button class="lever" data-view="boiler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 17a8.5 8.5 0 1 1 17 0"/><path d="m12 17 4.5-5.5"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></svg>Boiler</button>
+  <nav class="nav" id="nav">
+    <button class="tile on" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg>Station</button>
+    <button class="tile" data-view="deadlines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.5l2 2 4-4"/></svg>Deadlines</button>
+    <button class="tile" data-view="telegrams"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4z"/><path d="M8 9.5h8M8 13h5"/></svg>Telegrams</button>
+    <button class="tile" data-view="boiler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 17a8 8 0 1 1 16 0"/><path d="m12 17 4-5"/><circle cx="12" cy="17" r="1.6" fill="currentColor"/></svg>Boiler</button>
   </nav>
 
   <section class="view" id="view-home">
     <div class="grid">
-      <div class="panel c-7"><div class="label">Next Deadline</div><div id="hero"></div></div>
-      <div class="panel c-5"><div class="label">Boiler Pressure</div><div id="boiler"></div></div>
-      <div class="panel c-8"><div class="label">Next Deadlines</div><div class="tickets" id="next"></div></div>
-      <div class="panel c-4"><div class="label">Courses</div><div class="plaques" id="courses"></div></div>
-      <div class="panel c-8"><div class="label">On The Line</div><div class="cards" id="cards"></div></div>
-      <div class="panel c-4"><div class="label">The Wire</div><div class="wire" id="wire"></div></div>
+      <div class="panel hero" style="--c:8" id="hero"></div>
+      <div class="panel" style="--c:4"><span class="label">Boiler pressure · <b>72h</b></span><div id="boiler"></div></div>
+      <div class="panel" style="--c:5"><span class="label">Up next</span><div class="rows" id="next"></div></div>
+      <div class="panel" style="--c:4"><span class="label">Courses</span><div class="chips" id="courses"></div></div>
+      <div class="panel" style="--c:3"><span class="label">The wire</span><div class="wire" id="wire"></div></div>
+      <div class="panel" style="--c:12"><span class="label">On the line</span><div class="cards" id="cards"></div></div>
     </div>
   </section>
-
-  <section class="view" id="view-deadlines" hidden>
-    <div class="panel"><div class="label">Every Upcoming Deadline</div><div class="tickets" id="all"></div></div>
-  </section>
-  <section class="view" id="view-telegrams" hidden>
-    <div class="panel"><div class="label">Telegram Archive</div><div class="wire" id="wireAll" style="max-width:640px"></div></div>
-  </section>
-  <section class="view" id="view-boiler" hidden>
-    <div class="panel"><div class="label">Boiler Pressure · Next 72 Hours</div><div id="boilerBig"></div></div>
-  </section>
+  <section class="view" id="view-deadlines" hidden><div class="panel"><span class="label">Every upcoming deadline</span><div class="rows" id="all"></div></div></section>
+  <section class="view" id="view-telegrams" hidden><div class="panel"><span class="label">Telegram archive</span><div class="wire" id="wireAll" style="max-width:620px"></div></div></section>
+  <section class="view" id="view-boiler" hidden><div class="panel"><span class="label">Boiler pressure · <b>72h</b></span><div id="boilerBig"></div></div></section>
 </main>
 
 <script>
@@ -341,8 +260,7 @@ const ET = "America/New_York";
 const WEIGHT = { exam: 4, quiz: 2, assignment: 2, discussion: 1, content: 0, other: 1 };
 const MAX_LOAD = 8;
 let state = { items: [], telegrams: [], now: new Date().toISOString() };
-let courseFilter = null;
-let clockOffset = 0; // FAKE_NOW support: server "now" minus real now
+let courseFilter = null, clockOffset = 0;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -364,59 +282,72 @@ const KIND_ICON = {
   content: '<path d="M4 5h7v14H4z M13 5h7v14h-7z"/>',
   other: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'
 };
-const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${KIND_ICON[k] || KIND_ICON.other}</svg>`;
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${KIND_ICON[k] || KIND_ICON.other}</svg>`;
 
 function gearPath(teeth, ro, ri, hole, cx = 0, cy = 0) {
   let d = "";
   const step = Math.PI * 2 / teeth;
   for (let i = 0; i < teeth; i++) {
     const a = i * step;
-    for (const [r, t] of [[ri, a], [ro, a + step * .14], [ro, a + step * .44], [ri, a + step * .58]])
+    for (const [r, t] of [[ri, a], [ro, a + step * .16], [ro, a + step * .42], [ri, a + step * .58]])
       d += (d ? "L" : "M") + (cx + r * Math.cos(t)).toFixed(2) + "," + (cy + r * Math.sin(t)).toFixed(2);
   }
   return d + `ZM${cx + hole},${cy}A${hole},${hole} 0 1,0 ${cx - hole},${cy}A${hole},${hole} 0 1,0 ${cx + hole},${cy}Z`;
 }
 
-/* ---------- background gears: big, layered, partially off-screen ---------- */
+/* Metallic gears: specular-lit SVG, two depth layers, meshing speeds (duration ∝ teeth). */
 function drawGears() {
-  // [side, x, y, size, teeth, seconds, reverse, depth]
+  const METALS = {
+    copper: ["#e0945c", "#a85a2e", "#4a2512"],
+    brass: ["#f0c070", "#b8863c", "#5a3c14"],
+    bronze: ["#b07a4c", "#6e4424", "#2e1a0c"]
+  };
+  // [side, x, y, size, teeth, metal, layer, reverse]
   const spots = [
-    ["l", -110, -90, 340, 22, 90, 0, 1], ["l", 150, 150, 150, 12, 40, 1, 1], ["l", -80, 300, 230, 16, 70, 1, .8],
-    ["l", 90, 500, 280, 20, 95, 0, 1], ["l", -120, 760, 300, 20, 110, 1, .8], ["l", 160, 830, 140, 11, 35, 0, 1],
-    ["r", -120, -60, 320, 20, 85, 1, 1], ["r", 150, 170, 160, 12, 42, 0, 1], ["r", -70, 360, 240, 16, 75, 0, .8],
-    ["r", 80, 560, 260, 18, 90, 1, 1], ["r", -110, 800, 320, 22, 120, 0, .8], ["r", 170, 880, 130, 10, 32, 1, 1]
+    ["l", -170, -190, 520, 26, "copper", "front", 0], ["l", 190, 90, 190, 11, "brass", "front", 1],
+    ["l", -230, 400, 470, 24, "bronze", "back", 1], ["l", 60, 640, 230, 13, "copper", "front", 0],
+    ["l", -140, 900, 400, 20, "brass", "back", 0],
+    ["r", -190, -130, 500, 25, "brass", "front", 1], ["r", 170, 240, 200, 11, "copper", "front", 0],
+    ["r", -260, 480, 540, 28, "copper", "back", 0], ["r", 90, 780, 240, 13, "bronze", "front", 1],
+    ["r", -120, 960, 380, 19, "brass", "back", 1]
   ];
-  $("gears").innerHTML = spots.map(([side, x, y, size, teeth, dur, rev, depth], i) => {
-    const r = size / 2;
+  $("gears").innerHTML = spots.map(([side, x, y, size, teeth, metal, layer, rev], i) => {
+    const r = size / 2, [hi, mid, lo] = METALS[metal];
     const spokes = Array.from({ length: 6 }, (_, k) => {
-      const a = k * Math.PI / 3;
+      const a = k * Math.PI / 3, w = r * .09;
       const p = (rr, t) => `${(rr * Math.cos(t)).toFixed(1)},${(rr * Math.sin(t)).toFixed(1)}`;
-      return `<path d="M${p(r * .2, a - .25)} L${p(r * .72, a - .1)} L${p(r * .72, a + .1)} L${p(r * .2, a + .25)}Z" fill="url(#gg${i})" stroke="#2a170a" stroke-width="1.5"/>`;
+      return `<path d="M${p(r * .2, a - w / (r * .2))} L${p(r * .7, a - w / (r * .7))} L${p(r * .7, a + w / (r * .7))} L${p(r * .2, a + w / (r * .2))}Z"/>`;
     }).join("");
-    return `<svg style="${side === "l" ? "left" : "right"}:${x}px;top:${y}px;width:${size}px;height:${size}px;opacity:${depth};filter:drop-shadow(0 12px 16px rgba(0,0,0,.7))${depth < 1 ? " brightness(.65)" : ""}" viewBox="${-r} ${-r} ${size} ${size}">
+    return `<svg class="${layer} ${rev ? "rev" : ""}" style="${side === "l" ? "left" : "right"}:${x}px;top:${y}px;width:${size}px;height:${size}px;--d:${teeth * 4.5}s" viewBox="${-r} ${-r} ${size} ${size}">
       <defs>
-        <radialGradient id="gg${i}" cx="30%" cy="25%" r="90%"><stop offset="0" stop-color="#ffd9a0"/><stop offset=".35" stop-color="#c88a46"/><stop offset=".75" stop-color="#7a4a20"/><stop offset="1" stop-color="#3a2210"/></radialGradient>
+        <radialGradient id="m${i}" cx="32%" cy="26%" r="95%"><stop offset="0" stop-color="${hi}"/><stop offset=".45" stop-color="${mid}"/><stop offset="1" stop-color="${lo}"/></radialGradient>
+        <linearGradient id="s${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+        <filter id="f${i}" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="${(r * .02).toFixed(1)}" result="b"/>
+          <feSpecularLighting in="b" surfaceScale="${(r * .06).toFixed(1)}" specularConstant=".75" specularExponent="18" lighting-color="#ffe6c0" result="sp"><fePointLight x="${-r * 1.2}" y="${-r * 1.6}" z="${r * 1.4}"/></feSpecularLighting>
+          <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+          <feComposite in="SourceGraphic" in2="sp2" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+        </filter>
       </defs>
-      <g class="spin ${rev ? "rev" : ""}" style="--d:${dur}s">
-        <path fill="url(#gg${i})" fill-rule="evenodd" stroke="#2a170a" stroke-width="2" d="${gearPath(teeth, r * .98, r * .84, r * .72)}"/>
+      <g filter="url(#f${i})" fill="url(#m${i})" stroke="${lo}" stroke-width="${(r * .012).toFixed(1)}">
+        <path fill-rule="evenodd" d="${gearPath(teeth, r * .98, r * .86, r * .72)}"/>
         ${spokes}
-        <circle r="${r * .24}" fill="url(#gg${i})" stroke="#2a170a" stroke-width="2"/>
-        <circle r="${r * .09}" fill="#1a0f06"/>
-        <circle r="${r * .78}" fill="none" stroke="#ffe1b0" stroke-width="1" opacity=".25"/>
-      </g></svg>`;
+        <circle r="${r * .22}"/>
+      </g>
+      <g fill="url(#s${i})"><path fill-rule="evenodd" d="${gearPath(teeth, r * .98, r * .86, r * .72)}"/><circle r="${r * .22}"/></g>
+      <circle r="${r * .08}" fill="${lo}"/>
+      <circle r="${r * .79}" fill="none" stroke="${hi}" stroke-opacity=".25" stroke-width="1"/>
+      ${Array.from({ length: 6 }, (_, k) => { const a = k * Math.PI / 3 + Math.PI / 6; return `<circle cx="${(r * .79 * Math.cos(a)).toFixed(1)}" cy="${(r * .79 * Math.sin(a)).toFixed(1)}" r="${r * .025}" fill="${lo}"/>`; }).join("")}
+    </svg>`;
   }).join("");
-  $("gearIcon").setAttribute("d", gearPath(10, 11, 8.6, 3.2, 12, 12));
+  $("gearIcon").setAttribute("d", gearPath(9, 11, 8.4, 3.2, 12, 12));
 }
 
 /* ---------- data ---------- */
-function matches(i) {
-  const q = $("q").value.trim().toLowerCase();
-  return !q || `${i.title} ${i.course} ${i.kind}`.toLowerCase().includes(q);
-}
+const matches = i => { const q = $("q").value.trim().toLowerCase(); return !q || `${i.title} ${i.course} ${i.kind}`.toLowerCase().includes(q); };
 function upcoming(days = 365, filtered = true) {
   const n = now(), end = n + days * 864e5;
-  return state.items.filter(i => i.isDue && Date.parse(i.due) >= n && Date.parse(i.due) <= end
-    && (!filtered || ((!courseFilter || i.course === courseFilter) && matches(i))));
+  return state.items.filter(i => i.isDue && Date.parse(i.due) >= n && Date.parse(i.due) <= end && (!filtered || ((!courseFilter || i.course === courseFilter) && matches(i))));
 }
 function currentCourses() {
   const m = new Map();
@@ -424,109 +355,92 @@ function currentCourses() {
   return [...m].sort((a, b) => a[0].localeCompare(b[0]));
 }
 const loadBetween = (s, e) => state.items.filter(i => i.isDue && Date.parse(i.due) >= s && Date.parse(i.due) < e).reduce((a, i) => a + (WEIGHT[i.kind] ?? 1), 0);
+function etMidnight(ms) {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: ET, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ms));
+  const g = t => +parts.find(p => p.type === t).value;
+  return ms - ((g("hour") * 60 + g("minute")) * 60 + g("second")) * 1000 - (ms % 1000);
+}
+function orders(i) {
+  return i.description.split("\n").map(l => l.trim())
+    .filter(l => l && !/https?:\/\//.test(l) && !/^(Assignments|Discussions|Quizzes|Materials|Modules):$/i.test(l))
+    .join("\n");
+}
 
 /* ---------- views ---------- */
 function heroHtml() {
   const i = upcoming(365)[0];
-  if (!i) return `<p class="empty">The line is quiet. Full steam ahead.</p>`;
-  return `<h2 class="hero-title">${esc(i.title)}</h2>
-    <div class="hero-meta"><b>${esc(code(i.course))}</b> · ${esc(courseName(i.course))} · ${esc(fmt(i.due))}</div>
+  if (!i) return `<span class="label">Next on the wire</span><p class="empty">The line is quiet. Full steam ahead.</p>`;
+  const txt = orders(i);
+  return `<span class="label">Next on the wire</span>
+    <h1>${esc(i.title)}<small><b>${esc(code(i.course))}</b> · ${esc(courseName(i.course))}</small></h1>
     <div class="nixies" id="nixies" data-due="${esc(i.due)}"></div>
-    ${i.link ? `<a class="brass-btn" href="${esc(i.link)}" target="_blank" rel="noopener">${icon(i.kind).replace("<svg", '<svg width="16" height="16"')} Open in Brightspace</a>` : ""}
-    ${orders(i)}`;
-}
-/** The assignment's own instructions, typed out as a telegram slip. */
-function orders(i) {
-  const text = i.description
-    .split("\n").map(l => l.trim())
-    .filter(l => l && !/https?:\/\//.test(l) && !/^(Assignments|Discussions|Quizzes|Materials|Modules):$/i.test(l))
-    .join("\n").replace(/\n{2,}/g, "\n");
-  if (!text) return "";
-  const short = text.length > 280 ? text.slice(0, 280).replace(/\s+\S*$/, "") + " …" : text;
-  return `<div class="orders"><div class="slip"><header><span>ORDERS FROM ${esc(code(i.course))}</span><span class="stamp">${esc(i.kind.toUpperCase())}</span></header><p>${esc(short)}</p></div></div>`;
+    <div class="hero-actions">
+      ${i.link ? `<a class="cta" href="${esc(i.link)}" target="_blank" rel="noopener">Open in Brightspace <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>` : ""}
+      <span class="pill"><i></i>Due ${esc(fmt(i.due))}</span>
+    </div>
+    ${txt ? `<p class="orders">${esc(txt)}</p>` : ""}`;
 }
 function tickNixies() {
   const el = $("nixies"); if (!el) return;
   let s = Math.max(0, Math.floor((Date.parse(el.dataset.due) - now()) / 1000));
-  const d = Math.floor(s / 86400); s %= 86400;
-  const h = Math.floor(s / 3600); s %= 3600;
-  const m = Math.floor(s / 60); s %= 60;
+  const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
   const grp = (v, cap) => `<div class="nx-group"><div class="nx-row">${String(v).padStart(2, "0").split("").map(c => `<span class="nx">${c}</span>`).join("")}</div><span class="nx-cap">${cap}</span></div>`;
-  const colon = `<span class="colon">:</span>`;
-  el.innerHTML = grp(d, "DAYS") + colon + grp(h, "HRS") + colon + grp(m, "MIN") + colon + grp(s, "SEC");
+  el.innerHTML = [grp(d, "DAYS"), grp(h, "HRS"), grp(m, "MIN"), grp(s, "SEC")].join(`<span class="colon">:</span>`);
 }
-
-function ticketHtml(i) {
+function rowHtml(i) {
   const hot = Date.parse(i.due) - now() < 24 * 3.6e6;
   const day = new Date(i.due).toLocaleDateString("en-US", { timeZone: ET, month: "short", day: "numeric" });
   const time = new Date(i.due).toLocaleTimeString("en-US", { timeZone: ET, weekday: "short", hour: "numeric", minute: "2-digit" });
-  return `<div class="ticket ${hot ? "hot" : ""}">
-    <span class="medal">${icon(i.kind)}</span>
+  return `<div class="row ${hot ? "hot" : ""}"><span class="ico">${icon(i.kind)}</span>
     <div><h3>${esc(i.title)}</h3><div class="meta">${esc(code(i.course))} · ${esc(i.kind)}</div></div>
     <div class="when"><b>${esc(day)}</b><small>${esc(time)} · ${left(i.due)}</small></div>
-    ${i.link ? `<a href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(i.title)} in Brightspace"></a>` : ""}
-  </div>`;
+    ${i.link ? `<a href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(i.title)}"></a>` : ""}</div>`;
 }
 
 function gaugeSvg(load) {
-  const pct = Math.min(1, load / MAX_LOAD), ang = -135 + pct * 270;
+  const pct = Math.min(1, load / MAX_LOAD), A0 = -135, A1 = 135, ang = A0 + pct * 270;
   const pt = (a, r) => { const t = (a - 90) * Math.PI / 180; return [100 + r * Math.cos(t), 100 + r * Math.sin(t)]; };
-  let ticks = "", nums = "";
-  for (let k = 0; k <= 40; k++) {
-    const a = -135 + k * 270 / 40, major = k % 5 === 0;
-    const [x1, y1] = pt(a, 74), [x2, y2] = pt(a, major ? 63 : 68);
-    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2b2118" stroke-width="${major ? 2.2 : 1}"/>`;
-    if (major) { const [nx, ny] = pt(a, 52); nums += `<text x="${nx.toFixed(1)}" y="${(ny + 4).toFixed(1)}" text-anchor="middle" font-family="Cinzel" font-weight="700" font-size="12" fill="#2b2118">${k / 5}</text>`; }
+  const arc = (a, b, r) => { const [x1, y1] = pt(a, r), [x2, y2] = pt(b, r); return `M${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${b - a > 180 ? 1 : 0},1 ${x2.toFixed(1)},${y2.toFixed(1)}`; };
+  let ticks = "";
+  for (let k = 0; k <= 8; k++) {
+    const a = A0 + k * 270 / 8, [x1, y1] = pt(a, 70), [x2, y2] = pt(a, 74), [tx, ty] = pt(a, 81);
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(255,230,190,.45)" stroke-width="1.5"/>
+      <text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}" text-anchor="middle" font-family="Outfit" font-weight="600" font-size="8" fill="rgba(255,230,190,.55)">${k}</text>`;
   }
-  const [y1x, y1y] = pt(-135 + 270 * .4, 70), [a1x, a1y] = pt(-135 + 270 * .7, 70), [a2x, a2y] = pt(135, 70);
+  const hot = pct >= .7;
   return `<svg class="gauge" viewBox="0 0 200 200">
     <defs>
-      <radialGradient id="bez" cx="35%" cy="25%"><stop offset="0" stop-color="#ffe2a8"/><stop offset=".45" stop-color="#c48a45"/><stop offset=".8" stop-color="#7a4a1c"/><stop offset="1" stop-color="#3a2210"/></radialGradient>
-      <radialGradient id="dial" cx="50%" cy="45%"><stop offset="0" stop-color="#f6ecd2"/><stop offset=".8" stop-color="#e2d1a8"/><stop offset="1" stop-color="#b9a174"/></radialGradient>
-      <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="bz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0c070"/><stop offset=".5" stop-color="#9a6a36"/><stop offset="1" stop-color="#5a3c14"/></linearGradient>
+      <radialGradient id="fc" cx="50%" cy="40%"><stop offset="0" stop-color="#1f1812"/><stop offset="1" stop-color="#0d0a08"/></radialGradient>
+      <linearGradient id="pg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#ffc46a"/><stop offset="1" stop-color="${hot ? "#ff5a3c" : "#ff9a3c"}"/></linearGradient>
+      <filter id="gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
-    <circle cx="100" cy="100" r="98" fill="url(#bez)"/>
-    <circle cx="100" cy="100" r="90" fill="#2a170a"/>
-    <circle cx="100" cy="100" r="86" fill="url(#bez)" transform="rotate(180 100 100)"/>
-    <circle cx="100" cy="100" r="80" fill="url(#dial)"/>
-    <path d="M${y1x.toFixed(1)},${y1y.toFixed(1)} A70,70 0 0,1 ${a1x.toFixed(1)},${a1y.toFixed(1)}" stroke="#d9a13a" stroke-width="7" fill="none" opacity=".75"/>
-    <path d="M${a1x.toFixed(1)},${a1y.toFixed(1)} A70,70 0 0,1 ${a2x.toFixed(1)},${a2y.toFixed(1)}" stroke="#b8321c" stroke-width="7" fill="none"/>
-    ${ticks}${nums}
-    <text x="100" y="128" text-anchor="middle" font-family="Cinzel" font-weight="700" font-size="9" letter-spacing="2" fill="#5a4226">PRESSURE</text>
-    <text x="100" y="141" text-anchor="middle" font-family="Special Elite" font-size="8" fill="#5a4226">72 HR LOAD</text>
+    <circle cx="100" cy="100" r="96" fill="url(#bz)"/>
+    <circle cx="100" cy="100" r="91" fill="#120d09"/>
+    <circle cx="100" cy="100" r="88" fill="url(#fc)"/>
+    <path d="${arc(A0, A1, 62)}" stroke="rgba(255,255,255,.07)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="${arc(A0 + 270 * .7, A1, 62)}" stroke="rgba(255,90,60,.3)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    ${pct > 0 ? `<path d="${arc(A0, ang, 62)}" stroke="url(#pg)" stroke-width="8" fill="none" stroke-linecap="round" filter="url(#gl)"/>` : ""}
+    ${ticks}
     <g style="transform:rotate(${ang}deg);transform-origin:100px 100px;transition:transform 1.4s cubic-bezier(.3,1.5,.5,1)">
-      <path d="M97 112 L100 30 L103 112 Z" fill="#1a120b"/>
-      <path d="M99.2 50 L100 30 L100.8 50 Z" fill="#c0301c"/>
-      <circle cx="100" cy="100" r="9" fill="#1a120b"/>
+      <path d="M98.6 100 L100 48 L101.4 100 Z" fill="${hot ? "#ff6a4a" : "#ffb35a"}" filter="url(#gl)"/>
     </g>
-    <circle cx="100" cy="100" r="5" fill="url(#bez)"/>
-    <ellipse cx="80" cy="62" rx="52" ry="30" fill="url(#glass)" transform="rotate(-25 80 62)"/>
-    ${[45, 135, 225, 315].map(a => { const [x, y] = pt(a, 94); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="#3a2210"/>`; }).join("")}
+    <text x="100" y="146" text-anchor="middle" font-family="'Nixie One'" font-size="30" fill="#ffb35a" filter="url(#gl)">${load}</text>
+    <text x="100" y="160" text-anchor="middle" font-family="Outfit" font-weight="600" font-size="7" letter-spacing="2.5" fill="rgba(255,230,190,.5)">UNITS / 72H</text>
+    <circle cx="100" cy="100" r="6" fill="url(#bz)"/><circle cx="100" cy="100" r="2.5" fill="#120d09"/>
   </svg>`;
 }
-
-function etMidnight(ms) {
-  // midnight in New York for the day containing ms
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone: ET, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ms));
-  const g = t => +parts.find(p => p.type === t).value;
-  return ms - ((g("hour") * 60 + g("minute")) * 60 + g("second")) * 1000 - (ms % 1000);
-}
 function boilerHtml() {
-  const n = now();
-  const load = loadBetween(n, n + 72 * 3.6e6);
-  const pct = load / MAX_LOAD;
-  const [label, cls] = pct >= .7 ? ["Overpressure", "hot"] : pct >= .4 ? ["Building Steam", ""] : ["Calm Seas", ""];
+  const n = now(), load = loadBetween(n, n + 72 * 3.6e6), pct = load / MAX_LOAD;
+  const [label, cls] = pct >= .7 ? ["Overpressure", "hot"] : pct >= .4 ? ["Building steam", ""] : ["Calm seas", ""];
   const start = etMidnight(n);
   const days = Array.from({ length: 14 }, (_, d) => {
-    const s = start + d * 864e5, v = loadBetween(s, s + 864e5);
-    const nice = new Date(s + 6 * 3.6e6).toLocaleDateString("en-US", { timeZone: ET, weekday: "short", month: "short", day: "numeric" });
-    const w = new Date(s + 6 * 3.6e6).toLocaleDateString("en-US", { timeZone: ET, weekday: "narrow" });
-    return `<div class="day ${d === 0 ? "today" : ""}" title="${nice}: load ${v}">
-      <div class="vial">${v ? `<i class="${v >= 3 ? "hot" : ""}" style="height:${Math.min(100, 20 + v / 4 * 80)}%"></i>` : ""}</div><span>${w}</span></div>`;
+    const s = start + d * 864e5, v = loadBetween(s, s + 864e5), mid = new Date(s + 6 * 3.6e6);
+    return `<div class="day ${d === 0 ? "today" : ""}" title="${mid.toLocaleDateString("en-US", { timeZone: ET, weekday: "short", month: "short", day: "numeric" })}: load ${v}">
+      <div class="vial">${v ? `<i class="${v >= 3 ? "hot" : ""}" style="height:${Math.min(100, 22 + v / 4 * 78)}%"></i>` : ""}</div><span>${mid.toLocaleDateString("en-US", { timeZone: ET, weekday: "narrow" })}</span></div>`;
   }).join("");
   const steam = pct >= .7 ? [0, .9, 1.7].map((d, k) => `<span class="steam" style="left:${44 + k * 6}%;animation-delay:${d}s;--dx:${(k - 1) * 18}px"></span>`).join("") : "";
-  return `<div class="gauge-wrap">${steam}${gaugeSvg(load)}
-    <div class="gauge-state ${cls}">${label}</div>
+  return `<div class="gauge-wrap">${steam}${gaugeSvg(load)}<div class="gauge-state ${cls}">${label}</div>
     <div class="gauge-sub">${load ? `${load} units of work due in the next 72 hours` : "Nothing due in the next 72 hours"}</div>
     <div class="forecast">${days}</div></div>`;
 }
@@ -539,64 +453,44 @@ function queuedReminders() {
   }
   return out.sort((a, b) => a.at - b.at);
 }
-function slipsHtml(limit) {
-  const sent = state.telegrams.map(t => ({ at: Date.parse(t.at), text: t.text.replace(/^TELEGRAM:\s*/, ""), tag: t.sent ? "SENT" : "LOGGED" }));
-  const queued = queuedReminders().map(q => ({ ...q, tag: "QUEUED", q: true }));
-  const list = [...queued.slice(0, 2), ...sent].slice(0, limit);
+function wireHtml(limit) {
+  const sent = state.telegrams.map(t => ({ at: Date.parse(t.at), text: t.text.replace(/^TELEGRAM:\s*/, ""), tag: t.sent ? "SENT" : "LOGGED", cls: t.sent ? "sent" : "" }));
+  const queued = queuedReminders().map(q => ({ ...q, tag: "QUEUED", cls: "" }));
+  const list = [...sent, ...queued.slice(0, 2)].slice(0, limit);
   if (!list.length) return `<p class="empty">No telegrams on the wire yet.</p>`;
-  return list.map((t, k) => `<div class="slip" style="--r:${[-.8, .6, -.3, .9][k % 4]}deg">
-      <header><span>№ ${String(4200 + k).padStart(5, "0")} · ${esc(fmt(new Date(t.at).toISOString(), { weekday: undefined }))}</span><span class="stamp ${t.q ? "q" : ""}">${t.tag}</span></header>
-      ${esc(t.text)}</div>`).join("");
+  return list.map(t => `<div class="msg"><header><span>${esc(fmt(new Date(t.at).toISOString()))}</span><span class="tag ${t.cls}">${t.tag}</span></header><p>${esc(t.text)}</p></div>`).join("");
 }
 
 function render() {
   $("hero").innerHTML = heroHtml(); tickNixies();
-  $("boiler").innerHTML = boilerHtml();
-  $("boilerBig").innerHTML = boilerHtml();
-  $("next").innerHTML = upcoming(14).slice(0, 3).map(ticketHtml).join("") || `<p class="empty">Nothing due in the next 14 days.</p>`;
-  $("all").innerHTML = upcoming().map(ticketHtml).join("") || `<p class="empty">No upcoming deadlines.</p>`;
+  $("boiler").innerHTML = boilerHtml(); $("boilerBig").innerHTML = boilerHtml();
+  const up = upcoming();
+  $("next").innerHTML = up.slice(1, 4).map(rowHtml).join("") || `<p class="empty">Nothing else on the horizon.</p>`;
+  $("all").innerHTML = up.map(rowHtml).join("") || `<p class="empty">No upcoming deadlines.</p>`;
   $("courses").innerHTML = currentCourses().map(([c, n]) =>
-    `<button class="plaque ${courseFilter === c ? "on" : ""}" data-course="${esc(c)}">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="${gearPath(9, 11, 8.6, 3.4, 12, 12)}"/></svg>
-      <span class="nm"><b>${esc(code(c))}</b><small>${esc(courseName(c))}</small></span><span class="lamp">${n}</span></button>`).join("");
-  $("cards").innerHTML = upcoming().slice(0, 4).map(i => {
+    `<button class="chip ${courseFilter === c ? "on" : ""}" data-course="${esc(c)}"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="${gearPath(9, 11, 8.4, 3.4, 12, 12)}"/></svg>
+      <span class="nm"><b>${esc(code(c))}</b><small>${esc(courseName(c))}</small></span><span class="count">${n}</span></button>`).join("");
+  $("cards").innerHTML = up.slice(0, 4).map(i => {
     const days = Math.max(0, Math.ceil((Date.parse(i.due) - now()) / 864e5));
-    return `<div class="card"><span class="medal">${icon(i.kind)}</span><h3>${esc(i.title)}</h3>
+    return `<div class="card"><span class="ico">${icon(i.kind)}</span><h3>${esc(i.title)}</h3>
       <div class="meta">${esc(code(i.course))} · ${esc(fmt(i.due, { hour: undefined, minute: undefined }))}</div>
-      <div class="big">${days} <small>${days === 1 ? "DAY" : "DAYS"}</small></div></div>`;
+      <div class="big">${days}<small>${days === 1 ? "DAY" : "DAYS"}</small></div></div>`;
   }).join("") || `<p class="empty">The line is quiet.</p>`;
-  $("wire").innerHTML = slipsHtml(3);
-  $("wireAll").innerHTML = slipsHtml(100);
+  $("wire").innerHTML = wireHtml(3); $("wireAll").innerHTML = wireHtml(100);
 }
-
 async function load() {
-  try {
-    state = await (await fetch("/api/state")).json();
-    clockOffset = Date.parse(state.now) - Date.now();
-  } catch { /* keep last state */ }
+  try { state = await (await fetch("/api/state")).json(); clockOffset = Date.parse(state.now) - Date.now(); } catch {}
   render();
 }
-
-const cornerSvg = c => `<svg class="corner ${c}"><use href="#corner"/></svg>`;
-document.querySelectorAll(".lever").forEach(l => l.insertAdjacentHTML("afterbegin", ["tl", "tr", "bl", "br"].map(cornerSvg).join("")));
-document.querySelectorAll(".panel").forEach(p => p.insertAdjacentHTML("afterbegin", `<span class="rivet sm l"></span><span class="rivet sm r"></span>`));
-
-$("levers").addEventListener("click", e => {
-  const t = e.target.closest(".lever"); if (!t) return;
-  document.querySelectorAll(".lever").forEach(x => x.classList.toggle("on", x === t));
+$("nav").addEventListener("click", e => {
+  const t = e.target.closest(".tile"); if (!t) return;
+  document.querySelectorAll(".tile").forEach(x => x.classList.toggle("on", x === t));
   document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + t.dataset.view);
 });
-$("courses").addEventListener("click", e => {
-  const c = e.target.closest(".plaque"); if (!c) return;
-  courseFilter = courseFilter === c.dataset.course ? null : c.dataset.course;
-  render();
-});
+$("courses").addEventListener("click", e => { const c = e.target.closest(".chip"); if (!c) return; courseFilter = courseFilter === c.dataset.course ? null : c.dataset.course; render(); });
 $("q").addEventListener("input", render);
-
-drawGears();
-load();
-setInterval(tickNixies, 1000);
-setInterval(load, 60_000);
+drawGears(); load();
+setInterval(tickNixies, 1000); setInterval(load, 60_000);
 </script>
 </body>
 </html>
