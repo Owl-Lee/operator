@@ -27,6 +27,26 @@ export async function geminiExtract(input: { text?: string; image?: { data: stri
   const parts: any[] = [{ text: prompt(now) }];
   if (input.text) parts.push({ text: `USER TEXT:\n${input.text}` });
   if (input.image) parts.push({ inline_data: { mime_type: input.image.mime, data: input.image.data } });
+  const parsed = await callJson(parts);
+  return { items: Array.isArray(parsed.items) ? parsed.items : [], summary: String(parsed.summary ?? ""), model: parsed.__model };
+}
+
+/** Answer a question about the schedule. `context` is a plain-text dump of what the dashboard knows. */
+export async function geminiAsk(question: string, context: string, lang: "en" | "zh", now = new Date()): Promise<{ answer: string; used: string[]; model?: string }> {
+  const today = now.toLocaleString("en-US", { timeZone: "America/New_York", weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" });
+  const parts = [{ text: `You are Brass Telegraph, a student's schedule agent at Stony Brook University. Now: ${today} (America/New_York).
+Answer the question using ONLY the schedule below. Be concrete: name items, days and times. Prioritise by urgency (exams > things due within 72 h > quizzes > the rest), then by date. Be brief: 1–3 sentences, no preamble. Answer in ${lang === "zh" ? "Simplified Chinese" : "English"}.
+Return ONLY JSON: {"answer":"...","used":["short labels of what you looked at, e.g. '3 deadlines', 'Tuesday classes'"]}
+
+SCHEDULE:
+${context}
+
+QUESTION: ${question}` }];
+  const parsed = await callJson(parts);
+  return { answer: String(parsed.answer ?? ""), used: Array.isArray(parsed.used) ? parsed.used.map(String) : [], model: parsed.__model };
+}
+
+async function callJson(parts: any[]): Promise<any> {
   const body = JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2 } });
   let lastErr = "";
   for (const model of MODELS()) {
@@ -41,7 +61,7 @@ export async function geminiExtract(input: { text?: string; image?: { data: stri
         const data: any = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "{}";
         const parsed = JSON.parse(text.replace(/^```json|```$/g, "").trim());
-        return { items: Array.isArray(parsed.items) ? parsed.items : [], summary: String(parsed.summary ?? ""), model };
+        return { ...parsed, __model: model };
       } catch (e: any) {
         if (e?.name === "TimeoutError" || e?.name === "AbortError") { lastErr = `${model} timeout`; break; }
         throw e;

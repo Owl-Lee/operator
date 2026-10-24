@@ -5,7 +5,7 @@ import { loadSnapshot, loadTelegrams, loadAgentLog, logAgent } from "./store.js"
 import { triage } from "./triage.js";
 import { runPoll, loadConfig, saveConfig, icalUrl } from "./poll.js";
 import { parseText } from "./parse.js";
-import { geminiExtract, hasGemini, type GItem } from "./gemini.js";
+import { geminiExtract, geminiAsk, hasGemini, type GItem } from "./gemini.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
@@ -96,6 +96,24 @@ createServer(async (req, res) => {
       const what = added.map(a => `${a.kind}: “${a.title}”`).join("; ");
       logAgent("triage", added.length ? `Understood ${image ? "your image" : "your text"} as ${added.length} item${added.length > 1 ? "s" : ""} — ${what} (${engine}).` : `Read ${image ? "your image" : "your text"} but found nothing schedulable.`, { ids: added.map(a => a.id), engine });
       return json({ ok: true, items: added, summary, engine, notes });
+    }
+    /* Questions: Gemini answers over a text dump of the next two weeks. */
+    if (url.pathname === "/api/ask" && req.method === "POST") {
+      const { question, lang } = await body(req);
+      if (!question?.trim()) return json({ error: "Empty question." }, 400);
+      if (!hasGemini()) return json({ error: "Gemini not connected." }, 503);
+      const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
+      const n = now.getTime(), end = n + 14 * 864e5, items = loadSnapshot(), tri = triage(items, now), s = loadSchedule();
+      const fmt = (d: Date | string) => new Date(d).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      const lines: string[] = [];
+      for (const i of items) { const t = tri.find(x => x.uid === i.uid); const due = Date.parse(i.due); if (t?.level === "ignore" || !i.isDue || due < n || due > end) continue; lines.push(`DEADLINE [${t?.level}] ${i.course.split(" - ")[0]} · ${i.title} (${i.kind}) due ${fmt(i.due)}${t ? " — " + t.reason : ""}`); }
+      for (const c of s.classes) lines.push(`CLASS ${c.course.split(" - ")[0]} every ${c.days.join("/")} ${c.start}–${c.end}${c.location ? " at " + c.location : ""}`);
+      for (const m of s.meetings) lines.push(`MEETING ${m.title} ${fmt(m.start)}${m.end ? "–" + new Date(m.end).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : ""}${m.location ? " at " + m.location : ""}${m.note ? " — " + m.note : ""}`);
+      for (const e of s.events) lines.push(`EVENT ${e.title} ${fmt(e.start)}${e.end ? " → " + fmt(e.end) : ""}${e.location ? " at " + e.location : ""}${e.milestone ? ` — milestone: ${e.milestone.title} at ${fmt(e.milestone.at)}` : ""}`);
+      for (const d of s.deadlines) lines.push(`DEADLINE [pasted] ${d.title} due ${fmt(d.start)}`);
+      const r = await geminiAsk(question, lines.join("\n") || "(empty)", lang === "zh" ? "zh" : "en", now);
+      logAgent("triage", `Answered: “${question.trim().slice(0, 80)}” (${r.model}).`, { kind: "ask" });
+      return json({ ok: true, ...r });
     }
     if (url.pathname === "/api/remove" && req.method === "POST") {
       const { id } = await body(req);

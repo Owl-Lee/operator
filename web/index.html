@@ -240,7 +240,8 @@ textarea, input { font-family: var(--sans); }
 /* week view */
 .wkwrap { max-height: 70vh; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff; }
 .wk { display: grid; grid-template-columns: 56px repeat(7, 1fr); }
-.wk .hd { position: sticky; top: 0; z-index: 3; padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: var(--bg-2); }
+.wk .hd { position: sticky; top: 0; z-index: 4; height: 58px; padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: #fcfaf6; }
+html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .wk .hd b { display: block; font-size: 18px; color: var(--ink); }
 .wk .hd.today b { color: var(--accent); }
 .wk .col { position: relative; height: 960px; border-left: 1px solid var(--line); background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
@@ -249,13 +250,15 @@ textarea, input { font-family: var(--sans); }
 .blk { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font: 600 11.5px/1.25 var(--disp); color: var(--c); background-color: #fff; background-image: linear-gradient(var(--cbg), var(--cbg)); border-left: 3px solid var(--c); overflow: hidden; }
 .blk small { display: block; font: 500 10.5px var(--sans); color: var(--ink-2); opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .blk.tight { padding: 3px 5px; font-size: 10.5px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
+.blk .tm { font: 500 10px var(--sans); color: var(--ink-2); opacity: .8; }
 .blk.over { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(30,27,46,.12); margin-top: 4px; font-size: 10px; padding: 3px 4px; }
 .blk.ghost { background: repeating-linear-gradient(135deg, var(--focus-bg) 0 6px, #fff 6px 12px); border: 1.5px dashed var(--ink-2); border-left-width: 1.5px; color: var(--ink); cursor: pointer; }
 .blk.ghost:hover { border-color: var(--ink); }
 .blk.conf { outline: 2px solid var(--need); outline-offset: -2px; }
 .pin { position: absolute; left: 4px; right: 4px; height: 20px; border-radius: 6px; background: var(--deadline); color: #fff; font: 600 11px/20px var(--disp); padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pin.u1 { background: var(--urgent); }
-.allday { padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; }
+.allday { position: sticky; top: 58px; z-index: 3; padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; background: #fcfaf6; }
+html[data-theme="steam"] .allday { background: #fbf4e8; }
 .allday.lbl { align-items: flex-end; justify-content: center; padding-right: 8px; font: 500 11px var(--sans); color: var(--muted); }
 .allday span { display: block; padding: 3px 7px; margin: 0 -1px; background: var(--cbg); color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 0; }
 .allday span.s { border-radius: 6px 0 0 6px; margin-left: 6px; border-left: 3px solid var(--c); }
@@ -572,7 +575,7 @@ const I18N = {
     "filter.only": "Showing only {k}", "filter.clear": "Show everything",
     "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
     "feed.telegram": "<b>{s} telegram:</b> {t}", "feed.sent": "Sent", "feed.drafted": "Drafted", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
-    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
+    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -614,7 +617,7 @@ const I18N = {
     "filter.only": "只看：{k}", "filter.clear": "显示全部",
     "feed.poll": "<b>检查了 Brightspace：</b>{n} 条。{u} 条紧急，{k} 条需知，{i} 条已过滤。", "feed.change.moved": "<b>发现</b> {c} · {t} 从 {a} 挪到 {b}。", "feed.change.new": "<b>发现</b> {c} · {t} 新增，{a} 截止。", "feed.change": "<b>发现</b> {c} · {t} {w}。",
     "feed.telegram": "<b>{s}电报：</b>{t}", "feed.sent": "已发送", "feed.drafted": "已起草", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
-    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
+    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -862,6 +865,7 @@ function feedText(e) {
   if (e.type === "triage" && (r = x.match(/^Read (your image|your text) but found nothing/))) return t("feed.read.none", { src: t(r[1] === "your image" ? "src.image" : "src.text") });
   if (e.type === "triage" && (r = x.match(/^Received an image.*\((\d+) waiting\)/))) return t("feed.image", { n: r[1] });
   if (e.type === "triage" && /^You removed/.test(x)) return t("feed.removed");
+  if (e.type === "triage" && (r = x.match(/^Answered: “(.+)” \((.+)\)\.$/))) return t("feed.answered", { q: esc(r[1]) });
   return esc(x);
 }
 function renderQuiet() {
@@ -943,7 +947,8 @@ function renderWeekView(items) {
       const { col: c } = lay.get(i), hpx = Math.max(22, (i.end - i.start) / H * PX - 2), inset = Math.min(60, c * 30);
       const tight = hpx < 44 || c > 0;
       const shortTitle = i.title.split(/\s[·(（]|\s-\s/)[0].trim(); // "Office hours · Prof. (EST 393)" → "Office hours"
-      col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(tight ? shortTitle : i.title)}${tight ? "" : `<small>${esc(i.location || "")}</small>`}</div>`;
+      const range = `${timeOf(i.start)}–${timeOf(i.end)}`;
+      col += `<div class="blk ${tight ? "tight" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `${esc(i.title)}<small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
@@ -1017,7 +1022,17 @@ function itemLine(a) {
 }
 async function sendToAgent() {
   const text = $("dtext").value.trim(); if (!text && !pending) return;
-  if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|是不是|什么|哪个|啥|几点|有没有)/i.test(text)) { bubble(esc(text), true); $("dtext").value = ""; $("dtext").style.height = ""; bubble(answer(text, allItems())); return; }
+  if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|是不是|什么|哪个|啥|几点|有没有|你好|hi|hello)/i.test(text)) {
+    bubble(esc(text), true); $("dtext").value = ""; $("dtext").style.height = "";
+    if (!state.setup?.gemini) { bubble(answer(text, allItems())); return; }
+    const wait = bubble(t("drawer.reading"));
+    try {
+      const r = await (await fetch("/api/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question: text, lang }) })).json();
+      if (r.error) { wait.innerHTML = answer(text, allItems()); return; }
+      wait.innerHTML = `${esc(r.answer)}<div class="used" style="margin-top:8px">${r.used.map(u => `<span>${t("ans.used", { x: esc(u) })}</span>`).join("")}</div><span class="eng g">Gemini</span>`;
+    } catch { wait.innerHTML = answer(text, allItems()); }
+    load(); return;
+  }
   bubble(`${esc(text)}${pending ? `<img src="${pending.url}" alt="">` : ""}`, true);
   const payload = { text, image: pending?.data, mime: pending?.mime };
   $("dtext").value = ""; $("dtext").style.height = "32px"; clearImage();
