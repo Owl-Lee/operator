@@ -72,8 +72,8 @@ createServer(async (req, res) => {
       } else {
         const p = parseText(text, now);
         notes = p.notes; engine = "rules";
-        items = [{ kind: p.kind, title: p.title, date: p.start.slice(0, 10), start: p.start.slice(11), end: p.end?.slice(11), location: p.location, course: p.kind === "class" ? p.title : undefined }];
-        summary = `${p.kind}: ${p.title}`;
+        items = p.grounded ? [{ kind: p.kind, title: p.title, date: p.start.slice(0, 10), start: p.start.slice(11), end: p.end?.slice(11), location: p.location, course: p.kind === "class" ? p.title : undefined }] : [];
+        summary = p.grounded ? `${p.kind}: ${p.title}` : "";
       }
       const s = loadSchedule(), added: any[] = [];
       for (const g of items) {

@@ -6,6 +6,8 @@ export type Kind = "deadline" | "class" | "meeting" | "event";
 export interface Parsed {
   kind: Kind; title: string; start: string; end?: string; location?: string;
   allDay?: boolean; confidence: number; notes: string[];
+  /** true when an actual date or time was found — rules refuse to add ungrounded text */
+  grounded: boolean;
 }
 
 const MONTHS: Record<string, number> = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
@@ -102,5 +104,5 @@ export function parseText(raw: string, now = new Date()): Parsed {
   if (title.length > 70) title = title.slice(0, 70).replace(/\s+\S*$/, "") + "…";
   if (!title) title = kind === "deadline" ? "Deadline" : kind === "meeting" ? "Meeting" : "Event";
 
-  return { kind, title, start: startIso, end, location, allDay: !times.start && kind !== "deadline", confidence: Math.min(1, confidence), notes };
+  return { kind, title, start: startIso, end, location, allDay: !times.start && kind !== "deadline", confidence: Math.min(1, confidence), notes, grounded: !!(date || times.start) };
 }

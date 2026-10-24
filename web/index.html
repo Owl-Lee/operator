@@ -204,7 +204,8 @@ textarea, input { font-family: var(--sans); }
 
 /* week strip */
 .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-.wd { padding: 10px 6px 12px; border-radius: 12px; text-align: center; border: 1px solid var(--line); background: var(--bg-2); }
+.wd { padding: 10px 6px 12px; border-radius: 12px; text-align: center; border: 1px solid var(--line); background: var(--bg-2); cursor: pointer; transition: transform .15s, border-color .15s; }
+.wd:hover { transform: translateY(-2px); border-color: var(--line-2); }
 .wd.today { background: var(--ink); color: #fff; border-color: var(--ink); }
 .wd small { display: block; font: 600 11px var(--disp); letter-spacing: .08em; opacity: .6; }
 .wd b { display: block; font: 700 20px var(--disp); margin: 2px 0 8px; }
@@ -309,13 +310,14 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 .bub.ai .eng { display: inline-block; margin-top: 8px; font: 600 10px var(--disp); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 8px; }
 .bub.ai .eng.g { color: var(--event); border-color: #9ad9cc; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 10px; }
-.chips button { font: 500 12px var(--sans); color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; text-align: left; }
+.chips button { font: 500 12px/1.35 var(--sans); color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 5px 10px; text-align: left; white-space: normal; }
 .chips button:hover { border-color: var(--line-2); color: var(--ink); }
 .dc { padding: 12px 14px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #fff; }
 .dc.drag { background: var(--event-bg); }
 .dc .box { display: flex; align-items: flex-end; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 22px; border: 1px solid var(--line-2); background: var(--bg-2); }
 .dc .box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,94,58,.12); }
-.dc textarea { flex: 1; min-width: 0; max-height: 140px; border: 0; outline: 0; background: none; resize: none; font-size: 14px; line-height: 1.45; padding: 6px 0; }
+.dc textarea { flex: 1; min-width: 0; height: 32px; max-height: 140px; border: 0; outline: 0; background: none; resize: none; font-size: 14px; line-height: 1.45; padding: 6px 0; overflow: hidden; }
+.dc textarea.multi { overflow: auto; }
 .dc .ib { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); flex: none; }
 .dc .ib:hover { background: var(--bg); color: var(--ink); }
 .dc .ib svg { width: 18px; height: 18px; }
@@ -444,8 +446,8 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
     <div class="box">
       <textarea id="dtext" rows="1" data-i18n-ph="drawer.ph"></textarea>
       <input type="file" id="dfile" accept="image/*" hidden>
-      <button class="ib" id="dattach" title="Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg></button>
-      <button class="ib send" id="dsend" title="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      <button class="ib" id="dattach" type="button" title="Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg></button>
+      <button class="ib send" id="dsend" type="button" title="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </div>
     <div class="hint" data-i18n="drawer.hint">Paste or drop a screenshot · Enter to send · Shift+Enter for a new line</div>
   </div>
@@ -469,9 +471,9 @@ const I18N = {
     "h.paste": "Paste anything", "h.paste.sub": "email · chat · poster · one sentence", "h.week": "This week", "h.deadlines": "Deadlines", "h.all": "All →",
     "h.agenda": "Meetings & events", "h.weekview": "Week view", "h.alldl": "Every upcoming deadline",
     "paste.hint": "Timetable screenshot, an email, a poster, one sentence — English or 中文. Wrong guess? Undo on the item.", "paste.undo": "Undo",
-    "drawer.open": "Open the agent →", "drawer.fab": "Agent", "drawer.ph": "Type or paste anything… a timetable screenshot, an email, “office hours Tue 3pm Harriman 212”", "drawer.hint": "Paste or drop a screenshot · Enter to send · Shift+Enter for a new line",
+    "drawer.open": "Open the agent →", "drawer.fab": "Agent", "drawer.ph": "Type, paste, or drop a screenshot…", "drawer.hint": "Enter to send · Shift+Enter for a new line · paste or drop images",
     "drawer.sub.g": "Gemini reads text & images", "drawer.sub.r": "rules for text · images wait for Gemini", "drawer.hello": "Send me anything with a time in it — a screenshot of your timetable, an email from a professor, a poster, one sentence. I'll put it on your schedule and you can undo.",
-    "drawer.reading": "Reading…", "drawer.added": "Added {n} to your schedule:", "drawer.none": "I read it but found nothing with a date or time.", "drawer.queued": "Got the image. I'll read it the moment Gemini is connected — it's in the inbox.", "drawer.err": "Something went wrong: {e}", "drawer.ask": "Question? Ask in the bar at the top; here I add things to your schedule.",
+    "drawer.reading": "Reading…", "drawer.added": "Added {n} to your schedule:", "drawer.none": "I didn't see a date or time, so I didn't add anything. Give me one — “office hours Tue 3pm, Harriman 212”.", "drawer.queued": "Got the image. I'll read it the moment Gemini is connected — it's in the inbox.", "drawer.err": "Something went wrong: {e}", "drawer.ask": "Question? Ask in the bar at the top; here I add things to your schedule.",
     "eng.gemini": "Gemini", "eng.rules": "rules", "eng.queued": "queued",
     "filter.only": "Showing only {k}", "filter.clear": "Show everything",
     "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
@@ -511,9 +513,9 @@ const I18N = {
     "h.paste": "随便粘贴", "h.paste.sub": "邮件 · 群消息 · 海报 · 一句话", "h.week": "本周", "h.deadlines": "截止时间", "h.all": "全部 →",
     "h.agenda": "会议与活动", "h.weekview": "周视图", "h.alldl": "所有待办截止",
     "paste.hint": "课表截图、一封邮件、一张海报、一句话——中英文都行。看错了点条目上的撤销。", "paste.undo": "撤销",
-    "drawer.open": "打开 agent →", "drawer.fab": "Agent", "drawer.ph": "随便输入或粘贴…课表截图、邮件、“周二下午3点 office hours 在 Harriman 212”", "drawer.hint": "粘贴或拖入截图 · Enter 发送 · Shift+Enter 换行",
+    "drawer.open": "打开 agent →", "drawer.fab": "Agent", "drawer.ph": "输入、粘贴，或拖入截图…", "drawer.hint": "Enter 发送 · Shift+Enter 换行 · 可粘贴或拖入图片",
     "drawer.sub.g": "Gemini 读文字和图片", "drawer.sub.r": "文字用规则 · 图片等 Gemini", "drawer.hello": "把任何带时间的东西发给我——课表截图、教授的邮件、海报、一句话。我会放进你的日程，看错了可以撤销。",
-    "drawer.reading": "正在读…", "drawer.added": "已加入 {n}：", "drawer.none": "读完了，但没找到带日期或时间的内容。", "drawer.queued": "图片收到了。接上 Gemini 我马上读——已放进收件箱。", "drawer.err": "出错了：{e}", "drawer.ask": "想提问？用顶部的提问栏；这里我负责往日程里加东西。",
+    "drawer.reading": "正在读…", "drawer.added": "已加入 {n}：", "drawer.none": "没看到日期或时间，所以什么都没加。写上时间就行——“周二下午3点 office hours 在 Harriman 212”。", "drawer.queued": "图片收到了。接上 Gemini 我马上读——已放进收件箱。", "drawer.err": "出错了：{e}", "drawer.ask": "想提问？用顶部的提问栏；这里我负责往日程里加东西。",
     "eng.gemini": "Gemini", "eng.rules": "规则", "eng.queued": "排队中",
     "filter.only": "只看：{k}", "filter.clear": "显示全部",
     "feed.poll": "<b>检查了 Brightspace：</b>{n} 条。{u} 条紧急，{k} 条需知，{i} 条已过滤。", "feed.change.moved": "<b>发现</b> {c} · {t} 从 {a} 挪到 {b}。", "feed.change.new": "<b>发现</b> {c} · {t} 新增，{a} 截止。", "feed.change": "<b>发现</b> {c} · {t} {w}。",
@@ -566,7 +568,7 @@ function applyLang() {
   document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
   document.querySelectorAll("#lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
   $("bsSteps").innerHTML = ["setup.s1", "setup.s2", "setup.s3"].map(k => `<div>${t(k)}</div>`).join("");
-  $("chips").innerHTML = ["ex1", "ex2", "ex3", "ex4"].map(k => `<button data-ex="${k}">${esc(t(k)).slice(0, 34)}…</button>`).join("");
+  $("chips").innerHTML = ["ex1", "ex2", "ex3", "ex4"].map(k => `<button type="button" data-ex="${k}">${esc(t(k))}</button>`).join("");
   $("dsub").textContent = t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r");
   if ($("dm").children.length <= 1) $("dm").innerHTML = `<div class="bub ai">${t("drawer.hello")}</div>`;
   $("legend").innerHTML = ["class", "meeting", "event", "deadline"].map(k => `<span data-kind="${k}"><i></i>${t("kind." + k)}</span>`).join("") + `<span><i class="g"></i>${t("legend.sugg")}</span>`;
@@ -771,7 +773,7 @@ function renderWeekStrip(items) {
   $("weekRange").textContent = range; $("weekRange2").textContent = range;
   $("weekstrip").innerHTML = Array.from({ length: 7 }, (_, k) => {
     const d = today + k * D, list = items.filter(i => visible(i) && dayKey(i.start) === d && i.kind !== "focus");
-    return `<div class="wd ${k === 0 ? "today" : ""}"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
+    return `<div class="wd ${k === 0 ? "today" : ""}" data-go="week" role="button" tabindex="0"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
   }).join("");
 }
 function dlHtml(i) {
@@ -914,8 +916,8 @@ document.addEventListener("click", async e => {
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();
   if (e.target.closest("[data-close-drawer]")) return closeDrawer();
-  if (e.target.closest("#dsend")) return sendToAgent();
-  if (e.target.closest("#dattach")) return $("dfile").click();
+  if (e.target.closest("#dsend")) { e.preventDefault(); return sendToAgent(); }
+  if (e.target.closest("#dattach")) { e.preventDefault(); e.stopPropagation(); $("dfile").click(); return; }
   if (e.target.closest("#prevX")) return clearImage();
   if (e.target.closest("#quietToggle")) { quietOpen = !quietOpen; return renderQuiet(); }
   if (e.target.closest("#icalBtn")) {
@@ -933,7 +935,8 @@ document.addEventListener("click", async e => {
 $("q").addEventListener("input", () => { if (!/[?？]/.test($("q").value)) { $("answer").classList.remove("show"); render(); } });
 $("q").addEventListener("keydown", e => { if (e.key === "Enter" && $("q").value.trim()) answer($("q").value, allItems()); });
 $("dtext").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendToAgent(); } });
-$("dtext").addEventListener("input", e => { e.target.style.height = ""; e.target.style.height = Math.min(140, e.target.scrollHeight) + "px"; });
+$("dtext").addEventListener("input", e => { e.target.style.height = ""; const h = Math.min(140, e.target.scrollHeight); e.target.style.height = h + "px"; e.target.classList.toggle("multi", e.target.scrollHeight > 140); });
+$("dfile").addEventListener("click", e => e.stopPropagation());
 $("dfile").addEventListener("change", e => setImage(e.target.files[0]));
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files || [])].find(x => x.type.startsWith("image/")); if (f) { openDrawer(); setImage(f); } });
 const dc = $("dc");
