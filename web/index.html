@@ -728,12 +728,12 @@ const dayKey = ms => etMidnight(ms);
 const triOf = uid => state.triage.find(x => x.uid === uid);
 
 function allItems(opts = {}) {
-  const n = now(), start = etMidnight(n) - 7 * D, end = opts.farDeadlines ? Infinity : start + 28 * D, out = [];
+  const n = now(), start = etMidnight(n) - 7 * D, end = start + 28 * D, dlEnd = opts.farDeadlines ? Infinity : end, out = [];
   const doneSet = new Set((state.done || []).map(d => d.uid));
   for (const i of state.items) {
     const tr = triOf(i.uid); if (!i.isDue || tr?.level === "ignore") continue;
     const ms = Date.parse(i.due);
-    if (ms >= start && ms <= end) out.push({ id: i.uid, kind: "deadline", title: i.title, course: i.course, start: ms, end: ms, link: i.link, type: i.kind, desc: i.description, tri: tr, done: doneSet.has(i.uid) });
+    if (ms >= start && ms <= dlEnd) out.push({ id: i.uid, kind: "deadline", title: i.title, course: i.course, start: ms, end: ms, link: i.link, type: i.kind, desc: i.description, tri: tr, done: doneSet.has(i.uid) });
   }
   const sc = state.schedule || {};
   for (const c of sc.classes || []) for (let d = start; d < end; d += D) {
