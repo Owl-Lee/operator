@@ -255,8 +255,12 @@ textarea, input { font-family: var(--sans); }
 .blk.conf { outline: 2px solid var(--need); outline-offset: -2px; }
 .pin { position: absolute; left: 4px; right: 4px; height: 20px; border-radius: 6px; background: var(--deadline); color: #fff; font: 600 11px/20px var(--disp); padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pin.u1 { background: var(--urgent); }
-.allday { padding: 6px 8px; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); }
-.allday span { display: block; padding: 3px 7px; border-radius: 6px; background: var(--cbg); color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.allday { padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; }
+.allday.lbl { align-items: flex-end; justify-content: center; padding-right: 8px; font: 500 11px var(--sans); color: var(--muted); }
+.allday span { display: block; padding: 3px 7px; margin: 0 -1px; background: var(--cbg); color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 0; }
+.allday span.s { border-radius: 6px 0 0 6px; margin-left: 6px; border-left: 3px solid var(--c); }
+.allday span.e { border-radius: 0 6px 6px 0; margin-right: 6px; }
+.allday span.s.e { border-radius: 6px; }
 .now-h { position: absolute; left: 0; right: 0; border-top: 2px solid var(--urgent); z-index: 2; }
 .now-h::before { content: ""; position: absolute; left: -4px; top: -4px; width: 7px; height: 7px; border-radius: 50%; background: var(--urgent); }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 12px; }
@@ -580,7 +584,7 @@ const I18N = {
     "status.online": "Agent online", "status.off": "Agent idle", "status.watch": " · watching {n} courses", "status.checked": " · checked {t}", "just now": "just now", "min ago": "{n} min ago", "h ago": "{n} h ago",
     "kind.deadline": "deadline", "kind.class": "class", "kind.meeting": "meeting", "kind.event": "event", "kind.focus": "planned",
     "tri.urgent": "Urgent", "tri.need": "Need-to-know", "tri.ignore": "Ignored",
-    "today": "Today", "tomorrow": "Tomorrow", "due": "due", "ongoing": "Ongoing", "until": "until", "now": "now", "accept": "Accept", "overlaps": "overlaps",
+    "allday": "all day", "today": "Today", "tomorrow": "Tomorrow", "due": "due", "ongoing": "Ongoing", "until": "until", "now": "now", "accept": "Accept", "overlaps": "overlaps",
     "empty.day": "Clear day", "empty.day.sub": "The agent will text you if that changes.", "empty.feed": "Nothing yet", "empty.feed.sub": "Run npm run poll and the agent's decisions show up here.",
     "empty.dl": "No deadlines ahead", "empty.dl.sub": "Enjoy it while it lasts.", "empty.ag": "Nothing booked", "empty.ag.sub": "Paste an email or a sentence above and it'll show up here.", "empty.courses": "No courses with upcoming work",
     "focus.k": "Next deadline", "focus.clear": "All clear.", "focus.clear.sub": "No deadlines ahead.", "focus.open": "Open in Brightspace →", "focus.event": "Open event page →", "focus.after": "After that",
@@ -622,7 +626,7 @@ const I18N = {
     "status.online": "Agent 在线", "status.off": "Agent 空闲", "status.watch": " · 盯着 {n} 门课", "status.checked": " · {t}检查过", "just now": "刚刚", "min ago": "{n} 分钟前", "h ago": "{n} 小时前",
     "kind.deadline": "截止", "kind.class": "上课", "kind.meeting": "会议", "kind.event": "活动", "kind.focus": "已安排",
     "tri.urgent": "紧急", "tri.need": "需知", "tri.ignore": "忽略",
-    "today": "今天", "tomorrow": "明天", "due": "截止", "ongoing": "进行中", "until": "至", "now": "现在", "accept": "接受", "overlaps": "与之重叠：",
+    "allday": "全天", "today": "今天", "tomorrow": "明天", "due": "截止", "ongoing": "进行中", "until": "至", "now": "现在", "accept": "接受", "overlaps": "与之重叠：",
     "empty.day": "今天没事", "empty.day.sub": "有变化 agent 会发消息给你。", "empty.feed": "还没有记录", "empty.feed.sub": "跑一次 npm run poll，agent 的决定会出现在这里。",
     "empty.dl": "没有待办截止", "empty.dl.sub": "好好享受。", "empty.ag": "没有安排", "empty.ag.sub": "在上面贴一封邮件或一句话，就会出现在这里。", "empty.courses": "没有有待办的课程",
     "focus.k": "下一个截止", "focus.clear": "全部清空。", "focus.clear.sub": "前面没有截止。", "focus.open": "在 Brightspace 打开 →", "focus.event": "打开活动页 →", "focus.after": "再往后",
@@ -918,14 +922,15 @@ function layoutColumns(list) {
 }
 function renderWeekView(items) {
   const n = now(), today = etMidnight(n), H0 = 7, H1 = 23, PX = 60;
-  let head = `<div class="hd"></div>`, allday = `<div class="allday"></div>`;
+  let head = `<div class="hd"></div>`, allday = `<div class="allday lbl">${t("allday")}</div>`;
   const body = `<div class="hours">${Array.from({ length: H1 - H0 + 1 }, (_, k) => `<span style="top:${k * PX}px">${H0 + k}:00</span>`).join("")}</div>`;
   const cols = [];
   for (let k = 0; k < 7; k++) {
     const d = today + k * D, list = items.filter(i => visible(i) && (dayKey(i.start) === d || (i.kind === "event" && i.start < d && i.end > d)));
     head += `<div class="hd ${k === 0 ? "today" : ""}">${fmt(d + 12 * H, { weekday: "short" })}<b>${etParts(d + 12 * H).d}</b></div>`;
     const multi = list.filter(i => i.kind === "event" && i.end - i.start > 12 * H);
-    allday += `<div class="allday">${multi.map(i => `<span data-kind="event">${esc(i.title)}</span>`).join("")}</div>`;
+    // one continuous bar across the days it spans: rounded only at its real start/end
+    allday += `<div class="allday">${multi.map(i => { const first = dayKey(i.start) === d || k === 0, last = dayKey(i.end) === d || i.end <= d + D; return `<span data-kind="event" class="${first ? "s" : ""} ${last ? "e" : ""}">${first ? esc(i.title) : "&nbsp;"}</span>`; }).join("")}</div>`;
     let col = "";
     if (k === 0) { const p = etParts(n), top = ((p.h + p.mi / 60) - H0) * PX; if (top >= 0 && top <= (H1 - H0) * PX) col += `<div class="now-h" style="top:${top}px"></div>`; }
     const timed = list.filter(i => !multi.includes(i) && i.kind !== "deadline"), lay = layoutColumns(timed);
@@ -1099,6 +1104,7 @@ function steamFx() {
 document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") ?? (localStorage.getItem("bt.theme") || "");
 steamFx();
 applyLang(); load(); setInterval(tick, 1000); setInterval(load, 60_000);
+{ const v = new URLSearchParams(location.search).get("view"); if (v && $("view-" + v)) go(v); }
 </script>
 </body>
 </html>
