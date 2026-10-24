@@ -109,6 +109,13 @@ createServer(async (req, res) => {
       res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
       return res.end(readFileSync(page));
     }
+    if (url.pathname.startsWith("/assets/") && !url.pathname.includes("..")) {
+      const f = new URL(`../web${url.pathname}`, import.meta.url);
+      if (!existsSync(f)) { res.writeHead(404).end(); return; }
+      const ext = url.pathname.split(".").pop() || "";
+      res.writeHead(200, { "content-type": { webp: "image/webp", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", css: "text/css", js: "text/javascript" }[ext] || "application/octet-stream", "cache-control": "public, max-age=86400" });
+      return res.end(readFileSync(f));
+    }
     res.writeHead(404).end();
   } catch (e: any) {
     json({ error: e?.message ?? String(e) }, 500);

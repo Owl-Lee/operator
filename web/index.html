@@ -301,6 +301,48 @@ textarea, input { font-family: var(--sans); }
 .msg { margin-top: 10px; font-size: 14px; color: var(--ink-2); min-height: 20px; }
 .msg.err { color: var(--urgent); }
 
+/* ---------- Steam skin: the wallpaper does the atmosphere, everything else just borrows its colors ---------- */
+html[data-theme="steam"] {
+  --bg: #f1e4d0; --bg-2: rgba(255,250,242,.75); --card: rgba(255,250,243,.84);
+  --ink: #3a2816; --ink-2: #6b5138; --muted: #9a8268; --line: rgba(160,110,60,.18); --line-2: rgba(160,110,60,.35);
+  --accent: #c8702f; --accent-2: #e6a640;
+  --deadline: #c4512b; --deadline-bg: rgba(196,81,43,.12);
+  --class: #3f7fb5; --class-bg: rgba(63,127,181,.13);
+  --meeting: #8a5f9c; --meeting-bg: rgba(138,95,156,.13);
+  --event: #3c8f7a; --event-bg: rgba(60,143,122,.13);
+  --focus: #3a2816; --focus-bg: rgba(58,40,22,.08);
+  --urgent: #b8341a; --need: #b7761c; --ok: #3c8f7a;
+  --shadow: 0 1px 2px rgba(58,40,22,.06), 0 18px 40px -18px rgba(58,40,22,.35);
+}
+html[data-theme="steam"] body { background: #e9d9c3 url("/assets/steam.webp") center / cover fixed no-repeat; }
+html[data-theme="steam"] body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(255,248,236,.25), rgba(240,222,196,.45)); pointer-events: none; }
+html[data-theme="steam"] .card, html[data-theme="steam"] .stat { backdrop-filter: blur(16px) saturate(1.1); -webkit-backdrop-filter: blur(16px) saturate(1.1); border-color: rgba(255,255,255,.55); box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.6); }
+html[data-theme="steam"] .nav { background: rgba(255,248,236,.72); border-bottom-color: rgba(160,110,60,.15); }
+html[data-theme="steam"] .tabs, html[data-theme="steam"] .status, html[data-theme="steam"] .lang, html[data-theme="steam"] .icon-btn { background: rgba(255,250,243,.85); }
+html[data-theme="steam"] .tab.on, html[data-theme="steam"] .lang button.on, html[data-theme="steam"] .icon-btn.on { background: var(--ink); color: #fff3e2; }
+html[data-theme="steam"] .brand i { background: linear-gradient(135deg, #e6a640, #b85f28); box-shadow: 0 6px 14px rgba(184,95,40,.35); }
+html[data-theme="steam"] .hero h1 span { background: linear-gradient(90deg, #b85f28, #e6a640); -webkit-background-clip: text; background-clip: text; }
+html[data-theme="steam"] .hero .kicker { color: #b85f28; }
+html[data-theme="steam"] .focus { background: linear-gradient(160deg, #3b2614, #5a3a1c 55%, #7a4a22); box-shadow: var(--shadow), inset 0 1px 0 rgba(255,220,170,.25); }
+html[data-theme="steam"] .focus::after { background: radial-gradient(circle, rgba(230,166,64,.65), transparent 65%); }
+html[data-theme="steam"] .btn { background: linear-gradient(90deg, #c8702f, #e6a640); box-shadow: 0 8px 20px -6px rgba(200,112,47,.6); }
+html[data-theme="steam"] .btn.ghost { background: rgba(255,250,243,.9); color: var(--ink); box-shadow: none; }
+html[data-theme="steam"] .fab { background: linear-gradient(135deg, #c8702f, #e6a640); box-shadow: 0 14px 34px -8px rgba(200,112,47,.7); }
+html[data-theme="steam"] .drawer { background: rgba(245,234,216,.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+html[data-theme="steam"] .dh, html[data-theme="steam"] .dc { background: rgba(255,250,243,.9); }
+html[data-theme="steam"] .dh .av { background: linear-gradient(135deg, #c8702f, #e6a640); }
+html[data-theme="steam"] .bub.me { background: #3a2816; }
+html[data-theme="steam"] .bub.ai, html[data-theme="steam"] .chips button { background: rgba(255,250,243,.95); }
+html[data-theme="steam"] .wkwrap, html[data-theme="steam"] .wk .hd { background: rgba(255,250,243,.9); }
+html[data-theme="steam"] .wk .col { background: repeating-linear-gradient(180deg, transparent 0 59px, var(--line) 59px 60px); }
+html[data-theme="steam"] .wd.today, html[data-theme="steam"] .dc .send { background: var(--ink); }
+html[data-theme="steam"] .item.urgent .kind { background: rgba(184,52,26,.12); }
+html[data-theme="steam"] .course { background: rgba(255,250,243,.7); }
+html[data-theme="steam"] .steps div, html[data-theme="steam"] .ag .note, html[data-theme="steam"] .field input, html[data-theme="steam"] .dc .box, html[data-theme="steam"] .result { background: rgba(255,250,243,.8); }
+.skin { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); background: #fff; border: 1px solid var(--line); }
+.skin svg { width: 18px; height: 18px; }
+html[data-theme="steam"] .skin { background: var(--ink); color: #ffd79a; border-color: var(--ink); }
+
 /* filter banner */
 .fbar { display: none; align-items: center; gap: 10px; margin: -10px 0 20px; padding: 10px 14px; border-radius: 12px; background: var(--cbg); border: 1px solid transparent; font: 600 14px var(--disp); color: var(--c); }
 .fbar.show { display: flex; animation: rise .2s ease-out; }
@@ -389,6 +431,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
     </nav>
     <span class="status" id="status"><i></i><span><b>…</b></span></span>
     <span class="lang" id="lang"><button data-lang="en">EN</button><button data-lang="zh">中</button></span>
+    <button class="skin" id="skinBtn" title="Skin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18c-2 0-2.5-1.5-1.5-2.5S12 16 10 15s-4 0-4-2 2-2 2-4-2-3 0-4.5S10 3 12 3z"/><circle cx="8" cy="9" r="1" fill="currentColor"/><circle cx="14" cy="7" r="1" fill="currentColor"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg></button>
     <button class="icon-btn" data-view="setup" id="setupBtn" title="Setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
 
@@ -953,6 +996,7 @@ document.addEventListener("click", async e => {
   const nav = e.target.closest(".tab, .tabbar button, #setupBtn"); if (nav) return go(nav.dataset.view);
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
+  if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); return; }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();
@@ -984,6 +1028,7 @@ dc.addEventListener("dragover", e => { e.preventDefault(); dc.classList.add("dra
 dc.addEventListener("dragleave", () => dc.classList.remove("drag"));
 dc.addEventListener("drop", e => { e.preventDefault(); dc.classList.remove("drag"); setImage(e.dataTransfer.files[0]); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") ?? (localStorage.getItem("bt.theme") || "");
 applyLang(); load(); setInterval(tick, 1000); setInterval(load, 60_000);
 </script>
 </body>
