@@ -85,6 +85,8 @@ textarea, input { font-family: var(--sans); }
 
 /* layout */
 .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+.stack { grid-column: span var(--c, 12); min-width: 0; display: grid; gap: 20px; align-content: start; }
+.stack .card { grid-column: auto; }
 .card { grid-column: span var(--c, 12); min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 22px 24px 24px; animation: rise .35s ease-out both; }
 .card:nth-child(2) { animation-delay: .05s; } .card:nth-child(3) { animation-delay: .1s; } .card:nth-child(4) { animation-delay: .15s; } .card:nth-child(5) { animation-delay: .2s; } .card:nth-child(6) { animation-delay: .25s; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
@@ -389,10 +391,13 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 
   <section class="view" id="view-today">
     <div class="grid">
+      <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.week">This week</h2><span class="more" id="weekRange"></span></div><div class="week" id="weekstrip"></div></div>
       <div class="card" style="--c:7"><div class="card-h"><h2 data-i18n="h.timeline">Timeline</h2></div><div id="timeline"></div></div>
-      <div class="card focus" style="--c:5" id="focus"></div>
-      <div class="card" style="--c:7"><div class="card-h"><h2><span data-i18n="h.feed">What the agent did</span> <span class="kind" style="--c:#16b36a;--cbg:#e6f7ee" data-i18n="h.live">live</span></h2><span class="more" id="feedCount"></span></div><div id="feed"></div></div>
-      <div class="card" style="--c:5"><div class="card-h"><h2 data-i18n="h.quiet">Didn't bother you with</h2><button class="more" id="quietToggle"></button></div><div id="quiet"></div></div>
+      <div class="stack" style="--c:5">
+        <div class="card focus" id="focus"></div>
+        <div class="card"><div class="card-h"><h2 data-i18n="h.quiet">Didn't bother you with</h2><button class="more" id="quietToggle"></button></div><div id="quiet"></div></div>
+      </div>
+      <div class="card" style="--c:12"><div class="card-h"><h2><span data-i18n="h.feed">What the agent did</span> <span class="kind" style="--c:#16b36a;--cbg:#e6f7ee" data-i18n="h.live">live</span></h2><span class="more" id="feedCount"></span></div><div id="feed"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.deadlines">Deadlines</h2></div><div class="dl" id="deadlines"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.agenda">Meetings &amp; events</h2><span class="more" id="agCount"></span></div><div class="ag" id="agenda"></div></div>
     </div>
@@ -460,7 +465,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 /* ---------------- i18n ---------------- */
 const I18N = {
   en: {
-    "nav.today": "Today", "nav.week": "Week", "nav.deadlines": "Deadlines", "nav.courses": "Courses", "nav.setup": "Setup",
+    "nav.today": "Home", "nav.week": "Week", "nav.deadlines": "Deadlines", "nav.courses": "Courses", "nav.setup": "Setup",
     "ask.ph": "Ask the agent… “what should I do first this week?” — or type to filter",
     "h.timeline": "Timeline", "h.fullweek": "Full week →", "h.feed": "What the agent did", "h.live": "live", "h.quiet": "Didn't bother you with",
     "h.paste": "Paste anything", "h.paste.sub": "email · chat · poster · one sentence", "h.week": "This week", "h.deadlines": "Deadlines", "h.all": "All →",
@@ -481,7 +486,7 @@ const I18N = {
     "setup.photon": "iMessage via Photon", "setup.gemini": "Gemini (judgement & Q&A)", "setup.rules": "rule-based for now", "setup.ready": "ready", "setup.missing": "key missing",
     "greet.night": "Still up", "greet.morning": "Good morning", "greet.afternoon": "Good afternoon", "greet.evening": "Good evening",
     "sum": "{d} deadlines, {c} classes, {m} meetings and {e} events in the next 7 days. {u} {ig} things filtered out so far.", "sum.urgent": "{n} marked urgent.", "sum.nourgent": "Nothing urgent yet.",
-    "next": "Next: {t} →", "stat.deadline": "Deadlines", "stat.class": "Classes", "stat.meeting": "Meetings", "stat.event": "Events", "stat.days": "7 days",
+    "next": "Next: {t} →", "stat.deadline": "Deadlines", "stat.class": "Classes", "stat.meeting": "Meetings", "stat.event": "Events", "stat.days": "this week",
     "status.online": "Agent online", "status.off": "Agent idle", "status.watch": " · watching {n} courses", "status.checked": " · checked {t}", "just now": "just now", "min ago": "{n} min ago", "h ago": "{n} h ago",
     "kind.deadline": "deadline", "kind.class": "class", "kind.meeting": "meeting", "kind.event": "event", "kind.focus": "planned",
     "tri.urgent": "Urgent", "tri.need": "Need-to-know", "tri.ignore": "Ignored",
@@ -502,7 +507,7 @@ const I18N = {
     "removed": "Removed.", "reason.old": "Old course", "reason.past": "Already past", "reason.notice": "Not a course item", "reason.avail": "Availability notice, not a deadline", "reason.exam": "Exam — always top priority", "reason.due": "Due in {n} h", "reason.quiz": "Quiz within a week", "reason.need": "{k} due in {n} days", "reason.milestone": "Event milestone"
   },
   zh: {
-    "nav.today": "今天", "nav.week": "本周", "nav.deadlines": "截止", "nav.courses": "课程", "nav.setup": "设置",
+    "nav.today": "主页", "nav.week": "本周", "nav.deadlines": "截止", "nav.courses": "课程", "nav.setup": "设置",
     "ask.ph": "问 agent… “这周先做哪个？”——或直接输入关键词筛选",
     "h.timeline": "时间线", "h.fullweek": "完整一周 →", "h.feed": "Agent 做了什么", "h.live": "实时", "h.quiet": "没打扰你的",
     "h.paste": "随便粘贴", "h.paste.sub": "邮件 · 群消息 · 海报 · 一句话", "h.week": "本周", "h.deadlines": "截止时间", "h.all": "全部 →",
@@ -523,7 +528,7 @@ const I18N = {
     "setup.photon": "iMessage（Photon）", "setup.gemini": "Gemini（判断与问答）", "setup.rules": "目前用规则", "setup.ready": "就绪", "setup.missing": "缺少密钥",
     "greet.night": "还没睡呢", "greet.morning": "早上好", "greet.afternoon": "下午好", "greet.evening": "晚上好",
     "sum": "未来 7 天：{d} 个截止、{c} 节课、{m} 个会议、{e} 个活动。{u} 目前已过滤 {ig} 条。", "sum.urgent": "{n} 条标为紧急。", "sum.nourgent": "暂无紧急事项。",
-    "next": "下一个：{t} →", "stat.deadline": "截止", "stat.class": "上课", "stat.meeting": "会议", "stat.event": "活动", "stat.days": "7 天内",
+    "next": "下一个：{t} →", "stat.deadline": "截止", "stat.class": "上课", "stat.meeting": "会议", "stat.event": "活动", "stat.days": "本周",
     "status.online": "Agent 在线", "status.off": "Agent 空闲", "status.watch": " · 盯着 {n} 门课", "status.checked": " · {t}检查过", "just now": "刚刚", "min ago": "{n} 分钟前", "h ago": "{n} 小时前",
     "kind.deadline": "截止", "kind.class": "上课", "kind.meeting": "会议", "kind.event": "活动", "kind.focus": "已安排",
     "tri.urgent": "紧急", "tri.need": "需知", "tri.ignore": "忽略",
@@ -762,9 +767,14 @@ function renderQuiet() {
     <div class="quiet-list ${quietOpen ? "show" : ""}">${ig.slice(0, 12).map(x => { const i = byUid.get(x.uid); return `<div class="ql"><span>${esc(i?.title)} <small>· ${esc(code(i?.course))}</small></span><small>${esc(reason(x.reason))}</small></div>`; }).join("")}${ig.length > 12 ? `<div class="ql"><small>${t("quiet.more", { n: ig.length - 12 })}</small></div>` : ""}</div>`;
   $("quietToggle").textContent = t(quietOpen ? "quiet.hide" : "quiet.show");
 }
-function renderWeekStrip() {
+function renderWeekStrip(items) {
   const today = etMidnight(now());
-  $("weekRange2").textContent = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
+  const range = `${fmt(today + 12 * H, { month: "short", day: "numeric" })} – ${fmt(today + 6 * D + 12 * H, { month: "short", day: "numeric" })}`;
+  $("weekRange").textContent = range; $("weekRange2").textContent = range;
+  $("weekstrip").innerHTML = Array.from({ length: 7 }, (_, k) => {
+    const d = today + k * D, list = items.filter(i => dayKey(i.start) === d);
+    return `<div class="wd ${k === 0 ? "today" : ""}"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
+  }).join("");
 }
 function dlHtml(i) {
   const lvl = i.tri?.level || "need";
@@ -886,7 +896,7 @@ async function sendToAgent() {
   if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|是不是|什么|哪个|啥|几点|有没有)/i.test(text)) { bubble(esc(text), true); $("dtext").value = ""; $("dtext").style.height = ""; bubble(answer(text, allItems())); return; }
   bubble(`${esc(text)}${pending ? `<img src="${pending.url}" alt="">` : ""}`, true);
   const payload = { text, image: pending?.data, mime: pending?.mime };
-  $("dtext").value = ""; $("dtext").style.height = ""; clearImage();
+  $("dtext").value = ""; $("dtext").style.height = "32px"; clearImage();
   const wait = bubble(t("drawer.reading"));
   try {
     const r = await (await fetch(payload.image ? "/api/add-image" : "/api/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) })).json();
@@ -901,7 +911,7 @@ async function sendToAgent() {
 /* ---------------- wiring ---------------- */
 function render() {
   const items = allItems();
-  renderHero(items); renderTimeline(items); renderFocus(items); renderFeed(); renderQuiet(); renderWeekStrip();
+  renderHero(items); renderTimeline(items); renderFocus(items); renderFeed(); renderQuiet(); renderWeekStrip(items);
   renderDeadlines(items); renderAgenda(items); renderWeekView(items); renderCourses(); renderSetup();
 }
 async function load() {
@@ -920,7 +930,7 @@ document.addEventListener("click", async e => {
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); return load(); }
-  const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); $("dtext").focus(); return; }
+  const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); autosize(); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();
   if (e.target.closest("[data-close-drawer]")) return closeDrawer();
   if (e.target.closest("#dsend")) { e.preventDefault(); return sendToAgent(); }
@@ -940,7 +950,8 @@ document.addEventListener("click", async e => {
   }
 });
 $("dtext").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendToAgent(); } });
-$("dtext").addEventListener("input", e => { e.target.style.height = ""; const h = Math.min(140, e.target.scrollHeight); e.target.style.height = h + "px"; e.target.classList.toggle("multi", e.target.scrollHeight > 140); });
+function autosize() { const ta = $("dtext"); ta.style.height = "32px"; const h = Math.min(140, ta.scrollHeight); ta.style.height = h + "px"; ta.classList.toggle("multi", ta.scrollHeight > 140); }
+$("dtext").addEventListener("input", autosize);
 $("dfile").addEventListener("click", e => e.stopPropagation());
 $("dfile").addEventListener("change", e => setImage(e.target.files[0]));
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files || [])].find(x => x.type.startsWith("image/")); if (f) { openDrawer(); setImage(f); } });
