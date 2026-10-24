@@ -77,9 +77,7 @@ textarea, input { font-family: var(--sans); }
 .hero h1 span { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hero p { margin: 12px 0 0; color: var(--ink-2); font-size: 16px; max-width: 58ch; }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.stat { display: flex; align-items: center; gap: 14px; padding: 15px 18px; border-radius: var(--r-sm); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .15s; text-align: left; }
-.stat:hover { transform: translateY(-2px); }
-.stat.on { outline: 2px solid var(--c); outline-offset: -2px; }
+.stat { display: flex; align-items: center; gap: 14px; padding: 15px 18px; border-radius: var(--r-sm); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); text-align: left; }
 .stat .dot { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--cbg); color: var(--c); flex: none; }
 .stat .dot svg { width: 20px; height: 20px; }
 .stat .num { font: 700 26px/1 var(--disp); }
@@ -204,8 +202,7 @@ textarea, input { font-family: var(--sans); }
 
 /* week strip */
 .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-.wd { padding: 10px 6px 12px; border-radius: 12px; text-align: center; border: 1px solid var(--line); background: var(--bg-2); cursor: pointer; transition: transform .15s, border-color .15s; }
-.wd:hover { transform: translateY(-2px); border-color: var(--line-2); }
+.wd { padding: 10px 6px 12px; border-radius: 12px; text-align: center; border: 1px solid var(--line); background: var(--bg-2); }
 .wd.today { background: var(--ink); color: #fff; border-color: var(--ink); }
 .wd small { display: block; font: 600 11px var(--disp); letter-spacing: .08em; opacity: .6; }
 .wd b { display: block; font: 700 20px var(--disp); margin: 2px 0 8px; }
@@ -372,13 +369,6 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
     <button class="icon-btn" data-view="setup" id="setupBtn" title="Setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
 
-  <label class="ask">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
-    <input id="q" data-i18n-ph="ask.ph" placeholder="" autocomplete="off">
-    <kbd>Enter</kbd>
-  </label>
-  <div class="answer" id="answer"></div>
-
   <section class="hero">
     <div>
       <div class="kicker" id="kicker">—</div>
@@ -389,16 +379,15 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
   </section>
 
   <div class="stats" id="stats"></div>
-  <div class="fbar" id="fbar"></div>
 
   <section class="view" id="view-today">
     <div class="grid">
-      <div class="card" style="--c:7"><div class="card-h"><h2 data-i18n="h.timeline">Timeline</h2><a class="more" href="#" data-go="week" data-i18n="h.fullweek">Full week →</a></div><div id="timeline"></div></div>
+      <div class="card" style="--c:7"><div class="card-h"><h2 data-i18n="h.timeline">Timeline</h2></div><div id="timeline"></div></div>
       <div class="card focus" style="--c:5" id="focus"></div>
       <div class="card" style="--c:7"><div class="card-h"><h2><span data-i18n="h.feed">What the agent did</span> <span class="kind" style="--c:#16b36a;--cbg:#e6f7ee" data-i18n="h.live">live</span></h2><span class="more" id="feedCount"></span></div><div id="feed"></div></div>
       <div class="card" style="--c:5"><div class="card-h"><h2 data-i18n="h.quiet">Didn't bother you with</h2><button class="more" id="quietToggle"></button></div><div id="quiet"></div></div>
       <div class="card" style="--c:12"><div class="card-h"><h2 data-i18n="h.week">This week</h2><span class="more" id="weekRange"></span></div><div class="week" id="weekstrip"></div></div>
-      <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.deadlines">Deadlines</h2><a class="more" href="#" data-go="deadlines" data-i18n="h.all">All →</a></div><div class="dl" id="deadlines"></div></div>
+      <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.deadlines">Deadlines</h2></div><div class="dl" id="deadlines"></div></div>
       <div class="card" style="--c:6"><div class="card-h"><h2 data-i18n="h.agenda">Meetings &amp; events</h2><span class="more" id="agCount"></span></div><div class="ag" id="agenda"></div></div>
     </div>
   </section>
@@ -472,8 +461,8 @@ const I18N = {
     "h.agenda": "Meetings & events", "h.weekview": "Week view", "h.alldl": "Every upcoming deadline",
     "paste.hint": "Timetable screenshot, an email, a poster, one sentence — English or 中文. Wrong guess? Undo on the item.", "paste.undo": "Undo",
     "drawer.open": "Open the agent →", "drawer.fab": "Agent", "drawer.ph": "Type, paste, or drop a screenshot…", "drawer.hint": "Enter to send · Shift+Enter for a new line · paste or drop images",
-    "drawer.sub.g": "Gemini reads text & images", "drawer.sub.r": "rules for text · images wait for Gemini", "drawer.hello": "Send me anything with a time in it — a screenshot of your timetable, an email from a professor, a poster, one sentence. I'll put it on your schedule and you can undo.",
-    "drawer.reading": "Reading…", "drawer.added": "Added {n} to your schedule:", "drawer.none": "I didn't see a date or time, so I didn't add anything. Give me one — “office hours Tue 3pm, Harriman 212”.", "drawer.queued": "Got the image. I'll read it the moment Gemini is connected — it's in the inbox.", "drawer.err": "Something went wrong: {e}", "drawer.ask": "Question? Ask in the bar at the top; here I add things to your schedule.",
+    "drawer.sub.g": "Gemini reads text & images", "drawer.sub.r": "rules for text · images wait for Gemini", "drawer.hello": "Send me anything with a time in it — a timetable screenshot, an email, a poster, one sentence — and I'll put it on your schedule (undo any time). Or just ask: “what should I do first this week?”",
+    "drawer.reading": "Reading…", "drawer.added": "Added {n} to your schedule:", "drawer.none": "I didn't see a date or time, so I didn't add anything. Give me one — “office hours Tue 3pm, Harriman 212”.", "drawer.queued": "Got the image. I'll read it the moment Gemini is connected — it's in the inbox.", "drawer.err": "Something went wrong: {e}",
     "eng.gemini": "Gemini", "eng.rules": "rules", "eng.queued": "queued",
     "filter.only": "Showing only {k}", "filter.clear": "Show everything",
     "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
@@ -514,7 +503,7 @@ const I18N = {
     "h.agenda": "会议与活动", "h.weekview": "周视图", "h.alldl": "所有待办截止",
     "paste.hint": "课表截图、一封邮件、一张海报、一句话——中英文都行。看错了点条目上的撤销。", "paste.undo": "撤销",
     "drawer.open": "打开 agent →", "drawer.fab": "Agent", "drawer.ph": "输入、粘贴，或拖入截图…", "drawer.hint": "Enter 发送 · Shift+Enter 换行 · 可粘贴或拖入图片",
-    "drawer.sub.g": "Gemini 读文字和图片", "drawer.sub.r": "文字用规则 · 图片等 Gemini", "drawer.hello": "把任何带时间的东西发给我——课表截图、教授的邮件、海报、一句话。我会放进你的日程，看错了可以撤销。",
+    "drawer.sub.g": "Gemini 读文字和图片", "drawer.sub.r": "文字用规则 · 图片等 Gemini", "drawer.hello": "把任何带时间的东西发给我——课表截图、邮件、海报、一句话——我放进你的日程，随时可撤销。也可以直接问：“这周先做哪个？”",
     "drawer.reading": "正在读…", "drawer.added": "已加入 {n}：", "drawer.none": "没看到日期或时间，所以什么都没加。写上时间就行——“周二下午3点 office hours 在 Harriman 212”。", "drawer.queued": "图片收到了。接上 Gemini 我马上读——已放进收件箱。", "drawer.err": "出错了：{e}", "drawer.ask": "想提问？用顶部的提问栏；这里我负责往日程里加东西。",
     "eng.gemini": "Gemini", "eng.rules": "规则", "eng.queued": "排队中",
     "filter.only": "只看：{k}", "filter.clear": "显示全部",
@@ -571,14 +560,13 @@ function applyLang() {
   $("chips").innerHTML = ["ex1", "ex2", "ex3", "ex4"].map(k => `<button type="button" data-ex="${k}">${esc(t(k))}</button>`).join("");
   $("dsub").textContent = t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r");
   if ($("dm").children.length <= 1) $("dm").innerHTML = `<div class="bub ai">${t("drawer.hello")}</div>`;
-  $("legend").innerHTML = ["class", "meeting", "event", "deadline"].map(k => `<span data-kind="${k}"><i></i>${t("kind." + k)}</span>`).join("") + `<span><i class="g"></i>${t("legend.sugg")}</span>`;
+  $("legend").innerHTML = ["class", "meeting", "event", "deadline"].map(k => `<span data-kind="${k}"><i></i>${t("kind." + k)}</span>`).join("");
 }
 
 /* ---------------- state ---------------- */
 const ET = "America/New_York";
 let state = { items: [], triage: [], agentLog: [], schedule: { classes: [], meetings: [], events: [], deadlines: [] }, setup: {}, now: new Date().toISOString() };
-let clockOffset = 0, kindFilter = null, quietOpen = false;
-const accepted = new Set(JSON.parse(localStorage.getItem("bt.accepted") || "[]"));
+let clockOffset = 0, quietOpen = false;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -626,7 +614,7 @@ function allItems() {
   for (const d of sc.deadlines || []) { const ms = etToMs(d.start); out.push({ id: d.id, rid: d.id, kind: "deadline", title: d.title, course: d.course || (lang === "zh" ? "粘贴" : "Pasted"), start: ms, end: ms, type: "pasted", pasted: true, tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: urgency(ms) === 3 ? `Due in ${Math.round((ms - n) / D)} days` : `Due in ${Math.round((ms - n) / H)} h` } }); }
   out.sort((a, b) => a.start - b.start);
   markConflicts(out);
-  return out.concat(suggestions(out)).sort((a, b) => a.start - b.start);
+  return out;
 }
 function markConflicts(list) {
   const timed = list.filter(i => i.kind !== "deadline" && i.end - i.start < 12 * H);
@@ -635,7 +623,8 @@ function markConflicts(list) {
     if (x.start < y.end && y.start < x.end) { x.conflict = y.title; y.conflict = x.title; }
   }
 }
-function suggestions(list) {
+/* Free 2-hour slots before each deadline — only used to answer "when am I free?" in the agent drawer. */
+function freeSlots(list) {
   const n = now(), out = [];
   const busy = list.filter(i => i.kind !== "deadline" && i.end - i.start < 12 * H);
   const free = (s, e) => !busy.some(b => b.start < e && s < b.end) && !out.some(b => b.start < e && s < b.end);
@@ -643,12 +632,11 @@ function suggestions(list) {
     let found = null;
     for (let day = etMidnight(Math.max(n, d.start - 3 * D)); day < d.start && !found; day += D)
       for (let h = 9; h <= 19 && !found; h++) { const s = day + h * H, e = s + 2 * H; if (s > n && e <= d.start && free(s, e)) found = s; }
-    if (found) { const id = `g-${d.id}`; out.push({ id, kind: "focus", title: t("sugg.title", { t: d.title }), course: d.course, start: found, end: found + 2 * H, ghost: !accepted.has(id), forId: d.id, note: t("sugg.note", { d: fmt(d.start, { weekday: "short" }) }) }); }
+    if (found) out.push({ title: d.title, start: found, end: found + 2 * H });
   }
   return out;
 }
-const matchesQ = i => { const q = $("q").value.trim().toLowerCase(); return !q || /[?？]/.test(q) || `${i.title} ${i.course || ""} ${i.location || ""} ${i.note || ""}`.toLowerCase().includes(q); };
-const visible = i => (!kindFilter || i.kind === kindFilter || (kindFilter === "deadline" && i.kind === "focus")) && matchesQ(i);
+const visible = () => true;
 function urgency(ms) { const h = (ms - now()) / H; return h < 24 ? 1 : h < 72 ? 2 : 3; }
 function leftTxt(ms) { const h = (ms - now()) / H; if (h < 0) return lang === "zh" ? "已过" : "past"; if (h < 1) return `${Math.max(1, Math.round(h * 60))} min`; if (h < 24) return `${Math.round(h)} h`; return `${Math.round(h / 24)} d`; }
 const triChip = (i, pulse) => i.tri ? `<span class="tri ${i.tri.level} ${pulse && i.tri.level === "urgent" && urgency(i.start) === 1 ? "pulse" : ""}" title="${esc(reason(i.tri.reason))}">${t("tri." + i.tri.level)} · ${leftTxt(i.start)}</span>` : "";
@@ -675,9 +663,7 @@ function renderHero(items) {
   const next = items.find(i => i.start >= n && i.link && i.kind !== "focus");
   const a = $("openNext"); if (next) { a.href = next.link; a.textContent = t("next", { t: next.title }); a.hidden = false; } else a.hidden = true;
   $("stats").innerHTML = [["deadline", dl.length], ["class", c("class")], ["meeting", c("meeting")], ["event", c("event")]]
-    .map(([k, v]) => `<button class="stat ${kindFilter === k ? "on" : ""}" data-kind="${k}" data-filter="${k}"><span class="dot">${kicon(k)}</span><span><span class="num">${v}</span><small>${t("stat." + k)} · ${t("stat.days")}</small></span></button>`).join("");
-  const fb = $("fbar"); fb.className = "fbar" + (kindFilter ? " show" : ""); fb.dataset.kind = kindFilter || "";
-  fb.innerHTML = kindFilter ? `${kicon(kindFilter).replace("<svg", '<svg width="18" height="18"')} ${t("filter.only", { k: t("stat." + kindFilter) })}<button data-filter="${kindFilter}">${t("filter.clear")} ✕</button>` : "";
+    .map(([k, v]) => `<div class="stat" data-kind="${k}"><span class="dot">${kicon(k)}</span><span><span class="num">${v}</span><small>${t("stat." + k)} · ${t("stat.days")}</small></span></div>`).join("");
   const courses = new Set(state.items.filter(i => /^[A-Z]{3}\s\d{3}.*Fall 2026/.test(i.course)).map(i => code(i.course))).size;
   const last = state.agentLog.find(e => e.type === "poll");
   const ago = last ? Math.max(0, Math.round((n - Date.parse(last.at)) / 60000)) : null;
@@ -689,12 +675,12 @@ function itemHtml(i) {
   const n = now(), u = i.kind === "deadline" ? urgency(i.start) : 0, past = i.end < n && !i.ongoing;
   const when = i.kind === "deadline" ? `${timeOf(i.start)}<small>${t("due")}</small>` : i.ongoing ? `${t("ongoing")}<small>${t("until")} ${fmt(i.end, { weekday: "short" })} ${timeOf(i.end)}</small>` : `${timeOf(i.start)}<small>${timeOf(i.end)}</small>`;
   const sub = [i.course && i.kind !== "class" ? code(i.course) : "", i.kind === "class" ? courseName(i.course) : "", i.location, i.type && !/milestone|pasted/.test(i.type) ? i.type : "", i.kind === "focus" ? i.note : ""].filter(Boolean).join(" · ");
-  const side = i.kind === "focus" ? (i.ghost ? `<button class="btn ghost sm" data-accept="${esc(i.id)}">${t("accept")}</button>` : `<span class="kind" data-kind="focus">${t("kind.focus")}</span>`) : `<span class="kind">${t("kind." + i.kind)}</span>${triChip(i, true)}${undoBtn(i)}`;
-  return `<div class="item ${u === 1 ? "urgent" : ""} ${past ? "past" : ""} ${i.ghost ? "ghost" : ""}" data-kind="${i.kind}">
+  const side = `<span class="kind">${t("kind." + i.kind)}</span>${triChip(i, true)}${undoBtn(i)}`;
+  return `<div class="item ${u === 1 ? "urgent" : ""} ${past ? "past" : ""}" data-kind="${i.kind}">
     <div class="time">${when}</div>
     <div class="body"><h4>${esc(i.title)}${tagz(i)}</h4><p>${esc(sub)}${i.conflict ? ` · <span class="warn">⚠ ${t("overlaps")} ${esc(i.conflict)}</span>` : ""}</p></div>
     <div class="side">${side}</div>
-    ${i.link && !i.ghost ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
+    ${i.link ? `<a class="cover" href="${esc(i.link)}" target="_blank" rel="noopener" aria-label="${esc(i.title)}"></a>` : ""}</div>`;
 }
 function renderTimeline(items) {
   const n = now(), today = etMidnight(n);
@@ -773,7 +759,7 @@ function renderWeekStrip(items) {
   $("weekRange").textContent = range; $("weekRange2").textContent = range;
   $("weekstrip").innerHTML = Array.from({ length: 7 }, (_, k) => {
     const d = today + k * D, list = items.filter(i => visible(i) && dayKey(i.start) === d && i.kind !== "focus");
-    return `<div class="wd ${k === 0 ? "today" : ""}" data-go="week" role="button" tabindex="0"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
+    return `<div class="wd ${k === 0 ? "today" : ""}"><small>${fmt(d + 12 * H, { weekday: "short" })}</small><b>${etParts(d + 12 * H).d}</b><div class="dots">${list.map(i => `<i data-kind="${i.kind}" title="${esc(i.title)}"></i>`).join("")}</div></div>`;
   }).join("");
 }
 function dlHtml(i) {
@@ -817,7 +803,7 @@ function renderWeekView(items) {
       const p = etParts(i.start), top = ((p.h + p.mi / 60) - H0) * PX;
       if (top < -PX || top > (H1 - H0) * PX) continue;
       if (i.kind === "deadline") col += `<div class="pin u${urgency(i.start)}" style="top:${Math.max(0, top - 10)}px" title="${esc(i.title)}${i.tri ? " — " + esc(reason(i.tri.reason)) : ""}">${esc(i.title)}</div>`;
-      else col += `<div class="blk ${i.ghost ? "ghost" : ""} ${i.conflict ? "conf" : ""}" data-kind="${i.kind}" ${i.ghost ? `data-accept="${esc(i.id)}"` : ""} style="top:${top}px;height:${Math.max(22, (i.end - i.start) / H * PX - 2)}px" title="${esc(i.title)}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}<small>${esc(i.location || (i.ghost ? t("wk.sugg") : ""))}</small></div>`;
+      else col += `<div class="blk ${i.conflict ? "conf" : ""}" data-kind="${i.kind}" style="top:${top}px;height:${Math.max(22, (i.end - i.start) / H * PX - 2)}px" title="${esc(i.title)}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${esc(i.title)}<small>${esc(i.location || "")}</small></div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
@@ -841,20 +827,20 @@ function renderSetup() {
   $("dsub").textContent = t(s.gemini ? "drawer.sub.g" : "drawer.sub.r");
 }
 
-/* ---------------- ask ---------------- */
+/* ---------------- questions (rule-based until Gemini answers them) ---------------- */
 function answer(q, items) {
   const n = now(), dl = items.filter(i => i.kind === "deadline" && i.start >= n).slice(0, 3), used = []; let text;
   if (/first|priorit|start|what should|先做|先干|优先|哪个/i.test(q)) {
     used.push(t("u.deadlines", { n: dl.length }), t("u.rules"));
     text = dl.length ? t("ans.start", { t: esc(dl[0].title), c: esc(code(dl[0].course)), r: esc(reason(dl[0].tri?.reason) || ""), rest: dl.slice(1).map(d => t("ans.by", { t: esc(d.title), d: esc(fmt(d.start, { weekday: "short" })) })).join(", ") || t("ans.clear") }) : t("ans.none");
   } else if (/free|when can|time|空|什么时候/i.test(q)) {
-    const g = items.filter(i => i.kind === "focus"); used.push(t("u.classes"), t("u.meetings"), t("u.slots", { n: g.length }));
+    const g = freeSlots(items); used.push(t("u.classes"), t("u.meetings"), t("u.slots", { n: g.length }));
     text = g.length ? t("ans.free", { n: g.length, d: esc(fmt(g[0].start, { weekday: "short", hour: "numeric" })), t: esc(g[0].title) }) : t("ans.nofree");
   } else if (/meet|office|prof|会议|教授|见面/i.test(q)) {
     const m = items.filter(i => i.kind === "meeting" && i.start >= n); used.push(t("u.meetings"));
     text = m.length ? t("ans.meet", { t: esc(m[0].title), d: esc(fmt(m[0].start, { weekday: "short", hour: "numeric", minute: "2-digit" })), l: m[0].location ? (lang === "zh" ? "，" : " at ") + esc(m[0].location) : "" }) + (m[0].conflict ? t("ans.meet.conf", { c: esc(m[0].conflict) }) : "") : t("ans.nomeet");
   } else { used.push(t("u.all")); text = t("ans.fallback", { n: dl.length, t: esc(dl[0]?.title || "—") }); }
-  const el = $("answer"); el.innerHTML = `<p>${text}</p><div class="used">${used.map(u => `<span>${t("ans.used", { x: esc(u) })}</span>`).join("")}<span style="color:var(--muted)">${t("ans.rules")}</span></div>`; el.classList.add("show");
+  return `${text}<div class="used" style="margin-top:8px">${used.map(u => `<span>${t("ans.used", { x: esc(u) })}</span>`).join("")}</div><span class="eng">${t("ans.rules")}</span>`;
 }
 
 /* ---------------- agent drawer ---------------- */
@@ -875,7 +861,7 @@ function itemLine(a) {
 }
 async function sendToAgent() {
   const text = $("dtext").value.trim(); if (!text && !pending) return;
-  if (text && !pending && /[?？]$/.test(text)) { bubble(esc(text), true); $("dtext").value = ""; bubble(t("drawer.ask")); answer(text, allItems()); $("q").value = text; return; }
+  if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|是不是|什么|哪个|啥|几点|有没有)/i.test(text)) { bubble(esc(text), true); $("dtext").value = ""; $("dtext").style.height = ""; bubble(answer(text, allItems())); return; }
   bubble(`${esc(text)}${pending ? `<img src="${pending.url}" alt="">` : ""}`, true);
   const payload = { text, image: pending?.data, mime: pending?.mime };
   $("dtext").value = ""; $("dtext").style.height = ""; clearImage();
@@ -910,8 +896,6 @@ document.addEventListener("click", async e => {
   const nav = e.target.closest(".tab, .tabbar button, #setupBtn"); if (nav) return go(nav.dataset.view);
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
   const l = e.target.closest("[data-lang]"); if (l) { lang = l.dataset.lang; localStorage.setItem("bt.lang", lang); applyLang(); return render(); }
-  const f = e.target.closest("[data-filter]"); if (f) { kindFilter = kindFilter === f.dataset.filter ? null : f.dataset.filter; return render(); }
-  const a = e.target.closest("[data-accept]"); if (a) { accepted.add(a.dataset.accept); localStorage.setItem("bt.accepted", JSON.stringify([...accepted])); return render(); }
   const rm = e.target.closest("[data-remove]"); if (rm) { e.preventDefault(); e.stopPropagation(); await fetch("/api/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: rm.dataset.remove }) }); rm.closest(".result")?.classList.remove("show"); return load(); }
   const ex = e.target.closest("[data-ex]"); if (ex) { $("dtext").value = t(ex.dataset.ex); $("dtext").focus(); return; }
   if (e.target.closest("[data-open-drawer]")) return openDrawer();
@@ -932,8 +916,6 @@ document.addEventListener("click", async e => {
     if (r.error) { m.className = "msg err"; m.textContent = r.error; } else { m.textContent = t("setup.imported", { n: r.imported, u: r.summary.urgent, i: r.summary.ignore }); load(); }
   }
 });
-$("q").addEventListener("input", () => { if (!/[?？]/.test($("q").value)) { $("answer").classList.remove("show"); render(); } });
-$("q").addEventListener("keydown", e => { if (e.key === "Enter" && $("q").value.trim()) answer($("q").value, allItems()); });
 $("dtext").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendToAgent(); } });
 $("dtext").addEventListener("input", e => { e.target.style.height = ""; const h = Math.min(140, e.target.scrollHeight); e.target.style.height = h + "px"; e.target.classList.toggle("multi", e.target.scrollHeight > 140); });
 $("dfile").addEventListener("click", e => e.stopPropagation());
@@ -944,7 +926,6 @@ dc.addEventListener("dragover", e => { e.preventDefault(); dc.classList.add("dra
 dc.addEventListener("dragleave", () => dc.classList.remove("drag"));
 dc.addEventListener("drop", e => { e.preventDefault(); dc.classList.remove("drag"); setImage(e.dataTransfer.files[0]); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
-document.addEventListener("click", e => { const f = e.target.closest("[data-filter]"); if (f && f.classList.contains("stat") && kindFilter) setTimeout(() => $("timeline").scrollIntoView({ behavior: "smooth", block: "start" }), 50); });
 applyLang(); load(); setInterval(tick, 1000); setInterval(load, 60_000);
 </script>
 </body>
