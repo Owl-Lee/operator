@@ -228,6 +228,8 @@ textarea, input { font-family: var(--sans); }
 .item.urgent .kind { color: var(--urgent); background: #fde7e4; }
 .item.urgent .kind::before { background: var(--urgent); }
 .dl .item + .item::before { left: 10px; }
+.dl .mo { font: 700 12px var(--disp); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 14px 10px 4px; }
+.dl .mo + .item::before { display: none; }
 .dl .date { text-align: right; font: 600 13px var(--disp); color: var(--ink-2); }
 .dl .date small { display: block; color: var(--muted); font-weight: 500; font-size: 12px; }
 .bar { height: 5px; border-radius: 3px; background: var(--bg); margin-top: 8px; overflow: hidden; max-width: 320px; }
@@ -584,8 +586,8 @@ const I18N = {
     "nav.today": "Home", "nav.week": "Week", "nav.deadlines": "Deadlines", "nav.courses": "Courses", "nav.setup": "Setup",
     "ask.ph": "Ask the agent… “what should I do first this week?” — or type to filter",
     "h.timeline": "Timeline", "h.fullweek": "Full week →", "h.feed": "What the agent did", "h.live": "live", "h.quiet": "Didn't bother you with",
-    "h.paste": "Paste anything", "h.paste.sub": "email · chat · poster · one sentence", "h.week": "This week", "h.deadlines": "Deadlines", "h.all": "All →",
-    "h.agenda": "Meetings & events", "h.weekview": "Week view", "h.alldl": "Every upcoming deadline",
+    "h.paste": "Paste anything", "h.paste.sub": "email · chat · poster · one sentence", "h.week": "This week", "h.all": "All →",
+    "h.agenda": "Meetings & events", "h.weekview": "Week view", "h.alldl": "Every upcoming deadline", "h.deadlines": "Due this week",
     "paste.hint": "Timetable screenshot, an email, a poster, one sentence — English or 中文. Wrong guess? Undo on the item.", "paste.undo": "Undo",
     "drawer.open": "Open the agent →", "drawer.fab": "Agent", "drawer.ph": "Type, paste, or drop a screenshot…", "drawer.hint": "Enter to send · Shift+Enter for a new line · paste or drop images",
     "drawer.sub.g": "Gemini reads text & images", "drawer.sub.r": "rules for text · images wait for Gemini", "drawer.hello": "Send me anything with a time in it — a timetable screenshot, an email, a poster, one sentence — and I'll put it on your schedule (undo any time). Or just ask: “what should I do first this week?”",
@@ -629,8 +631,8 @@ const I18N = {
     "nav.today": "主页", "nav.week": "本周", "nav.deadlines": "截止", "nav.courses": "课程", "nav.setup": "设置",
     "ask.ph": "问 agent… “这周先做哪个？”——或直接输入关键词筛选",
     "h.timeline": "时间线", "h.fullweek": "完整一周 →", "h.feed": "Agent 做了什么", "h.live": "实时", "h.quiet": "没打扰你的",
-    "h.paste": "随便粘贴", "h.paste.sub": "邮件 · 群消息 · 海报 · 一句话", "h.week": "本周", "h.deadlines": "截止时间", "h.all": "全部 →",
-    "h.agenda": "会议与活动", "h.weekview": "周视图", "h.alldl": "所有待办截止",
+    "h.paste": "随便粘贴", "h.paste.sub": "邮件 · 群消息 · 海报 · 一句话", "h.week": "本周", "h.all": "全部 →",
+    "h.agenda": "会议与活动", "h.weekview": "周视图", "h.alldl": "所有待办截止", "h.deadlines": "本周截止",
     "paste.hint": "课表截图、一封邮件、一张海报、一句话——中英文都行。看错了点条目上的撤销。", "paste.undo": "撤销",
     "drawer.open": "打开 agent →", "drawer.fab": "Agent", "drawer.ph": "输入、粘贴，或拖入截图…", "drawer.hint": "Enter 发送 · Shift+Enter 换行 · 可粘贴或拖入图片",
     "drawer.sub.g": "Gemini 读文字和图片", "drawer.sub.r": "文字用规则 · 图片等 Gemini", "drawer.hello": "把任何带时间的东西发给我——课表截图、邮件、海报、一句话——我放进你的日程，随时可撤销。也可以直接问：“这周先做哪个？”",
@@ -725,8 +727,8 @@ const sameDay = (a, b) => etMidnight(a) === etMidnight(b);
 const dayKey = ms => etMidnight(ms);
 const triOf = uid => state.triage.find(x => x.uid === uid);
 
-function allItems() {
-  const n = now(), start = etMidnight(n) - 7 * D, end = start + 28 * D, out = [];
+function allItems(opts = {}) {
+  const n = now(), start = etMidnight(n) - 7 * D, end = opts.farDeadlines ? Infinity : start + 28 * D, out = [];
   const doneSet = new Set((state.done || []).map(d => d.uid));
   for (const i of state.items) {
     const tr = triOf(i.uid); if (!i.isDue || tr?.level === "ignore") continue;
@@ -930,7 +932,9 @@ function renderDeadlines(items) {
   const n = now(), week = etMidnight(n) + 7 * D;
   const list = items.filter(i => i.kind === "deadline" && i.start >= n);
   $("deadlines").innerHTML = list.filter(i => i.start < week).map(dlHtml).join("") || emptyHtml("empty.dl", "empty.dl.sub");
-  $("deadlinesAll").innerHTML = list.map(dlHtml).join("") || emptyHtml("empty.dl", "empty.dl.sub");
+  // The Deadlines tab is the full horizon, grouped by month; the home card is just this week.
+  const all = allItems({ farDeadlines: true }).filter(i => i.kind === "deadline" && i.start >= n);
+  let mo = ""; $("deadlinesAll").innerHTML = all.map(i => { const m = fmt(i.start, { month: "long", year: "numeric" }); const h = m !== mo ? `<div class="mo">${esc(m)}</div>` : ""; mo = m; return h + dlHtml(i); }).join("") || emptyHtml("empty.dl", "empty.dl.sub");
 }
 function renderAgenda(items) {
   const list = items.filter(i => (i.kind === "meeting" || i.kind === "event") && i.end >= now() && visible(i)).slice(0, 6);
