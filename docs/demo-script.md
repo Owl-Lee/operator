@@ -1,79 +1,99 @@
-# Operator · 3 分钟评委演示稿
+# Operator · 3 分钟演示稿（简单版）
 
-英文是照着念的台词，括号里是你手上的动作。总时长 2 分 50 秒左右，留 10 秒缓冲。
+短句，简单词。英文照着念，括号里是动作。全部念完约 2 分 40 秒。
 
 ---
 
-## 0:00–0:30 开场：真实的故事（主页，蒸汽皮肤，先别动）
+## 0:00–0:20 开场（主页）
 
-> Hi, I'm Lee. A few weeks ago I got a zero on an assignment. Not because I didn't do it — I never saw it. It was sitting in Brightspace, the platform every Stony Brook class runs on, buried between old-semester posts, "module now available" notices and campus announcements. I counted my feed this week: 94 items. Eleven of them actually mattered.
+> Hi, I'm Lee. This is Operator.
 >
-> So I built Operator: the telegraph operator who listens to every line for you, and only taps you on the shoulder when something is worth it.
+> Last month I got a zero on a homework. I did not see it. It was hidden in Brightspace, with 90 other things. Brightspace is where all our classes post homework.
+>
+> Operator watches Brightspace for me. It only tells me the things that matter.
 
-（说到 "taps you on the shoulder" 时指一下右边的「下一个截止」倒计时卡）
+## 0:20–0:45 过滤（「没打扰你的」卡片）
 
-## 0:30–0:55 过滤是产品（「没打扰你的」卡片）
+> Every 10 minutes it reads my Brightspace calendar. Then it sorts every item: urgent, good to know, or ignore.
+>
+> My feed has 94 items. 83 are ignored. It shows me why.
 
-> It reads my Brightspace calendar every ten minutes and triages every item: urgent, need-to-know, or ignore. Eighty-three of ninety-four were ignored — and it shows me why.
+（点开「Old course」，滚一下，再点「Already past」）
 
-（点「Old course」展开，滚两下，再点「Already past」）
+> Old classes. Past dates. School notices. None of this goes to my phone. The 2 urgent ones did.
 
-> Old semester, already past, campus notices. None of this ever reaches my phone. The two urgent ones did.
+## 0:45–1:20 手机（举起手机）
 
-## 0:55–1:35 手机闭环（举起手机，或者提前投屏）
+> It talks to me on iMessage. Short messages, like this.
 
-> Here's what reaching me looks like. When a professor moved a deadline, I got one plain line — not a notification dump. Before anything is due I get a 24-hour, a 3-hour and a 1-hour nudge. And I can just talk back.
+（展示手机上的消息）
 
-（手机发语音：「我刚交了 EST 393 的 HW#3」→ 等它回 → 切回网页，截止列表里 HW#3 变灰打勾）
+> When a teacher moves a deadline, I get one line. Before a deadline, I get three reminders: 24 hours, 3 hours, 1 hour.
+>
+> And I can talk back. Watch.
 
-> One voice note, one Gemini call: it figured out which assignment I meant, marked it done, and the reminders for it stopped. If it isn't sure which one, it asks instead of guessing — that's the rule everywhere in this project.
+（手机发语音：「我刚交了 EST 393 的 HW#3」→ 等回复 → 切回网页，HW#3 打勾）
 
-## 1:35–2:10 网页上的同一个大脑（点右下 Agent → 语音通话）
+> I said "I finished HW#3". It found the right homework, marked it done, and stopped the reminders. If it is not sure, it asks me first.
 
-> Same brain on the dashboard.
+## 1:20–1:55 网页对话（点右下 Agent → Voice call）
 
-（说："What do I have on Tuesday, and is anything urgent?" → 让它说完，字幕一个词一个词亮）
+> The same brain is on the website. I can talk to it.
 
-> ElevenLabs reads it back with live subtitles. And it understands anything that has a time in it —
+（说："What do I have on Tuesday?" → 等它读完，字幕一个词一个词亮）
 
-（拖课表截图进页面 → 课进日程 → 点一个「撤销」）
+> It answers out loud, with live subtitles.
+>
+> I can also give it anything with a time in it. A screenshot, an email, one sentence, in English or Chinese.
 
-> — a timetable screenshot, an email, a poster, a sentence in Chinese. Four classes in, one click to undo.
+（拖课表截图进页面 → 课进日程 → 点一个 Undo）
 
-## 2:10–2:35 早报与周视图
+> Four classes added. One click to undo.
 
-（点导航栏「Morning telegram」，念 5 秒就按停）
+## 1:55–2:20 早报和周视图
 
-> Every morning it writes and reads me a briefing of my day. And here's the week —
+（点顶部 Morning telegram，听 5 秒，按停）
 
-（切「Week」页）
+> Every morning it reads me my day.
 
-> — classes, meetings, events and deadlines in one place, English or Chinese, nothing to configure.
+（切 Week 页）
 
-（点一下「中」再切回「EN」）
+> This is my week. Classes, meetings, events, deadlines. All in one place.
 
-## 2:35–2:50 收尾
+（点「中」切中文，再切回 EN）
 
-> It's live at myoperator.club, open source on GitHub, built with Gemini, Photon for iMessage, ElevenLabs, a GoDaddy domain and Vultr. Filtering is the product: the value is in what it decides not to say. I haven't opened Brightspace in two days. Thanks.
+> English or Chinese. Nothing to set up.
+
+## 2:20–2:40 收尾
+
+> Operator is live at myoperator.club. The code is on GitHub.
+>
+> We used Gemini, Photon for iMessage, ElevenLabs for voice, a GoDaddy domain, and Vultr.
+>
+> The idea is simple: less noise, only what matters. I have not opened Brightspace in two days. Thank you.
 
 ---
 
 ## 演示前 10 分钟
 
-- 手机给 +1 415 605-6081 发一句 hi，把 iMessage 线路预热。
-- 笔记本：Chrome 开好两个标签（主页、GitHub），麦克风权限已允许，音量开大。
-- 确认 HW#3 是未完成状态（现在所有作业都是未完成）。
-- 准备好一张课表截图放在桌面，方便拖。
+- 手机给 +1 415 605-6081 发一句 hi，预热 iMessage 线路。
+- Chrome 开两个标签：主页、GitHub。麦克风权限允许。音量开大。
+- HW#3 是未完成（现在全部作业都是未完成）。
+- 桌面放一张课表截图，方便拖。
 
-## 兜底
+## 出问题怎么办
 
-- 早报是缓存好的，网络再差也能放。
-- 手机语音如果 30 秒没回，别等：切到之前收到消息的截图，口头说明，继续往下。
-- Gemini 如果报「忙」，网页提问改成读之前的回答截图；过滤卡片和周视图不依赖任何外部服务。
+- 早报是提前做好的，一定能放。
+- 手机 30 秒没回：给评委看之前收到的消息截图，继续讲。
+- Gemini 报忙：跳过网页提问，直接演示拖截图或周视图。
 
-## 评委可能问
+## 评委可能问（用简单英语答）
 
-- **怎么判断紧急？** 八条有顺序的规则，全部可解释：考试永远紧急；72 小时内到期紧急；一周内的测验紧急；旧学期、已过期、开放提示、校园通知忽略。没有黑盒。
-- **别人怎么用？** 设置页粘贴自己的 Brightspace 日历链接，其余自动。多用户登录是下一步。
-- **和 Canvas / Google 日历提醒有什么区别？** 它们提醒一切。Operator 先过滤、解释过滤了什么，而且能用文字、语音、照片双向对话。
-- **为什么是 iMessage？** 学生真正会看的地方；Photon 让这件事只用十几行代码。
+- **How do you decide what is urgent?**
+  > Eight simple rules. Exams are always urgent. Due within 72 hours is urgent. A quiz within a week is urgent. Old classes, past items and school notices are ignored. No black box, I can show every rule.
+- **How can other students use it?**
+  > Paste your own Brightspace calendar link on the Setup page. That is all. Login for many users is the next step.
+- **How is it different from Canvas or Google Calendar reminders?**
+  > They remind you about everything. Operator filters first, explains what it filtered, and you can talk to it by text, voice or photo.
+- **Why iMessage?**
+  > Students actually read it. Photon made it easy.
