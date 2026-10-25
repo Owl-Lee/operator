@@ -28,15 +28,15 @@
 
 ## 1:00–1:35 手机（举起手机）
 
-> It talks to me on iMessage. Short messages, like this.
+> The same agent lives on my phone, in iMessage.
 
-（展示手机上的消息）
+（展示手机上的对话）
 
-> The same agent is on my phone. I can talk to it here too, and it reminds me before every deadline. Watch.
+> It sends me short messages when something changes, and reminds me before every deadline. And I can talk to it right here. Watch.
 
 （手机发语音：「我刚交了 EST 393 的 HW#3」→ 等回复 → 切回网页，HW#3 打勾）
 
-> I said "I finished HW#3". It found the right homework, marked it done, and stopped the reminders. If it is not sure, it asks me first.
+> I just said "I finished HW#3". It found the right homework, marked it done, and the reminders stopped. If it is not sure what I mean, it asks me first.
 
 ## 1:35–2:10 网页对话（点右下 Agent → Voice call）
 
