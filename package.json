@@ -1,7 +1,7 @@
 {
   "name": "operator-agent",
   "version": "1.0.0",
-  "description": "",
+  "description": "Operator — the telegraph operator who watches your Brightspace so you never log in again. SBUHacks 2026 (Steel and Steam).",
   "main": "index.js",
   "scripts": {
     "poll": "tsx src/index.ts",
@@ -10,9 +10,19 @@
     "typecheck": "tsc --noEmit",
     "deploy": "git push origin master && ssh root@45.77.203.87 /opt/operator/deploy.sh"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "brightspace",
+    "agent",
+    "imessage",
+    "gemini",
+    "elevenlabs",
+    "photon",
+    "sbuhacks",
+    "student",
+    "deadlines"
+  ],
+  "author": "Owl-Lee",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^18.0.9",
     "node-ical": "^0.27.3",
@@ -23,5 +33,10 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
-  "type": "module"
+  "type": "module",
+  "homepage": "https://myoperator.club",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Owl-Lee/operator.git"
+  }
 }
