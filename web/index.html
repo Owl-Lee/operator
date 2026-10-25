@@ -1256,7 +1256,7 @@ function itemLine(a) {
 }
 async function sendToAgent() {
   const text = $("dtext").value.trim(); if (!text && !pending) return;
-  if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|是不是|什么|哪个|啥|几点|有没有|你好|hi|hello)/i.test(text)) {
+  if (text && !pending && /[?？]$|^(what|when|which|how|should|do i|is |are |can |will |tell me|是不是|什么|哪个|啥|几点|有没有|你好|hi|hello)|多久|多少|怎么|为什么|吗s*$|呢s*$|哪|什么时候|how long|how many|how much/i.test(text)) {
     bubble(esc(text), true); $("dtext").value = ""; $("dtext").style.height = "";
     if (!state.setup?.gemini) { bubble(answer(text, allItems())); return; }
     const wait = bubble(t("drawer.reading"));
@@ -1275,6 +1275,7 @@ async function sendToAgent() {
     const r = await (await fetch(payload.image ? "/api/add-image" : "/api/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) })).json();
     if (r.error) { wait.innerHTML = t("drawer.err", { e: esc(r.error) }); return; }
     if (r.queued) { wait.innerHTML = `${t("drawer.queued")}<br><span class="eng">${t("eng.queued")}</span>`; load(); return; }
+    if (r.asked) { wait.innerHTML = `<div class="kara">${esc(r.answer)}</div>${sayBtn(r.answer)}`; load(); return; }
     if (!r.items.length) { wait.innerHTML = `${t("drawer.none")}<br><span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`; return; }
     wait.innerHTML = `${r.summary && r.engine === "gemini" ? esc(r.summary) + "<br>" : ""}${t("drawer.added", { n: t("items", { n: r.items.length }) })}${r.items.map(itemLine).join("")}${r.notes?.length ? `<small style="color:var(--muted)">${esc(r.notes.join(" "))}</small><br>` : ""}<span class="eng ${r.engine === "gemini" ? "g" : ""}">${t("eng." + r.engine)}</span>`;
     toast(t("drawer.added", { n: t("items", { n: r.items.length }) }).replace(/[:：]$/, ""));

@@ -34,12 +34,14 @@ export async function runPoll(opts: { file?: string; now?: Date } = {}): Promise
   saveSnapshot(items);
 
   const now = opts.now ?? (process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date());
-  const summary = summarize(triage(items, now));
+  const tri = triage(items, now), summary = summarize(tri);
+  const ignored = new Set(tri.filter(t => t.level === "ignore").map(t => t.uid));
   logAgent("poll", `Checked Brightspace: ${items.length} items. ${summary.urgent} urgent, ${summary.need} need-to-know, ${summary.ignore} filtered out.`, { ...summary, total: items.length });
 
   for (const c of changes) {
     const what = c.type === "moved" ? `moved from ${fmtTime(c.oldDue)} to ${fmtTime(c.item.due)}` : c.type === "new" ? `added, due ${fmtTime(c.item.due)}` : c.type;
     logAgent("change", `Detected ${c.item.course.split(" - ")[0]} · ${c.item.title} ${what}.`, { uid: c.item.uid, change: c.type });
+    if (ignored.has(c.item.uid)) continue; // campus notices, old semesters, past items: never worth a telegram
     const text = changeTelegram(c);
     const send = !!process.env.IMESSAGE_PROJECT_ID;
     if (send) await sendTelegram(text);

@@ -1,3 +1,4 @@
+import "./tz.js";
 import "dotenv/config";
 import { createServer, type IncomingMessage } from "node:http";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
@@ -111,6 +112,13 @@ createServer(async (req, res) => {
         const it = { ...base, course: g.course, start, end };
         (g.kind === "deadline" ? s.deadlines : g.kind === "meeting" ? s.meetings : s.events).push(it);
         added.push({ ...g, id, start, end });
+      }
+      if (!added.length && engine === "gemini" && text?.trim() && !image) {
+        // Not something to record → it was a question or a remark. Answer it instead of shrugging.
+        const lang = /[一-龥]/.test(text) ? "zh" : "en";
+        const a = await geminiAsk(text, scheduleContext(now), lang, now);
+        logAgent("triage", `Answered: “${text.trim().slice(0, 80)}” (${a.model}).`, { kind: "ask" });
+        return json({ ok: true, asked: true, answer: a.answer, items: [], engine, notes });
       }
       saveSchedule(s);
       const what = added.map(a => `${a.kind}: “${a.title}”`).join("; ");

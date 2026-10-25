@@ -1,3 +1,4 @@
+import "./tz.js";
 import "dotenv/config";
 import { sendTelegram } from "./send.js";
 import { telegram } from "./telegram.js";

@@ -1,3 +1,4 @@
+import "./tz.js";
 import "dotenv/config";
 import { runPoll } from "./poll.js";
 import { upcoming } from "./ical.js";
