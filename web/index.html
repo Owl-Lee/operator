@@ -309,7 +309,7 @@ html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .blk.tall small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--dl, 2); white-space: normal; text-overflow: clip; overflow: hidden; }
 /* hover/focus: grow to show everything, over the neighbours */
 .blk:hover, .blk:focus, .blk.open { height: auto !important; min-height: var(--h, 42px); white-space: normal; text-overflow: clip; z-index: 30 !important; display: block; -webkit-line-clamp: unset; box-shadow: 0 10px 24px -8px rgba(30,27,46,.35), 0 0 0 2px #fff; transform: none; outline: none; }
-.blk:hover small, .blk:focus small, .blk.open small { white-space: normal; text-overflow: clip; }
+.blk:hover small, .blk:focus small, .blk.open small { display: block; -webkit-line-clamp: unset; overflow: visible; white-space: normal; text-overflow: clip; }
 .blk.tight { padding: 3px 5px; font-size: 10.5px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
 .blk .tm { font: 500 10px var(--sans); color: var(--ink-2); opacity: .8; }
 .blk.over { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(30,27,46,.12); margin-top: 4px; font-size: 10px; padding: 3px 4px; }
@@ -664,7 +664,7 @@ const I18N = {
     "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
     "feed.done.text": "<b>Marked done</b> from your text: {t} (“{q}”). Reminders off.", "feed.done.web": "<b>Marked done</b> from the dashboard: {t}. Reminders off.", "feed.reopen": "<b>Re-opened</b> {t}.", "feed.clarify": "<b>Asked</b> which item you meant by “{q}”.", "feed.answered.im": "<b>Answered over iMessage</b> “{q}”.",
     "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}",
-    "brief.play": "Morning telegram", "feed.brief": "Read the briefing aloud on the dashboard.", "feed.brief.phone": "Sent the briefing to your phone as a voice note.", "skin.clean": "Clean", "skin.airship": "Steam · Airship", "skin.gears": "Steam · Gears", "brief.loading": "Composing…", "brief.stop": "Stop", "say.play": "Read aloud", "say.loading": "…", "say.stop": "Stop", "mic.start": "Talk to the agent", "mic.stop": "Stop and send", "mic.sent": "(voice message)", "mic.short": "That was too short — hold on a second longer.", "mic.denied": "Microphone blocked — allow it in the address bar.", "mic.unsupported": "This browser can't record audio.", "mic.sentphone": "Sent to your phone.", "drawer.listening": "Listening…", "call.start": "Voice call", "call.stop": "Hang up", "call.listening": "Listening — pause when you're done", "call.thinking": "Thinking…", "call.speaking": "Speaking…", "call.hello": "Go ahead, I'm listening. Pause for a second when you're done; say nothing for a while to hang up.", "call.silence": "Didn't hear anything — call ended.", "call.ended": "Call ended · {t} · {n} exchange(s).", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
+    "brief.play": "Morning telegram", "feed.brief": "Read the briefing aloud on the dashboard.", "feed.brief.phone": "Sent the briefing to your phone as a voice note.", "skin.clean": "Clean", "skin.airship": "Steam · Airship", "skin.gears": "Steam · Gears", "brief.loading": "Composing…", "brief.stop": "Stop", "say.play": "Read aloud", "say.loading": "…", "say.stop": "Stop", "mic.start": "Talk to the agent", "mic.stop": "Stop and send", "mic.sent": "(voice message)", "mic.short": "That was too short — hold on a second longer.", "mic.denied": "Microphone blocked — click the 🔒/🎤 icon in the address bar and allow it, then try again.", "mic.none": "No microphone found on this device.", "mic.unsupported": "This browser can't record audio.", "mic.sentphone": "Sent to your phone.", "drawer.listening": "Listening…", "call.start": "Voice call", "call.stop": "Hang up", "call.listening": "Listening — pause when you're done", "call.thinking": "Thinking…", "call.speaking": "Speaking…", "call.hello": "Go ahead, I'm listening. Pause for a second when you're done; say nothing for a while to hang up.", "call.silence": "Didn't hear anything — call ended.", "call.ended": "Call ended · {t} · {n} exchange(s).", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -709,7 +709,7 @@ const I18N = {
     "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
     "feed.done.text": "<b>按你的短信标为完成</b>：{t}（“{q}”）。提醒已关。", "feed.done.web": "<b>在页面上标为完成</b>：{t}。提醒已关。", "feed.reopen": "<b>重新打开</b> {t}。", "feed.clarify": "<b>反问了</b>“{q}”指的是哪一项。", "feed.answered.im": "<b>在 iMessage 里回答了</b>“{q}”。",
     "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}",
-    "brief.play": "今日早报", "feed.brief": "在页面上朗读了早报。", "feed.brief.phone": "把早报作为语音发到了你手机。", "skin.clean": "简洁", "skin.airship": "蒸汽 · 飞艇", "skin.gears": "蒸汽 · 齿轮", "brief.loading": "正在撰写…", "brief.stop": "停止", "say.play": "朗读", "say.loading": "…", "say.stop": "停止", "mic.start": "对 agent 说话", "mic.stop": "停止并发送", "mic.sent": "（语音）", "mic.short": "太短了，再多说一秒。", "mic.denied": "麦克风被禁用了，在地址栏允许一下。", "mic.unsupported": "这个浏览器不支持录音。", "mic.sentphone": "已发到你手机。", "drawer.listening": "正在听…", "call.start": "语音通话", "call.stop": "挂断", "call.listening": "正在听，说完停一秒", "call.thinking": "正在想…", "call.speaking": "正在说…", "call.hello": "说吧，我在听。说完停一秒就行；一直不说话就自动挂断。", "call.silence": "没听到声音，通话结束。", "call.ended": "通话结束 · 用时 {t} · {n} 轮对话。", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
+    "brief.play": "今日早报", "feed.brief": "在页面上朗读了早报。", "feed.brief.phone": "把早报作为语音发到了你手机。", "skin.clean": "简洁", "skin.airship": "蒸汽 · 飞艇", "skin.gears": "蒸汽 · 齿轮", "brief.loading": "正在撰写…", "brief.stop": "停止", "say.play": "朗读", "say.loading": "…", "say.stop": "停止", "mic.start": "对 agent 说话", "mic.stop": "停止并发送", "mic.sent": "（语音）", "mic.short": "太短了，再多说一秒。", "mic.denied": "麦克风被拒绝了。点地址栏左边的 🔒 或 🎤 图标，允许麦克风后再试。", "mic.none": "这台设备没有检测到麦克风。", "mic.unsupported": "这个浏览器不支持录音。", "mic.sentphone": "已发到你手机。", "drawer.listening": "正在听…", "call.start": "语音通话", "call.stop": "挂断", "call.listening": "正在听，说完停一秒", "call.thinking": "正在想…", "call.speaking": "正在说…", "call.hello": "说吧，我在听。说完停一秒就行；一直不说话就自动挂断。", "call.silence": "没听到声音，通话结束。", "call.ended": "通话结束 · 用时 {t} · {n} 轮对话。", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -1161,8 +1161,9 @@ const callBtn = () => $("dcall");
 function listen({ auto } = {}) {
   return new Promise(async resolve => {
     const btn = $("dmic");
-    if (!navigator.mediaDevices?.getUserMedia) { toast(t("mic.unsupported")); return resolve(null); }
-    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast(t("mic.denied")); return resolve(null); }
+    if (!navigator.mediaDevices?.getUserMedia) { return resolve({ error: t("mic.unsupported") }); }
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) { return resolve({ error: t(/NotFound|Devices/i.test(e?.name) ? "mic.none" : /NotAllowed|Permission|Security/i.test(e?.name) ? "mic.denied" : "mic.unsupported") + (e?.name ? ` (${e.name})` : "") }); }
     const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"].find(m => MediaRecorder.isTypeSupported(m)) || "";
     const chunks = []; rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
     rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
@@ -1183,7 +1184,8 @@ function listen({ auto } = {}) {
       const blob = new Blob(chunks, { type: chunks[0]?.type || mime || "audio/webm" });
       resolve(blob.size < 2000 ? null : blob);
     };
-    rec.start(250); btn.classList.add("rec"); btn.title = t("mic.stop"); setSub(t("call.listening"));
+    try { rec.start(250); } catch (e) { clearInterval(timer); stream.getTracks().forEach(tr => tr.stop()); return resolve({ error: t("mic.unsupported") + ` (${e?.name || e})` }); }
+    btn.classList.add("rec"); btn.title = t("mic.stop"); setSub(t("call.listening"));
   });
 }
 async function sendVoiceBlob(blob) {
@@ -1202,7 +1204,9 @@ async function sendVoiceBlob(blob) {
 }
 async function toggleMic() {
   if (rec && rec.state === "recording") { rec.stop(); return; }
-  const blob = await listen({}); setSub(t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r"));
+  if (toggleMic.busy) return; toggleMic.busy = true;
+  const blob = await listen({}); toggleMic.busy = false; setSub(t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r"));
+  if (blob?.error) return toast(blob.error);
   if (!blob) return toast(t("mic.short"));
   await sendVoiceBlob(blob);
 }
@@ -1217,6 +1221,7 @@ async function toggleCall() {
     bubble(t("call.ended", { t: mmss(secs), n: toggleCall.turns }));
     return;
   }
+  if (toggleCall.starting) return; toggleCall.starting = true; setTimeout(() => { toggleCall.starting = false; }, 800);
   convo = true; toggleCall.t0 = Date.now(); toggleCall.turns = 0;
   callBtn().classList.add("on"); callBtn().lastChild.textContent = t("call.stop"); openDrawer();
   bar.hidden = false; $("callTime").textContent = "0:00"; $("callState").textContent = t("call.listening");
@@ -1225,6 +1230,7 @@ async function toggleCall() {
   while (convo) {
     const blob = await listen({ auto: true });
     if (!convo) break;
+    if (blob?.error) { bubble(blob.error); break; }
     if (!blob) { bubble(t("call.silence")); break; }
     toggleCall.turns++;
     await sendVoiceBlob(blob);
