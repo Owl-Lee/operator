@@ -1199,7 +1199,7 @@ function answer(q, items) {
 let pending = null; // { data: base64, mime, name, url }
 function openDrawer() { document.body.classList.add("drawer-open"); setTimeout(() => $("dtext").focus(), 250); }
 function closeDrawer() { document.body.classList.remove("drawer-open"); }
-function bubble(html, me) { const d = document.createElement("div"); d.className = "bub " + (me ? "me" : "ai"); d.innerHTML = html; $("dm").appendChild(d); $("dm").scrollTop = $("dm").scrollHeight; return d; }
+function bubble(html, me) { const d = document.createElement("div"); d.className = "bub " + (me ? "me" : "ai"); d.innerHTML = html; $("dm").appendChild(d); $("dm").scrollTop = $("dm").scrollHeight; if (me) $("chips").hidden = true; /* examples are for before the first message; after that they only steal room */ return d; }
 function setImage(file) {
   if (!file || !file.type.startsWith("image/")) return;
   const rd = new FileReader();
