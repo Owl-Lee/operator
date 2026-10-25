@@ -1,5 +1,7 @@
 # Operator 🚂📠
 
+English · [中文](README.zh-CN.md)
+
 **The telegraph operator who watches your Brightspace, so you never log in again.**
 
 Operator is an agent for Stony Brook students. It reads your Brightspace calendar feed every ten minutes, decides what actually matters, and sends you a short telegram over iMessage only when it does. You can text it back, send it a voice note or a photo of a timetable, or just talk to it on the dashboard. It answers, records what you tell it, and remembers what you have already finished.
