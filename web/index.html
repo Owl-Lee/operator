@@ -1080,13 +1080,14 @@ function renderWeekView(items) {
       // Pixel budget: title lines are 15px, detail lines 13.7px, 8px padding. The title takes as many lines as it
       // needs (≈11 characters per line in a week column) as long as one detail line still fits.
       const avail = hpx - 8, est = Math.ceil(i.title.length / 11);
-      const tl = tight ? 1 : Math.max(1, Math.min(est, Math.floor((avail - 13.7) / 15))), dl = Math.max(1, Math.floor((avail - tl * 15) / 13.7));
+      const tl = tight ? 1 : Math.max(1, Math.floor((avail - 13.7) / 15)), dl = Math.max(1, Math.floor((avail - 15) / 13.7)); // provisional; fitBlocks() measures the real title height
       const tall = !tight && avail >= 15 + 2 * 13.7; // enough for a title and two detail lines → wrap instead of truncating
       col += `<div class="blk ${tight ? "tight" : ""} ${tall ? "tall" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" tabindex="0" style="top:${top}px;height:${hpx}px;--h:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c};--dl:${dl};--tl:${tl}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `<b class="t">${esc(i.title)}</b><small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
   }
   $("wk").innerHTML = head + allday + body + cols.join("");
+  fitBlocks();
   // Open the week where the week actually starts: one hour above the earliest block (11:00 when the week is empty).
   const wrap = $("wkwrap"), tops = [...$("wk").querySelectorAll(".blk")].map(b => parseFloat(b.style.top)).filter(Number.isFinite);
   const want = Math.max(0, (tops.length ? Math.floor(Math.min(...tops) / PX) - 1 : 11 - H0) * PX);
@@ -1126,6 +1127,15 @@ function renderSetup() {
   $("briefBtn").hidden = !s.elevenlabs; $("dcall").hidden = !(s.elevenlabs && s.gemini);
 }
 /* ▶ Morning telegram: fetch the mp3 (ElevenLabs reads Gemini's briefing), play it, show the words as a toast */
+/* After layout: the title's real height (which depends on column width) decides how many detail lines are left. */
+function fitBlocks() {
+  for (const b of document.querySelectorAll(".blk.tall")) {
+    const t = b.querySelector(".t"), sm = b.querySelector("small"); if (!t || !sm) continue;
+    const avail = parseFloat(b.style.getPropertyValue("--h")) - 8, titleH = t.getBoundingClientRect().height || 15;
+    b.style.setProperty("--dl", String(Math.max(1, Math.floor((avail - titleH) / 13.7))));
+  }
+}
+window.addEventListener("resize", () => { clearTimeout(fitBlocks.t); fitBlocks.t = setTimeout(fitBlocks, 150); });
 const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 /* Live subtitles: one <span> per character, lit as the audio reaches its timestamp. */
 function karaoke(el, voice, audio) {
