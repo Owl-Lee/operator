@@ -202,6 +202,17 @@ textarea, input { font-family: var(--sans); }
 .ql { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
 .ql span { color: var(--ink-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ql small { color: var(--muted); white-space: nowrap; }
+/* each reason row opens a short, scrollable list of the actual items */
+button.ql { width: 100%; background: none; text-align: left; cursor: pointer; align-items: center; }
+button.ql:hover span { color: var(--ink); }
+.ql .chev { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg) translateY(-2px); transition: transform .18s; }
+.qg.open .ql .chev { transform: rotate(-135deg) translateY(-1px); }
+.ql-sub { display: none; max-height: 168px; overflow-y: auto; margin: 0 0 6px; padding: 0 2px 0 12px; border-left: 2px solid var(--line); }
+.qg.open .ql-sub { display: block; animation: rise .18s ease-out; }
+.qi { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; font-size: 12.5px; border-top: 1px solid var(--line); }
+.qi:first-child { border-top: 0; }
+.qi span { color: var(--ink-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qi small { color: var(--muted); white-space: nowrap; }
 .tri-bars { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 16px; background: var(--bg); }
 .tri-bars i { display: block; height: 100%; }
 .tri-leg { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
@@ -756,7 +767,7 @@ function applyLang() {
 /* ---------------- state ---------------- */
 const ET = "America/New_York";
 let state = { items: [], triage: [], agentLog: [], schedule: { classes: [], meetings: [], events: [], deadlines: [] }, setup: {}, now: new Date().toISOString() };
-let clockOffset = 0, quietOpen = false;
+let clockOffset = 0, quietOpen = false; const quietGroups = new Set(); // which filtered-out groups are expanded
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -963,12 +974,12 @@ function renderQuiet() {
   const ig = state.triage.filter(x => x.level === "ignore"), byUid = new Map(state.items.map(i => [i.uid, i]));
   const sum = { urgent: 0, need: 0, ignore: 0 }; for (const x of state.triage) sum[x.level]++;
   const total = state.triage.length || 1, groups = {};
-  for (const x of ig) { const k = reason(x.reason).replace(/\(.*\)/, "").trim(); groups[k] = (groups[k] || 0) + 1; }
+  for (const x of ig) { const k = reason(x.reason).replace(/\(.*\)/, "").trim(); (groups[k] = groups[k] || []).push(x); }
+  const line = x => { const i = byUid.get(x.uid); if (!i) return ""; const due = i.due ? fmt(Date.parse(i.due), { month: "short", day: "numeric" }) : ""; return `<div class="qi"><span>${esc(i.title)}</span><small>${esc(code(i.course))}${due ? " · " + esc(due) : ""}</small></div>`; };
   $("quiet").innerHTML = `<div class="quiet-h"><span class="big" id="quietBig">${ig.length}</span><p>${t("quiet.text")}</p></div>
     <div class="tri-bars"><i style="width:${sum.urgent / total * 100}%;background:var(--urgent)"></i><i style="width:${sum.need / total * 100}%;background:var(--need)"></i><i style="width:${sum.ignore / total * 100}%;background:var(--line-2)"></i></div>
     <div class="tri-leg"><span><i style="background:var(--urgent)"></i>${sum.urgent} ${t("q.urgent")}</span><span><i style="background:var(--need)"></i>${sum.need} ${t("q.need")}</span><span><i style="background:var(--line-2)"></i>${sum.ignore} ${t("q.ignore")}</span></div>
-    <div class="quiet-list show" style="margin-top:18px">${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([r, c]) => `<div class="ql"><span>${esc(r)}</span><small><b>${c}</b></small></div>`).join("")}</div>
-    <div class="quiet-list ${quietOpen ? "show" : ""}">${ig.slice(0, 12).map(x => { const i = byUid.get(x.uid); return `<div class="ql"><span>${esc(i?.title)} <small>· ${esc(code(i?.course))}</small></span><small>${esc(reason(x.reason))}</small></div>`; }).join("")}${ig.length > 12 ? `<div class="ql"><small>${t("quiet.more", { n: ig.length - 12 })}</small></div>` : ""}</div>`;
+    <div class="quiet-list show" style="margin-top:18px">${Object.entries(groups).sort((a, b) => b[1].length - a[1].length).map(([r, xs]) => { const open = quietOpen || quietGroups.has(r); return `<div class="qg ${open ? "open" : ""}"><button type="button" class="ql" data-qg="${esc(r)}"><span>${esc(r)}</span><small><b>${xs.length}</b> <i class="chev"></i></small></button><div class="ql-sub">${xs.map(line).join("")}</div></div>`; }).join("")}</div>`;
   $("quietToggle").textContent = t(quietOpen ? "quiet.hide" : "quiet.show");
   countUp($("quietBig"), ig.length);
 }
@@ -1329,7 +1340,8 @@ document.addEventListener("click", async e => {
   if (e.target.closest("#dsend")) { e.preventDefault(); return sendToAgent(); }
   if (e.target.closest("#dattach")) { e.preventDefault(); e.stopPropagation(); $("dfile").click(); return; }
   if (e.target.closest("#prevX")) return clearImage();
-  if (e.target.closest("#quietToggle")) { quietOpen = !quietOpen; return renderQuiet(); }
+  if (e.target.closest("#quietToggle")) { quietOpen = !quietOpen; quietGroups.clear(); return renderQuiet(); }
+  const qg = e.target.closest("[data-qg]"); if (qg) { const k = qg.dataset.qg; if (quietOpen) { quietOpen = false; quietGroups.clear(); quietGroups.add(k); } else quietGroups.has(k) ? quietGroups.delete(k) : quietGroups.add(k); return renderQuiet(); }
   if (e.target.closest("#icalBtn")) {
     const u = $("icalInput").value.trim(), m = $("icalMsg"); m.className = "msg"; m.textContent = t("setup.importing"); $("icalBtn").disabled = true;
     const r = await (await fetch("/api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ icalUrl: u }) })).json();
