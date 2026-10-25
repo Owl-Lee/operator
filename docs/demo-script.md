@@ -50,7 +50,7 @@
 >
 > I can also just tell it things, in English or Chinese.
 
-（挂断，在输入框打字："Meeting with Prof. Wang Thursday 3pm at Harriman 212" → 回车 → 会议出现 → 点 Undo）
+（挂断，在输入框打字："Meeting with Prof. Lee Friday 2pm at Harriman 212" → 回车 → 会议出现在周五下午 → 点 Undo）
 
 > One sentence, one meeting added. One click to undo.
 
