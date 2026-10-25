@@ -91,13 +91,49 @@
 - 手机 30 秒没回：给评委看之前收到的消息截图，继续讲。
 - Gemini 报忙：跳过网页提问，直接演示周视图、截止、课程、皮肤。
 
-## 评委可能问（用简单英语答）
+## 评委可能问（简单英语，背熟）
 
-- **How do you decide what is urgent?**
-  > Eight simple rules. Exams are always urgent. Due within 72 hours is urgent. A quiz within a week is urgent. Old classes, past items and school notices are ignored. No black box, I can show every rule.
-- **How can other students use it?**
-  > Paste your own Brightspace calendar link on the Setup page. That is all. Login for many users is the next step.
-- **How is it different from Canvas or Google Calendar reminders?**
-  > They remind you about everything. Operator filters first, explains what it filtered, and you can talk to it by text, voice or photo.
-- **Why iMessage?**
-  > Students actually read it. Photon made it easy.
+**1. How do you decide what is urgent?**
+> Eight simple rules, in order. Exams are always urgent. Anything due within 72 hours is urgent. A quiz within a week is urgent. Old classes, past items, "module available" notices and school notices are ignored. Everything else is "good to know". No black box, I can show every rule in the code.
+
+**2. What if it ignores something important?**
+> It never deletes anything. The dashboard shows every ignored item and the reason, and Brightspace is still there. The agent reduces noise, it does not hide your data.
+
+**3. How is this different from Canvas or Google Calendar reminders?**
+> They remind you about everything. Operator filters first, explains what it filtered, and you can talk back by text, voice or photo.
+
+**4. Where does the data come from? Do you need my password?**
+> No password. Brightspace gives every student a private calendar link. We only read that link. Nothing is scraped, nothing is logged in.
+
+**5. How can another student use it?**
+> Paste your own Brightspace calendar link on the Setup page. That is the whole setup. Login with SBU email for many users is the next step.
+
+**6. What does Gemini do exactly?**
+> It understands what you send: text, a voice note, a photo of a timetable. It decides what you mean: done, undo, question, add, or just chat. It answers questions about your schedule, and it writes the daily briefing. The urgency rules themselves are not AI, so they are predictable.
+
+**7. What happens if Gemini is wrong?**
+> Two safety rules. It only acts when it is confident; otherwise it asks you which item you meant. And every action is logged and can be undone in one click.
+
+**8. Why iMessage and not an app or email?**
+> Students read iMessage. Nobody opens another app. Photon gave us two-way iMessage in a few lines of code.
+
+**9. What did ElevenLabs add?**
+> The briefing and answers are spoken. ElevenLabs gives us word timestamps, so the subtitles light up as it speaks. You can also just talk to it, hands free.
+
+**10. What was the hardest part?**
+> Trust. Gemini once invented a transcript for audio it could not decode and marked a homework done. Now we convert all audio first and tell the model never to guess. Also timezones: the server was in UTC and sent a wrong "deadline moved" message.
+
+**11. Is it running right now? How is it hosted?**
+> Yes, live at myoperator.club on a Vultr server, HTTPS, checking my real Brightspace every ten minutes. The code is public on GitHub, with tests for the rules.
+
+**12. What would you do with more time?**
+> Login for many users, Gemini explaining its reasoning inside the message, and reading instructor announcements from Brightspace emails, which the calendar feed does not include.
+
+**13. How does this fit "Steel and Steam"?**
+> The telegraph operator. In the steam age, one person listened to every line and only ran to find you when a wire mattered. That is exactly what this agent does. The steam skin is the visual nod.
+
+**14. Did you use AI to build it?**
+> Yes, we used Claude for coding and Gemini inside the product. The design decisions, the rules, and the testing on real data are ours.
+
+**答不上来时**
+> Good question. We did not get to that this weekend, but here is how I would do it: ...
