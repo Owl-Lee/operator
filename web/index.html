@@ -1338,7 +1338,7 @@ function go(view) {
   document.querySelectorAll(".tab, .tabbar button").forEach(x => x.classList.toggle("on", x.dataset.view === view));
   $("setupBtn").classList.toggle("on", view === "setup");
   document.querySelectorAll(".view").forEach(v => { const show = v.id === "view-" + view; if (show && v.hidden) { v.style.animation = "none"; void v.offsetWidth; v.style.animation = ""; } v.hidden = !show; });
-  if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled) { w.scrollTop = Number(w.dataset.want || 240); w.dataset.scrolled = "1"; } }
+  if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled && w.scrollHeight > w.clientHeight) { w.scrollTop = Number(w.dataset.want || 240); w.dataset.scrolled = "1"; } } // only once the grid exists; otherwise render() does it
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 document.addEventListener("click", async e => {
