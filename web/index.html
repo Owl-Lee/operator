@@ -1111,7 +1111,7 @@ function renderCourses() {
   const cls = state.schedule?.classes || [], mt = (state.schedule?.meetings || []).filter(x => x.course);
   const KT = { assignment: lang === "zh" ? "作业" : "assignment", discussion: lang === "zh" ? "讨论" : "discussion", quiz: lang === "zh" ? "测验" : "quiz", exam: lang === "zh" ? "考试" : "exam" };
   $("courses").innerHTML = [...m].sort().map(([c, e]) => {
-    const k = cls.find(x => x.course === c), meet = mt.filter(x => x.course === c && etToMs(x.start) >= n);
+    const k = cls.find(x => code(x.course) === code(c)), meet = mt.filter(x => x.course && code(x.course) === code(c) && etToMs(x.start) >= n); // match by course code: "ANT 102" vs "ANT 102.01 What Makes Us Human? - Fall 2026"
     e.due.sort((a, b) => Date.parse(a.due) - Date.parse(b.due));
     return `<div class="course" data-kind="class">
       <div class="course-h"><div><h3>${esc(code(c))}</h3><p>${esc(courseName(c))}</p></div><span class="n">${e.due.length}</span></div>
