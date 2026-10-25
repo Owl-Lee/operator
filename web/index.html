@@ -239,6 +239,7 @@ button.ql:hover span { color: var(--ink); }
 .item.done .kind { opacity: .5; }
 .item .side .chk { margin-right: 2px; }
 .chk-slot { width: 22px; height: 22px; }
+.noanim *, .noanim *::before, .noanim *::after { animation: none !important; transition: none !important; }
 /* voice briefing: subtitle + progress, so you know what's being read and how long is left */
 .brief { margin: -6px 0 22px; padding: 14px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); animation: rise .25s ease-out; }
 .brief-text { font-size: 15px; line-height: 1.6; color: var(--ink); }
@@ -747,7 +748,9 @@ const I18N = {
     "removed": "已移除。", "reason.old": "旧课程", "reason.past": "已过期", "reason.notice": "不是课程内容", "reason.avail": "开放提示，不是截止", "reason.exam": "考试——永远最优先", "reason.due": "{n} 小时内截止", "reason.quiz": "一周内的测验", "reason.need": "{k}，{n} 天后截止", "reason.milestone": "活动节点"
   }
 };
-let lang = localStorage.getItem("bt.lang") || (navigator.language.startsWith("zh") ? "zh" : "en");
+const SHOT = new URLSearchParams(location.search).has("shot"); // ?shot=1: no animations, for screenshots
+if (SHOT) document.documentElement.classList.add("noanim");
+let lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("bt.lang") || (navigator.language.startsWith("zh") ? "zh" : "en");
 const t = (k, v = {}) => (I18N[lang][k] ?? I18N.en[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? "");
 const LOC = () => lang === "zh" ? "zh-CN" : "en-US";
 /* translate the server's English triage reasons */
@@ -934,6 +937,7 @@ function tick() {
 }
 /* count a big number up from 0 the first time it appears */
 function countUp(el, to, ms = 700) {
+  if (SHOT) { if (el) el.textContent = to; return; }
   // remember per element id, not on the node: the card is re-rendered (new node) every time a group is toggled
   if (!el) return; const done = countUp.done || (countUp.done = {}), key = el.id || "_";
   if (done[key] === to) { el.textContent = to; return; } done[key] = to;
