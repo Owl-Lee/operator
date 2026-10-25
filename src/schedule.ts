@@ -42,7 +42,8 @@ export function scheduleContext(now: Date): string {
   const n = now.getTime(), end = n + 14 * 864e5, s = loadSchedule(), lines: string[] = [];
   for (const d of openDeadlines(now)) if (Date.parse(d.due) <= end) lines.push(`DEADLINE id=${d.uid} [${d.level}${d.done ? ", DONE" : ""}] ${d.course} · ${d.title} (${d.kind}) due ${fmt(d.due)}`);
   for (const c of s.classes) lines.push(`CLASS ${c.course.split(" - ")[0]} every ${c.days.join("/")} ${c.start}–${c.end}${c.location ? " at " + c.location : ""}`);
-  const T = (o: any) => o.title_en || o.title; // the model gets English names; it still answers in the user's language
+  // Both names when we have them ("Meeting with Prof. Jennifer / Jennifer老师会议"), so each language gets its own.
+  const T = (o: any) => o.title_en && o.title_zh && o.title_en !== o.title_zh ? `${o.title_en} / ${o.title_zh}` : (o.title_en || o.title);
   for (const m of s.meetings) lines.push(`MEETING ${T(m)} ${fmt(m.start)}${m.location ? " at " + m.location : ""}${(m.note_en || m.note) ? " — " + (m.note_en || m.note) : ""}`);
   for (const e of s.events) lines.push(`EVENT ${T(e)} ${fmt(e.start)}${e.end ? " → " + fmt(e.end) : ""}${e.location ? " at " + e.location : ""}${e.milestone ? ` — milestone: ${e.milestone.title} at ${fmt(e.milestone.at)}` : ""}`);
   return lines.join("\n") || "(empty)";
