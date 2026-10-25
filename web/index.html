@@ -944,7 +944,7 @@ function toast(msg, action) {
   el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), action ? 6000 : 2500);
 }
 /* The feed is for what the agent did on its own or for you from the phone — not for echoing every click on this page. */
-const feedNoise = e => /^You removed|^Answered: |^Read (your image|your text) but found nothing|^Received an image|^Asked which item/.test(e.text) || /^Marked done from the dashboard|^Re-opened from the dashboard/.test(e.text);
+const feedNoise = e => /^You removed|^Answered: |^Read (your image|your text) but found nothing|^Received an image|^Asked which item|^Read the (morning )?briefing aloud/.test(e.text) || /^Marked done from the dashboard|^Re-opened from the dashboard/.test(e.text);
 function feedRows() {
   const rows = [];
   for (const e of state.agentLog) {
