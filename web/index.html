@@ -240,6 +240,14 @@ html[data-theme="steam"] .kara span.now { color: #b85f28; }
 .dh .call { margin-left: auto; margin-right: 6px; display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--disp); color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
 .dh .call svg { width: 14px; height: 14px; }
 .dh .call.on { color: #fff; background: var(--urgent); border-color: var(--urgent); animation: pulse 1.2s ease-in-out infinite; }
+/* in-call banner: the one thing you look at during a call */
+.callbar { display: flex; align-items: center; gap: 12px; margin: 12px 18px 0; padding: 12px 14px; border-radius: 14px; color: #fff; background: linear-gradient(135deg, var(--ink), #3a2f5a); box-shadow: 0 10px 30px -12px rgba(30,27,46,.6); animation: rise .25s ease-out; }
+.callbar i { width: 12px; height: 12px; border-radius: 50%; background: var(--urgent); box-shadow: 0 0 0 4px rgba(229,55,46,.25); animation: pulse 1.2s ease-in-out infinite; flex: none; }
+.callbar > div { flex: 1; min-width: 0; }
+.callbar b { display: block; font: 600 14px var(--disp); }
+.callbar small { font: 500 12px var(--disp); opacity: .7; font-variant-numeric: tabular-nums; }
+.callbar button { font: 600 13px var(--disp); color: #fff; background: var(--urgent); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.callbar button:hover { filter: brightness(1.08); }
 .brief-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 .brief-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
 .brief-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s linear; }
@@ -584,6 +592,7 @@ button:active, .btn:active, .fab:active { transform: scale(.97); }
 <aside class="drawer" id="drawer" aria-label="Agent">
   <div class="dh"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4 13.8 11.2 12 15.8l-1.8-4.6L5.5 9.4l4.7-1.8z"/></svg></span>
     <div><h3>Operator</h3><p id="dsub"></p></div><button class="call" id="dcall" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg><span data-i18n="call.start">Voice call</span></button><button class="x" data-close-drawer aria-label="Close">✕</button></div>
+  <div class="callbar" id="callBar" hidden><i></i><div><b id="callState"></b><small id="callTime">0:00</small></div><button type="button" id="callEnd" data-i18n="call.stop">Hang up</button></div>
   <div class="dm" id="dm"></div>
   <div class="chips" id="chips"></div>
   <div class="dc" id="dc">
@@ -628,7 +637,7 @@ const I18N = {
     "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
     "feed.done.text": "<b>Marked done</b> from your text: {t} (“{q}”). Reminders off.", "feed.done.web": "<b>Marked done</b> from the dashboard: {t}. Reminders off.", "feed.reopen": "<b>Re-opened</b> {t}.", "feed.clarify": "<b>Asked</b> which item you meant by “{q}”.", "feed.answered.im": "<b>Answered over iMessage</b> “{q}”.",
     "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}",
-    "brief.play": "Morning telegram", "brief.loading": "Composing…", "brief.stop": "Stop", "say.play": "Read aloud", "say.loading": "…", "say.stop": "Stop", "mic.start": "Talk to the agent", "mic.stop": "Stop and send", "mic.sent": "(voice message)", "mic.short": "That was too short — hold on a second longer.", "mic.denied": "Microphone blocked — allow it in the address bar.", "mic.unsupported": "This browser can't record audio.", "mic.sentphone": "Sent to your phone.", "drawer.listening": "Listening…", "call.start": "Voice call", "call.stop": "Hang up", "call.listening": "Listening — pause when you're done", "call.thinking": "Thinking…", "call.speaking": "Speaking…", "call.hello": "Go ahead, I'm listening. Pause for a second when you're done; say nothing for a while to hang up.", "call.silence": "Didn't hear anything — call ended.", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
+    "brief.play": "Morning telegram", "brief.loading": "Composing…", "brief.stop": "Stop", "say.play": "Read aloud", "say.loading": "…", "say.stop": "Stop", "mic.start": "Talk to the agent", "mic.stop": "Stop and send", "mic.sent": "(voice message)", "mic.short": "That was too short — hold on a second longer.", "mic.denied": "Microphone blocked — allow it in the address bar.", "mic.unsupported": "This browser can't record audio.", "mic.sentphone": "Sent to your phone.", "drawer.listening": "Listening…", "call.start": "Voice call", "call.stop": "Hang up", "call.listening": "Listening — pause when you're done", "call.thinking": "Thinking…", "call.speaking": "Speaking…", "call.hello": "Go ahead, I'm listening. Pause for a second when you're done; say nothing for a while to hang up.", "call.silence": "Didn't hear anything — call ended.", "call.ended": "Call ended · {t} · {n} exchange(s).", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
     "setup.bs": "Connect Brightspace", "setup.bs.sub": "one link, done", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "Import",
     "setup.s1": "Open Brightspace → <b>Calendar</b>.", "setup.s2": "Click <b>Subscribe</b> (top right).", "setup.s3": "Choose <b>All Calendars and Tasks</b>, copy the link, paste it below.",
     "setup.connected": "Connected", "setup.notconnected": "Not connected yet", "setup.env": "from .env", "setup.importing": "Importing…", "setup.imported": "Imported {n} items · {u} urgent · {i} filtered out",
@@ -673,7 +682,7 @@ const I18N = {
     "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
     "feed.done.text": "<b>按你的短信标为完成</b>：{t}（“{q}”）。提醒已关。", "feed.done.web": "<b>在页面上标为完成</b>：{t}。提醒已关。", "feed.reopen": "<b>重新打开</b> {t}。", "feed.clarify": "<b>反问了</b>“{q}”指的是哪一项。", "feed.answered.im": "<b>在 iMessage 里回答了</b>“{q}”。",
     "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}",
-    "brief.play": "今日早报", "brief.loading": "正在撰写…", "brief.stop": "停止", "say.play": "朗读", "say.loading": "…", "say.stop": "停止", "mic.start": "对 agent 说话", "mic.stop": "停止并发送", "mic.sent": "（语音）", "mic.short": "太短了，再多说一秒。", "mic.denied": "麦克风被禁用了，在地址栏允许一下。", "mic.unsupported": "这个浏览器不支持录音。", "mic.sentphone": "已发到你手机。", "drawer.listening": "正在听…", "call.start": "语音通话", "call.stop": "挂断", "call.listening": "正在听，说完停一秒", "call.thinking": "正在想…", "call.speaking": "正在说…", "call.hello": "说吧，我在听。说完停一秒就行；一直不说话就自动挂断。", "call.silence": "没听到声音，通话结束。", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
+    "brief.play": "今日早报", "brief.loading": "正在撰写…", "brief.stop": "停止", "say.play": "朗读", "say.loading": "…", "say.stop": "停止", "mic.start": "对 agent 说话", "mic.stop": "停止并发送", "mic.sent": "（语音）", "mic.short": "太短了，再多说一秒。", "mic.denied": "麦克风被禁用了，在地址栏允许一下。", "mic.unsupported": "这个浏览器不支持录音。", "mic.sentphone": "已发到你手机。", "drawer.listening": "正在听…", "call.start": "语音通话", "call.stop": "挂断", "call.listening": "正在听，说完停一秒", "call.thinking": "正在想…", "call.speaking": "正在说…", "call.hello": "说吧，我在听。说完停一秒就行；一直不说话就自动挂断。", "call.silence": "没听到声音，通话结束。", "call.ended": "通话结束 · 用时 {t} · {n} 轮对话。", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
     "setup.bs": "连接 Brightspace", "setup.bs.sub": "一个链接搞定", "setup.bs.ph": "https://mycourses.…/feed.ics?token=…", "setup.bs.btn": "导入",
     "setup.s1": "打开 Brightspace → <b>Calendar（日历）</b>。", "setup.s2": "点右上角 <b>Subscribe（订阅）</b>。", "setup.s3": "选 <b>All Calendars and Tasks</b>，复制链接，粘贴到下面。",
     "setup.connected": "已连接", "setup.notconnected": "还没连接", "setup.env": "来自 .env", "setup.importing": "导入中…", "setup.imported": "已导入 {n} 条 · {u} 条紧急 · {i} 条已过滤",
@@ -1116,7 +1125,7 @@ const voiceBubble = (text, tag) => bubble(`<div class="kara">${esc(text).replace
 /* Browser mic → same brain as the phone. Click to start, click again to stop and send.
    In call mode the loop runs hands-free: it stops on ~1 s of silence, sends, speaks the reply, then listens again. */
 let rec = null, convo = false;
-const setSub = s => { $("dsub").textContent = s; };
+const setSub = s => { $("dsub").textContent = s; if (convo) $("callState").textContent = s; };
 const callBtn = () => $("dcall");
 function listen({ auto } = {}) {
   return new Promise(async resolve => {
@@ -1166,14 +1175,27 @@ async function toggleMic() {
   if (!blob) return toast(t("mic.short"));
   await sendVoiceBlob(blob);
 }
+let callTimer = null;
 async function toggleCall() {
-  if (convo) { convo = false; if (rec && rec.state === "recording") rec.stop(); $("sayAudio").pause(); callBtn().classList.remove("on"); callBtn().lastChild.textContent = t("call.start"); setSub(t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r")); return; }
-  convo = true; callBtn().classList.add("on"); callBtn().lastChild.textContent = t("call.stop"); openDrawer();
+  const bar = $("callBar");
+  if (convo) {
+    convo = false; if (rec && rec.state === "recording") rec.stop(); $("sayAudio").pause();
+    callBtn().classList.remove("on"); callBtn().lastChild.textContent = t("call.start"); setSub(t(state.setup?.gemini ? "drawer.sub.g" : "drawer.sub.r"));
+    clearInterval(callTimer); bar.hidden = true;
+    const secs = Math.round((Date.now() - toggleCall.t0) / 1000);
+    bubble(t("call.ended", { t: mmss(secs), n: toggleCall.turns }));
+    return;
+  }
+  convo = true; toggleCall.t0 = Date.now(); toggleCall.turns = 0;
+  callBtn().classList.add("on"); callBtn().lastChild.textContent = t("call.stop"); openDrawer();
+  bar.hidden = false; $("callTime").textContent = "0:00"; $("callState").textContent = t("call.listening");
+  callTimer = setInterval(() => { $("callTime").textContent = mmss((Date.now() - toggleCall.t0) / 1000); }, 1000);
   bubble(t("call.hello"));
   while (convo) {
     const blob = await listen({ auto: true });
     if (!convo) break;
     if (!blob) { bubble(t("call.silence")); break; }
+    toggleCall.turns++;
     await sendVoiceBlob(blob);
   }
   if (convo) toggleCall();
@@ -1263,7 +1285,7 @@ document.addEventListener("click", async e => {
   const blk = e.target.closest(".blk, .pin"); if (blk) { const was = blk.classList.contains("open"); document.querySelectorAll(".blk.open, .pin.open").forEach(b => b.classList.remove("open")); if (!was) blk.classList.add("open"); return; }
   if (e.target.closest("#briefBtn")) return playBriefing();
   if (e.target.closest("#dmic")) return toggleMic();
-  if (e.target.closest("#dcall")) return toggleCall();
+  if (e.target.closest("#dcall, #callEnd")) return toggleCall();
   const say = e.target.closest(".say"); if (say) return sayText(say);
   if (e.target.closest("#skinBtn")) { const next = document.documentElement.dataset.theme === "steam" ? "" : "steam"; document.documentElement.dataset.theme = next; localStorage.setItem("bt.theme", next); steamFx(); return; }
   const dn = e.target.closest("[data-done]"); if (dn) {
