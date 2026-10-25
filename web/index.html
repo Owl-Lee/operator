@@ -46,11 +46,11 @@ textarea, input { font-family: var(--sans); }
 .status.off i { background: var(--need); box-shadow: 0 0 0 3px rgba(199,121,26,.18); animation: none; }
 @keyframes pulse-g { 50% { box-shadow: 0 0 0 6px rgba(22,179,106,0); } }
 .status b { color: var(--ink); font-weight: 600; }
-.status.brief { cursor: pointer; gap: 8px; font: 600 13px var(--disp); color: var(--ink); transition: border-color .15s, background .15s, color .15s; }
-.status.brief svg { width: 14px; height: 14px; flex: none; }
-.status.brief:hover { border-color: var(--accent); color: var(--accent); }
-.status.brief.on { background: var(--ink); color: #fff; border-color: var(--ink); }
-.status.brief:disabled { opacity: .7; cursor: progress; }
+.status.play { cursor: pointer; gap: 8px; font: 600 13px var(--disp); color: var(--ink); transition: border-color .15s, background .15s, color .15s; }
+.status.play svg { width: 14px; height: 14px; flex: none; }
+.status.play:hover { border-color: var(--accent); color: var(--accent); }
+.status.play.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.status.play:disabled { opacity: .7; cursor: progress; }
 .lang { display: inline-flex; padding: 3px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
 .lang button { padding: 4px 10px; border-radius: 999px; font: 600 12px var(--disp); color: var(--muted); }
 .lang button.on { background: var(--ink); color: #fff; }
@@ -515,7 +515,7 @@ button:active, .btn:active, .fab:active { transform: scale(.97); }
       <button class="tab" data-view="deadlines" title="3"><span data-i18n="nav.deadlines">Deadlines</span></button>
       <button class="tab" data-view="courses" title="4"><span data-i18n="nav.courses">Courses</span></button>
     </nav>
-    <button class="status brief" id="briefBtn" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="brief.play">Morning telegram</span></button>
+    <button class="status play" id="briefBtn" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="brief.play">Morning telegram</span></button>
     <span class="lang" id="lang"><button data-lang="en">EN</button><button data-lang="zh">中</button></span>
     <button class="skin" id="skinBtn" title="Skin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18c-2 0-2.5-1.5-1.5-2.5S12 16 10 15s-4 0-4-2 2-2 2-4-2-3 0-4.5S10 3 12 3z"/><circle cx="8" cy="9" r="1" fill="currentColor"/><circle cx="14" cy="7" r="1" fill="currentColor"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg></button>
     <button class="icon-btn" data-view="setup" id="setupBtn" title="Setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
