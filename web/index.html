@@ -296,7 +296,7 @@ html[data-theme="steam"] .kara span.now { color: #b85f28; }
 /* week view */
 .wkwrap { max-height: 70vh; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff; }
 .wk { display: grid; grid-template-columns: 56px repeat(7, 1fr); }
-.wk .hd { position: sticky; top: 0; z-index: 4; height: 58px; padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: #fcfaf6; }
+.wk .hd { position: sticky; top: 0; z-index: 20; height: 58px; padding: 10px 6px; text-align: center; font: 600 12px var(--disp); color: var(--muted); border-bottom: 1px solid var(--line); background: #fcfaf6; }
 html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .wk .hd b { display: block; font-size: 18px; color: var(--ink); }
 .wk .hd.today b { color: var(--accent); }
@@ -320,7 +320,7 @@ html[data-theme="steam"] .wk .hd { background: #fbf4e8; }
 .pin { position: absolute; left: 4px; right: 4px; min-height: 20px; border-radius: 6px; background: var(--deadline); color: #fff; font: 600 11px/20px var(--disp); padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: box-shadow .15s; }
 .pin:hover, .pin:focus, .pin.open { white-space: normal; line-height: 1.35; padding: 4px 7px; z-index: 30; box-shadow: 0 10px 24px -8px rgba(30,27,46,.4), 0 0 0 2px #fff; outline: none; }
 .pin.u1 { background: var(--urgent); }
-.allday { position: sticky; top: 58px; z-index: 3; padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; background: #fcfaf6; }
+.allday { position: sticky; top: 58px; z-index: 19; padding: 6px 0; border-bottom: 1px solid var(--line); min-height: 34px; font: 600 11.5px var(--disp); display: flex; flex-direction: column; gap: 3px; background: #fcfaf6; }
 html[data-theme="steam"] .allday { background: #fbf4e8; }
 .allday.lbl { align-items: flex-end; justify-content: center; padding-right: 8px; font: 500 11px var(--sans); color: var(--muted); }
 .allday span { display: block; padding: 3px 7px; margin: 0 -1px; background: var(--cbg); color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 0; }

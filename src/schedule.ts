@@ -1,16 +1,23 @@
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { loadSnapshot, loadDone } from "./store.js";
 import { triage } from "./triage.js";
 
 /** Classes / meetings / events / pasted deadlines that Brightspace doesn't know about (user-edited JSON). */
 export interface Schedule { classes: any[]; meetings: any[]; events: any[]; deadlines: any[]; _readme?: string }
-const schedulePath = new URL("../schedule.json", import.meta.url);
+/**
+ * The live schedule lives in data/ (gitignored) so a deploy never overwrites what the user imported.
+ * schedule.json in the repo is only the seed: copied into data/ the first time, never read again.
+ */
+const seedPath = new URL("../schedule.json", import.meta.url);
+const schedulePath = new URL("../data/schedule.json", import.meta.url);
 
 export function loadSchedule(): Schedule {
+  if (!existsSync(schedulePath) && existsSync(seedPath)) { mkdirSync(new URL("../data/", import.meta.url), { recursive: true }); writeFileSync(schedulePath, readFileSync(seedPath)); }
   const s = existsSync(schedulePath) ? JSON.parse(readFileSync(schedulePath, "utf8")) : {};
   return { classes: [], meetings: [], events: [], deadlines: [], ...s };
 }
 export function saveSchedule(s: Schedule): void {
+  mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
   writeFileSync(schedulePath, JSON.stringify(s, null, 2));
 }
 
