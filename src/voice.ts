@@ -55,6 +55,8 @@ export async function getBriefing(lang: "zh" | "en", now = new Date(), fromWarm 
   if (warming && !fromWarm) { try { await warming; } catch {} }
   const key = briefKey(now), c = briefCache[lang];
   if (c && c.key === key && Date.now() - c.at < 60 * 60_000) return { text: c.text, timed: c.timed, cached: true };
+  // Stale-while-revalidate: a click right after an edit gets the previous briefing at once while a fresh one is made.
+  if (c && !fromWarm && Date.now() - c.at < 3 * 60 * 60_000) { setTimeout(() => warmBriefing(), 0); return { text: c.text, timed: c.timed, cached: true }; }
   const text = await briefingText(lang, now);
   const timed = await speakTimed(text);
   briefCache[lang] = { key, at: Date.now(), text, timed };
