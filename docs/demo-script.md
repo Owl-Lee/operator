@@ -1,6 +1,6 @@
 # Operator · 3 分钟演示稿（简单版）
 
-短句，简单词。英文照着念，括号里是动作。全部念完约 2 分 40 秒。
+短句，简单词。英文照着念，括号里是动作。全部念完约 2 分 50 秒。
 
 ---
 
@@ -12,7 +12,7 @@
 >
 > Operator watches Brightspace for me. It only tells me the things that matter.
 
-## 0:20–0:45 过滤（「没打扰你的」卡片）
+## 0:20–0:40 过滤（「没打扰你的」卡片）
 
 > Every 10 minutes it reads my Brightspace calendar. Then it sorts every item: urgent, good to know, or ignore.
 >
@@ -20,9 +20,13 @@
 
 （点开「Old course」，滚一下，再点「Already past」）
 
-> Old classes. Past dates. School notices. None of this goes to my phone. The 2 urgent ones did.
+## 0:40–1:00 Agent 记录（往下滚到「What the agent did」）
 
-## 0:45–1:20 手机（举起手机）
+> Everything it does is written here. When it checked Brightspace. When it sent me a message. When I told it something.
+>
+> No black box. I can always see what it did and why.
+
+## 1:00–1:35 手机（举起手机）
 
 > It talks to me on iMessage. Short messages, like this.
 
@@ -36,7 +40,7 @@
 
 > I said "I finished HW#3". It found the right homework, marked it done, and stopped the reminders. If it is not sure, it asks me first.
 
-## 1:20–1:55 网页对话（点右下 Agent → Voice call）
+## 1:35–2:10 网页对话（点右下 Agent → Voice call）
 
 > The same brain is on the website. I can talk to it.
 
@@ -44,13 +48,13 @@
 
 > It answers out loud, with live subtitles.
 >
-> I can also give it anything with a time in it. A screenshot, an email, one sentence, in English or Chinese.
+> I can also just tell it things, in English or Chinese.
 
-（拖课表截图进页面 → 课进日程 → 点一个 Undo）
+（挂断，在输入框打字："Meeting with Prof. Wang Thursday 3pm at Harriman 212" → 回车 → 会议出现 → 点 Undo）
 
-> Four classes added. One click to undo.
+> One sentence, one meeting added. One click to undo.
 
-## 1:55–2:20 早报和周视图
+## 2:10–2:35 早报、本周、截止、课程
 
 （点顶部 Morning telegram，听 5 秒，按停）
 
@@ -58,19 +62,21 @@
 
 （切 Week 页）
 
-> This is my week. Classes, meetings, events, deadlines. All in one place.
+> This is my week. Classes, meetings, events, deadlines, all in one place.
 
-（点「中」切中文，再切回 EN）
+（切 Deadlines 页，再切 Courses 页，各停一秒）
 
-> English or Chinese. Nothing to set up.
+> Every deadline, by month. And every class, with what is due for it.
 
-## 2:20–2:40 收尾
+## 2:35–2:50 皮肤和语言，收尾
 
-> Operator is live at myoperator.club. The code is on GitHub.
+（点右上调色盘，选「Steam · Airship」→ 点「中」再切回 EN）
+
+> Five looks. English or Chinese. Nothing to set up.
 >
-> We used Gemini, Photon for iMessage, ElevenLabs for voice, a GoDaddy domain, and Vultr.
+> Operator is live at myoperator.club. The code is on GitHub. We used Gemini, Photon for iMessage, ElevenLabs for voice, a GoDaddy domain, and Vultr.
 >
-> The idea is simple: less noise, only what matters. I have not opened Brightspace in two days. Thank you.
+> Less noise, only what matters. I have not opened Brightspace in two days. Thank you.
 
 ---
 
@@ -78,14 +84,14 @@
 
 - 手机给 +1 415 605-6081 发一句 hi，预热 iMessage 线路。
 - Chrome 开两个标签：主页、GitHub。麦克风权限允许。音量开大。
+- 开场用「简洁」皮肤，最后再切到蒸汽皮肤，对比更明显。
 - HW#3 是未完成（现在全部作业都是未完成）。
-- 桌面放一张课表截图，方便拖。
 
 ## 出问题怎么办
 
 - 早报是提前做好的，一定能放。
 - 手机 30 秒没回：给评委看之前收到的消息截图，继续讲。
-- Gemini 报忙：跳过网页提问，直接演示拖截图或周视图。
+- Gemini 报忙：跳过网页提问，直接演示周视图、截止、课程、皮肤。
 
 ## 评委可能问（用简单英语答）
 
