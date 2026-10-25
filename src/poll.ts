@@ -36,7 +36,8 @@ export async function runPoll(opts: { file?: string; now?: Date } = {}): Promise
   const now = opts.now ?? (process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date());
   const tri = triage(items, now), summary = summarize(tri);
   const ignored = new Set(tri.filter(t => t.level === "ignore").map(t => t.uid));
-  logAgent("poll", `Checked Brightspace: ${items.length} items. ${summary.urgent} urgent, ${summary.need} need-to-know, ${summary.ignore} filtered out.`, { ...summary, total: items.length });
+  // Identical back-to-back checks collapse into one line (the timestamp moves); a check that found changes always gets its own line.
+  logAgent("poll", `Checked Brightspace: ${items.length} items. ${summary.urgent} urgent, ${summary.need} need-to-know, ${summary.ignore} filtered out.`, { ...summary, total: items.length }, changes.length ? undefined : { collapseKey: `poll:${items.length}:${summary.urgent}:${summary.need}:${summary.ignore}` });
 
   for (const c of changes) {
     const what = c.type === "moved" ? `moved from ${fmtTime(c.oldDue)} to ${fmtTime(c.item.due)}` : c.type === "new" ? `added, due ${fmtTime(c.item.due)}` : c.type;
