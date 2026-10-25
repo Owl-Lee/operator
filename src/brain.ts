@@ -62,7 +62,7 @@ Return ONLY one JSON object:
 - Un-finish: {"intent":"undo","uid":"<id>","confidence":0..1,"reply":"..."}
 - More than one open item could match, or confidence < 0.75: {"intent":"clarify","candidates":["<id>","<id>"],"reply":"<ask which one, listing course + title + due for each, numbered>"}
 - Asking about the schedule: {"intent":"question","answer":"<1–3 concrete sentences: items, days, times; prioritise exams > due within 72h > quizzes > rest>"}
-- Giving you something to record (meeting, event, class, deadline): {"intent":"add","items":[{"kind":"deadline|class|meeting|event","title":"...","course":"...","date":"YYYY-MM-DD","days":["Mon"],"start":"HH:MM","end":"HH:MM","location":"...","note":"..."}],"summary":"<one line confirming what you recorded, with date/time/place>"}
+- Giving you something to record (meeting, event, class, deadline): {"intent":"add","items":[{"kind":"deadline|class|meeting|event","title":"...","course":"...","date":"YYYY-MM-DD","days":["Mon"],"start":"HH:MM","end":"HH:MM","location":"...","note":"..."}],"summary":"<one line confirming what you recorded, with date/time/place>"} — Also give "title_en" and "title_zh" (the title in English and in Simplified Chinese; translate names of people/places sensibly, e.g. 老师 → Prof.) and, if there is a note, "note_en" and "note_zh".
 - Anything else: {"intent":"chat","reply":"<short friendly reply; if asked who you are, say what you can do>"}
 Resolve relative dates from today ("这周日" = the coming Sunday). Reply in the user's language (Chinese → Chinese); keep "TELEGRAM:"/"STOP." as-is. Never invent schedule facts. Tone: warm and human, like a sharp friend who keeps your calendar — after the facts, add ONE short personal sentence that reacts to what they actually said (a trip, stress, good news): e.g. \"Clear HW#3 Monday and the beach is all yours.\" Never more than one such sentence, no emoji strings.${inp.audio || inp.image ? ' Always include "transcript": "<what you heard/saw, in its original language>" in the JSON.' : ""}` }];
   if (inp.audio) parts.push({ inline_data: { mime_type: inp.audio.mime, data: inp.audio.data } });
@@ -98,7 +98,7 @@ async function act(r: Decision, text: string, open: ReturnType<typeof openDeadli
     for (const it of items) {
       const id = `p-${Date.now().toString(36)}${names.length}`;
       const date = it.date || today;
-      const base = { id, title: it.title, location: it.location, note: it.note, source: "agent", raw: text.slice(0, 300) } as any;
+      const base = { id, title: it.title, title_en: it.title_en, title_zh: it.title_zh, location: it.location, note: it.note, note_en: it.note_en, note_zh: it.note_zh, source: "agent", raw: text.slice(0, 300) } as any;
       if (it.kind === "class") s.classes.push({ ...base, course: it.course || it.title, days: it.days?.length ? it.days : ["Mon"], start: it.start || "09:00", end: it.end || "10:00" });
       else { const rec = { ...base, course: it.course, start: `${date}T${it.start || (it.kind === "deadline" ? "23:59" : "09:00")}`, end: it.end ? `${date}T${it.end}` : undefined }; (it.kind === "deadline" ? s.deadlines : it.kind === "meeting" ? s.meetings : s.events).push(rec); }
       names.push(it.title);

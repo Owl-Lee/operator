@@ -791,18 +791,19 @@ function allItems(opts = {}) {
     if (ms >= start && ms <= dlEnd) out.push({ id: i.uid, kind: "deadline", title: i.title, course: i.course, start: ms, end: ms, link: i.link, type: i.kind, desc: i.description, tri: tr, done: doneSet.has(i.uid) });
   }
   const sc = state.schedule || {};
+  const L = (o, k) => ((lang === "en" ? o[k + "_en"] : o[k + "_zh"]) || o[k]); // agent-added items carry both languages
   for (const c of sc.classes || []) for (let d = start; d < end; d += D) {
     const p = etParts(d + 12 * H); if (!(c.days || []).includes(p.wd)) continue;
     const date = `${p.y}-${String(p.m).padStart(2, "0")}-${String(p.d).padStart(2, "0")}`;
     out.push({ id: `c-${code(c.course)}-${date}`, rid: c.id, kind: "class", title: code(c.course), course: c.course, start: etToMs(`${date}T${c.start}`), end: etToMs(`${date}T${c.end}`), location: c.location, sample: c.sample, pasted: c.source === "pasted" });
   }
-  for (const m of sc.meetings || []) out.push({ id: m.id || `m-${m.start}`, rid: m.id, kind: "meeting", title: m.title, course: m.course, start: etToMs(m.start), end: m.end ? etToMs(m.end) : etToMs(m.start) + H, location: m.location, note: m.note, sample: m.sample, pasted: m.source === "pasted" });
+  for (const m of sc.meetings || []) out.push({ id: m.id || `m-${m.start}`, rid: m.id, kind: "meeting", title: L(m, "title"), course: m.course, start: etToMs(m.start), end: m.end ? etToMs(m.end) : etToMs(m.start) + H, location: m.location, note: L(m, "note"), sample: m.sample, pasted: m.source === "pasted" });
   for (const e of sc.events || []) {
     const s = etToMs(e.start), en = e.end ? etToMs(e.end) : (e.allDay ? s + 24 * H : s + 2 * H);
-    out.push({ id: e.id || `e-${e.start}`, rid: e.id, kind: "event", title: e.title, start: s, end: en, location: e.location, link: e.link, note: e.note, sample: e.sample, milestone: e.milestone, pasted: e.source === "pasted" });
+    out.push({ id: e.id || `e-${e.start}`, rid: e.id, kind: "event", title: L(e, "title"), start: s, end: en, location: e.location, link: e.link, note: L(e, "note"), sample: e.sample, milestone: e.milestone, pasted: e.source === "pasted" });
     if (e.milestone) { const ms = etToMs(e.milestone.at); out.push({ id: `ms-${e.milestone.at}`, kind: "deadline", title: e.milestone.title, course: e.title, start: ms, end: ms, link: e.link, type: "milestone", tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: "Event milestone" } }); }
   }
-  for (const d of sc.deadlines || []) { const ms = etToMs(d.start); out.push({ id: d.id, rid: d.id, kind: "deadline", title: d.title, course: d.course || (lang === "zh" ? "粘贴" : "Pasted"), start: ms, end: ms, type: "pasted", pasted: true, done: doneSet.has(d.id), tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: urgency(ms) === 3 ? `Due in ${Math.round((ms - n) / D)} days` : `Due in ${Math.round((ms - n) / H)} h` } }); }
+  for (const d of sc.deadlines || []) { const ms = etToMs(d.start); out.push({ id: d.id, rid: d.id, kind: "deadline", title: L(d, "title"), course: d.course || (lang === "zh" ? "粘贴" : "Pasted"), start: ms, end: ms, type: "pasted", pasted: true, done: doneSet.has(d.id), tri: { level: urgency(ms) === 3 ? "need" : "urgent", reason: urgency(ms) === 3 ? `Due in ${Math.round((ms - n) / D)} days` : `Due in ${Math.round((ms - n) / H)} h` } }); }
   out.sort((a, b) => a.start - b.start);
   markConflicts(out);
   return out;

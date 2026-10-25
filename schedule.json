@@ -71,7 +71,11 @@
       "source": "agent",
       "raw": "你帮我新增一个周日这周日下午2:00的一个会议吧，适合Jennifer老师的，然后在教室1零二教室是在earthand space那栋楼",
       "start": "2026-10-25T14:00",
-      "end": "2026-10-25T15:00"
+      "end": "2026-10-25T15:00",
+      "title_en": "Meeting with Prof. Jennifer",
+      "title_zh": "Jennifer老师会议",
+      "note_en": "Meeting with Prof. Jennifer",
+      "note_zh": "与Jennifer老师的会议"
     }
   ],
   "events": [

@@ -6,6 +6,7 @@ export interface GItem {
   kind: "deadline" | "class" | "meeting" | "event";
   title: string; course?: string; date?: string; days?: string[];
   start?: string; end?: string; location?: string; note?: string;
+  title_en?: string; title_zh?: string; note_en?: string; note_zh?: string;
 }
 export interface GResult { items: GItem[]; summary: string; model?: string }
 
@@ -20,7 +21,7 @@ function prompt(now: Date) {
   return `You are the intake brain of a student schedule agent at Stony Brook University. Today is ${wd} ${today} (America/New_York).
 Read the user's text or image and extract every schedule item you can see. Return ONLY JSON:
 {"items":[{"kind":"deadline|class|meeting|event","title":"short title","course":"e.g. EST 393 (if any)","date":"YYYY-MM-DD (for one-off items)","days":["Mon","Wed"] (for recurring classes),"start":"HH:MM 24h","end":"HH:MM 24h","location":"room/building","note":"anything worth remembering"}],"summary":"one sentence in the user's language describing what you understood"}
-Rules: a weekly timetable screenshot → one "class" item per course with days + start/end; "due"/"submit"/"deadline" → deadline (default 23:59); office hours, advising, 1:1 → meeting; hackathons, fairs, talks → event. Resolve relative dates (next Tuesday, 明天, 周三) from today. Chinese input is common. If nothing is schedulable, return {"items":[],"summary":"..."}.`;
+Rules: Also give "title_en" and "title_zh" (the title in English and in Simplified Chinese; translate names of people/places sensibly, e.g. 老师 → Prof.) and, if there is a note, "note_en" and "note_zh". A weekly timetable screenshot → one "class" item per course with days + start/end; "due"/"submit"/"deadline" → deadline (default 23:59); office hours, advising, 1:1 → meeting; hackathons, fairs, talks → event. Resolve relative dates (next Tuesday, 明天, 周三) from today. Chinese input is common. If nothing is schedulable, return {"items":[],"summary":"..."}.`;
 }
 
 export async function geminiExtract(input: { text?: string; image?: { data: string; mime: string } }, now = new Date()): Promise<GResult> {

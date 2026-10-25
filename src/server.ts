@@ -104,7 +104,7 @@ createServer(async (req, res) => {
       const s = loadSchedule(), added: any[] = [];
       for (const g of items) {
         const id = `p-${Date.now().toString(36)}${added.length}`;
-        const base: any = { id, title: g.title, location: g.location, note: g.note, source: engine === "gemini" ? "agent" : "pasted", raw: (text || "").trim().slice(0, 500) || imgPath };
+        const base: any = { id, title: g.title, title_en: g.title_en, title_zh: g.title_zh, location: g.location, note: g.note, note_en: g.note_en, note_zh: g.note_zh, source: engine === "gemini" ? "agent" : "pasted", raw: (text || "").trim().slice(0, 500) || imgPath };
         if (g.kind === "class") { s.classes.push({ ...base, course: g.course || g.title, days: g.days?.length ? g.days : [new Date(`${g.date || now.toISOString().slice(0, 10)}T12:00`).toLocaleDateString("en-US", { weekday: "short" })], start: g.start || "09:00", end: g.end || g.start || "10:00" }); added.push({ ...g, id }); continue; }
         const date = g.date || now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
         const start = `${date}T${g.start || (g.kind === "deadline" ? "23:59" : "09:00")}`, end = g.end ? `${date}T${g.end}` : undefined;
