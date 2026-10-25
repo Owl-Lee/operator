@@ -270,6 +270,7 @@ html[data-theme="steam"] .kara span.now { color: #b85f28; }
 .bub.ai .say span:empty { display: none; }
 .bub.ai .say:hover, .bub.ai .say.on { color: var(--accent); border-color: var(--accent); }
 #feed { max-height: 520px; overflow: auto; }
+.fe .xn { color: var(--muted); font-weight: 600; margin-left: 4px; }
 .dl .item.urgent h4 { color: var(--urgent); }
 .item.urgent .kind { color: var(--urgent); background: #fde7e4; }
 .item.urgent .kind::before { background: var(--urgent); }
@@ -666,8 +667,8 @@ const I18N = {
     "eng.gemini": "Gemini", "eng.rules": "rules", "eng.queued": "queued",
     "filter.only": "Showing only {k}", "filter.clear": "Show everything",
     "feed.poll": "<b>Checked Brightspace:</b> {n} items. {u} urgent, {k} need-to-know, {i} filtered out.", "feed.change.moved": "<b>Detected</b> {c} · {t} moved from {a} to {b}.", "feed.change.new": "<b>Detected</b> {c} · {t} added, due {a}.", "feed.change": "<b>Detected</b> {c} · {t} {w}.",
-    "feed.telegram": "<b>{s} telegram:</b> {t}", "feed.sent": "Sent", "feed.drafted": "Drafted", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
-    "feed.read": "<b>Understood {src}</b> as {n} — {w} ({e}).", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
+    "feed.telegram": "<b>{s}:</b> {t}", "feed.sent": "Messaged you", "feed.drafted": "Drafted a message", "feed.reminder": "<b>Scheduled reminders</b> for {c} · {t}: 24 h, 3 h and 1 h before {d}.",
+    "feed.read": "<b>Read {src}</b> and added {n}.", "feed.read.none": "<b>Read {src}</b> but found nothing schedulable.", "feed.image": "<b>Received an image.</b> I'll read it as soon as Gemini is connected ({n} waiting).", "feed.removed": "You removed an item I added. Noted.", "feed.answered": "<b>Answered</b> “{q}”.",
     "feed.done.text": "<b>Marked done</b> from your text: {t} (“{q}”). Reminders off.", "feed.done.web": "<b>Marked done</b> from the dashboard: {t}. Reminders off.", "feed.reopen": "<b>Re-opened</b> {t}.", "feed.clarify": "<b>Asked</b> which item you meant by “{q}”.", "feed.answered.im": "<b>Answered over iMessage</b> “{q}”.",
     "done.mark": "Mark done", "done.undo": "Re-open", "done.marked": "Done: {t}", "done.reopened": "Re-opened: {t}",
     "brief.play": "Morning telegram", "feed.brief": "Read the briefing aloud on the dashboard.", "feed.brief.phone": "Sent the briefing to your phone as a voice note.", "skin.clean": "Clean", "skin.airship": "Steam · Airship", "skin.gears": "Steam · Gears", "skin.plaza": "Steam · Plaza", "skin.snow": "Steam · Snow city", "brief.loading": "Composing…", "brief.stop": "Stop", "say.play": "Read aloud", "say.loading": "…", "say.stop": "Stop", "mic.start": "Talk to the agent", "mic.stop": "Stop and send", "mic.sent": "(voice message)", "mic.short": "That was too short — hold on a second longer.", "mic.denied": "Microphone blocked — click the 🔒/🎤 icon in the address bar and allow it, then try again.", "mic.none": "No microphone found on this device.", "mic.unsupported": "This browser can't record audio.", "mic.sentphone": "Sent to your phone.", "drawer.listening": "Listening…", "call.start": "Voice call", "call.stop": "Hang up", "call.listening": "Listening — pause when you're done", "call.thinking": "Thinking…", "call.speaking": "Speaking…", "call.hello": "Go ahead, I'm listening. Pause for a second when you're done; say nothing for a while to hang up.", "call.silence": "Didn't hear anything — call ended.", "call.ended": "Call ended · {t} · {n} exchange(s).", "setup.eleven": "ElevenLabs (voice briefing)", "feed.connected": "<b>Connected</b> a Brightspace calendar feed. Importing now.", "src.text": "your text", "src.image": "your image", "items": "{n} item(s)",
@@ -711,8 +712,8 @@ const I18N = {
     "eng.gemini": "Gemini", "eng.rules": "规则", "eng.queued": "排队中",
     "filter.only": "只看：{k}", "filter.clear": "显示全部",
     "feed.poll": "<b>检查了 Brightspace：</b>{n} 条。{u} 条紧急，{k} 条需知，{i} 条已过滤。", "feed.change.moved": "<b>发现</b> {c} · {t} 从 {a} 挪到 {b}。", "feed.change.new": "<b>发现</b> {c} · {t} 新增，{a} 截止。", "feed.change": "<b>发现</b> {c} · {t} {w}。",
-    "feed.telegram": "<b>{s}电报：</b>{t}", "feed.sent": "已发送", "feed.drafted": "已起草", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
-    "feed.read": "<b>理解了{src}</b>，共 {n}——{w}（{e}）。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
+    "feed.telegram": "<b>{s}：</b>{t}", "feed.sent": "给你发了消息", "feed.drafted": "起草了消息", "feed.reminder": "<b>已安排提醒</b> {c} · {t}：{d} 前 24 小时、3 小时、1 小时各一次。",
+    "feed.read": "<b>读了{src}</b>，加了 {n}。", "feed.read.none": "<b>读了{src}</b>，没找到可排进日程的内容。", "feed.image": "<b>收到一张图片。</b>接上 Gemini 就读（{n} 张等待中）。", "feed.removed": "你移除了我加的一项。记下了。", "feed.answered": "<b>回答了</b>“{q}”。",
     "feed.done.text": "<b>按你的短信标为完成</b>：{t}（“{q}”）。提醒已关。", "feed.done.web": "<b>在页面上标为完成</b>：{t}。提醒已关。", "feed.reopen": "<b>重新打开</b> {t}。", "feed.clarify": "<b>反问了</b>“{q}”指的是哪一项。", "feed.answered.im": "<b>在 iMessage 里回答了</b>“{q}”。",
     "done.mark": "标为完成", "done.undo": "重新打开", "done.marked": "已完成：{t}", "done.reopened": "已重新打开：{t}",
     "brief.play": "今日早报", "feed.brief": "在页面上朗读了早报。", "feed.brief.phone": "把早报作为语音发到了你手机。", "skin.clean": "简洁", "skin.airship": "蒸汽 · 飞艇", "skin.gears": "蒸汽 · 齿轮", "skin.plaza": "蒸汽 · 广场", "skin.snow": "蒸汽 · 雪城", "brief.loading": "正在撰写…", "brief.stop": "停止", "say.play": "朗读", "say.loading": "…", "say.stop": "停止", "mic.start": "对 agent 说话", "mic.stop": "停止并发送", "mic.sent": "（语音）", "mic.short": "太短了，再多说一秒。", "mic.denied": "麦克风被拒绝了。点地址栏左边的 🔒 或 🎤 图标，允许麦克风后再试。", "mic.none": "这台设备没有检测到麦克风。", "mic.unsupported": "这个浏览器不支持录音。", "mic.sentphone": "已发到你手机。", "drawer.listening": "正在听…", "call.start": "语音通话", "call.stop": "挂断", "call.listening": "正在听，说完停一秒", "call.thinking": "正在想…", "call.speaking": "正在说…", "call.hello": "说吧，我在听。说完停一秒就行；一直不说话就自动挂断。", "call.silence": "没听到声音，通话结束。", "call.ended": "通话结束 · 用时 {t} · {n} 轮对话。", "setup.eleven": "ElevenLabs（语音早报）", "feed.connected": "<b>已连接</b> Brightspace 日历源，正在导入。", "src.text": "你的文字", "src.image": "你的图片", "items": "{n} 项",
@@ -942,12 +943,25 @@ function toast(msg, action) {
   if (action) $("toastAct").onclick = () => { action.fn(); el.classList.remove("show"); };
   el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), action ? 6000 : 2500);
 }
+/* The feed is for what the agent did on its own or for you from the phone — not for echoing every click on this page. */
+const feedNoise = e => /^You removed|^Answered: |^Read (your image|your text) but found nothing|^Received an image|^Asked which item/.test(e.text) || /^Marked done from the dashboard|^Re-opened from the dashboard/.test(e.text);
+function feedRows() {
+  const rows = [];
+  for (const e of state.agentLog) {
+    if (feedNoise(e)) continue;
+    const text = feedText(e), last = rows[rows.length - 1];
+    if (last && last.text === text) { last.n++; continue; } // identical neighbours collapse into one line
+    rows.push({ e, text, n: 1 });
+    if (rows.length >= 14) break;
+  }
+  return rows;
+}
 function renderFeed() {
-  const n = now(), log = state.agentLog.slice(0, 24);
+  const n = now(), log = feedRows();
   if (!log.length) { $("feed").innerHTML = emptyHtml("empty.feed", "empty.feed.sub"); return; }
   const rel = ms => { const m = Math.round((n - ms) / 60000); return m < 1 ? t("just now") : m < 60 ? t("min ago", { n: m }) : m < 1440 ? t("h ago", { n: Math.round(m / 60) }) : fmt(ms, { month: "short", day: "numeric" }); };
   const seen = renderFeed.seen || (renderFeed.seen = new Set(state.agentLog.map(e => e.at)));
-  $("feed").innerHTML = log.map(e => `<div class="fe ${seen.has(e.at) ? "" : "new"}" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${feedText(e)}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
+  $("feed").innerHTML = log.map(({ e, text, n: k }) => `<div class="fe ${seen.has(e.at) ? "" : "new"}" data-t="${e.type}"><span class="ic">${kicon(e.type)}</span><p>${text}${k > 1 ? ` <small class="xn">×${k}</small>` : ""}</p><time>${rel(Date.parse(e.at))}</time></div>`).join("");
   for (const e of state.agentLog) seen.add(e.at);
 }
 /* The server logs in English; render each known template in the current language. */
@@ -957,7 +971,7 @@ function feedTextRaw(e) {
   const x = e.text, m = e.meta || {}; let r;
   if (e.type === "telegram" && /briefing/i.test(x)) return t(/voice note/.test(x) ? "feed.brief.phone" : "feed.brief");
   const kindWord = s => s.replace(/\b(deadline|class|meeting|event)\b/g, k => t("kind." + k));
-  const when = s => lang === "zh" ? s.replace(/\b(MON|TUE|WED|THU|FRI|SAT|SUN), (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d+), (\d+:\d+ [AP]M)/g, (_, w, mo, d, tm) => `${"JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split(" ").indexOf(mo) + 1}月${d}日 周${"日一二三四五六"["SUN MON TUE WED THU FRI SAT".split(" ").indexOf(w)]} ${tm}`) : s;
+  const when = s => lang === "zh" ? s.replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+), (\d+:\d+ [AP]M)/gi, (_, w, mo, d, tm) => `${"jan feb mar apr may jun jul aug sep oct nov dec".split(" ").indexOf(mo.toLowerCase()) + 1}月${d}日 周${"日一二三四五六"["sun mon tue wed thu fri sat".split(" ").indexOf(w.toLowerCase())]} ${tm}`) : s;
   if (e.type === "poll" && (r = x.match(/^Checked Brightspace: (\d+) items\. (\d+) urgent, (\d+) need-to-know, (\d+) filtered/))) return t("feed.poll", { n: r[1], u: r[2], k: r[3], i: r[4] });
   if (e.type === "poll" && /^Connected/.test(x)) return t("feed.connected");
   if (e.type === "change" && (r = x.match(/^Detected (.+?) · (.+?) moved from (.+?) to (.+?)\.$/))) return t("feed.change.moved", { c: esc(r[1]), t: esc(r[2]), a: when(r[3]), b: when(r[4]) });

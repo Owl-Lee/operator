@@ -21,7 +21,7 @@ Brightspace's notification bell is a flat, unranked list. On the first night of 
 Operator reads your Brightspace calendar feed every ten minutes, decides what deserves your attention, and sends you a short telegram over iMessage only when something does.
 
 - **Triages instead of forwarding.** Every item is judged urgent / need-to-know / ignore. In our real feed 83 of 94 were ignored (old semesters, past dates, availability windows). Those are never pushed; the dashboard shows what was filtered and why.
-- **Catches silent changes.** When a professor moves a deadline, you get `TELEGRAM: AMENDMENT EST 393 HW#3. STOP. MOVED TO MON, OCT 26, 11:59 PM. STOP.` and the 24 h / 3 h / 1 h reminders re-arm against the new time.
+- **Catches silent changes.** When a professor moves a deadline, you get `EST 393 · HW#3 moved: Thu, Oct 29, 11:59 PM → Mon, Oct 26, 11:59 PM.` and the 24 h / 3 h / 1 h reminders re-arm against the new time.
 - **Takes replies in any form.** Text "HW#3 交了", send a voice note, or photograph your timetable. One Gemini call decides the intent (done / undo / question / add / clarify / chat), acts only when confident, and asks back otherwise.
 - **Talks.** A spoken briefing written by Gemini and read by ElevenLabs, as a voice note on your phone or on the dashboard with live word-by-word subtitles. A hands-free voice-call mode lets you just talk to it.
 - **A calm dashboard** with home, week, deadlines and course views, bilingual (EN / 中), with one input and no filters to configure.

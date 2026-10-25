@@ -17,7 +17,7 @@ SBUHacks 2026（主题 Steel and Steam）36 小时作品。
 |---|---|
 | **盯着 Brightspace** | 每 10 分钟拉一次 iCal 源，和上次快照比对，老师悄悄改了截止时间也能发现。 |
 | **筛选，而不是转发** | 每一条都判定为 *紧急 / 需知 / 忽略*。真实数据里 94 条有 83 条被忽略（旧学期、已过期、开放提示）。被忽略的永远不会推给你。 |
-| **发电报** | `TELEGRAM: AMENDMENT EST 393 HW#3. STOP. MOVED TO MON, OCT 26, 11:59 PM. STOP.` 通过 iMessage 送达，外加截止前 24 小时 / 3 小时 / 1 小时三次提醒。 |
+| **发电报** | `EST 393 · HW#3 moved: Thu, Oct 29, 11:59 PM → Mon, Oct 26, 11:59 PM.` 通过 iMessage 送达，外加截止前 24 小时 / 3 小时 / 1 小时三次提醒。 |
 | **听得懂回复** | 手机发来的文字、语音、照片，都经过一次 Gemini 调用判断意图：*完成、撤销、提问、记录、追问、闲聊*。拿得准才动手，拿不准就反问。 |
 | **读给你听** | 语音简报（Gemini 写稿，ElevenLabs 配音），可以发到手机当语音消息，也可以在网页上播放，字幕读到哪亮到哪。 |
 | **语音通话** | 网页上的免提模式：说完停一秒自动发送，它出声回答，然后继续听。 |
@@ -71,7 +71,7 @@ Brightspace 自己对这个链接有几分钟缓存，所以老师改完到你�
 `src/photon.ts` 用 Photon 的 Spectrum SDK 通过 iMessage 收发。发出去的消息统一是电报体（`src/telegram.ts`）：大写、短句、以 `STOP.` 分隔，例如
 
 ```
-TELEGRAM: AMENDMENT EST 393 HW#3. STOP. MOVED FROM THU, OCT 29 TO MON, OCT 26, 11:59 PM. STOP.
+EST 393 · HW#3 moved: Thu, Oct 29, 11:59 PM → Mon, Oct 26, 11:59 PM.
 ```
 
 三种情况会发：

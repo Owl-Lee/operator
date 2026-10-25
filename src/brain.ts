@@ -1,7 +1,6 @@
 import { geminiJson, hasGemini, type GItem } from "./gemini.js";
 import { openDeadlines, scheduleContext, loadSchedule, saveSchedule } from "./schedule.js";
 import { logAgent, logTelegram, markDone, unmarkDone } from "./store.js";
-import { telegram } from "./telegram.js";
 import { hasElevenLabs, briefingText, speak } from "./voice.js";
 import { sendVoice } from "./photon.js";
 
@@ -17,7 +16,7 @@ interface Decision {
 }
 
 const nowET = (now: Date) => now.toLocaleString("en-US", { timeZone: "America/New_York", weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" });
-const busy = (lang: "zh" | "en", why: string) => lang === "zh" ? `TELEGRAM: 线路繁忙（${why}）。STOP. 一分钟后再发一次。STOP.` : `TELEGRAM: LINE BUSY (${why}). STOP. TRY AGAIN IN A MINUTE. STOP.`;
+const busy = (lang: "zh" | "en", why: string) => lang === "zh" ? `我这边暂时忙不过来（${why}），一分钟后再发一次。` : `I'm a bit tied up right now (${why}) — try again in a minute.`;
 
 export interface InboundInput { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }
 
@@ -58,13 +57,13 @@ FULL SCHEDULE (next two weeks):
 ${scheduleContext(now)}
 
 Return ONLY one JSON object:
-- Finished something ("done/submitted/交了/写完了/搞定"): {"intent":"done","uid":"<id>","confidence":0..1,"reply":"<one line, telegram style, UPPERCASE + STOP., naming course and title>"}
+- Finished something ("done/submitted/交了/写完了/搞定"): {"intent":"done","uid":"<id>","confidence":0..1,"reply":"<one short, natural sentence naming the course and title>"}
 - Un-finish: {"intent":"undo","uid":"<id>","confidence":0..1,"reply":"..."}
 - More than one open item could match, or confidence < 0.75: {"intent":"clarify","candidates":["<id>","<id>"],"reply":"<ask which one, listing course + title + due for each, numbered>"}
 - Asking about the schedule: {"intent":"question","answer":"<1–3 concrete sentences: items, days, times; prioritise exams > due within 72h > quizzes > rest>"}
 - Giving you something to record (meeting, event, class, deadline): {"intent":"add","items":[{"kind":"deadline|class|meeting|event","title":"...","course":"...","date":"YYYY-MM-DD","days":["Mon"],"start":"HH:MM","end":"HH:MM","location":"...","note":"..."}],"summary":"<one line confirming what you recorded, with date/time/place>"} — Also give "title_en" and "title_zh" (the title in English and in Simplified Chinese; translate names of people/places sensibly, e.g. 老师 → Prof.) and, if there is a note, "note_en" and "note_zh".
 - Anything else: {"intent":"chat","reply":"<short friendly reply; if asked who you are, say what you can do>"}
-Resolve relative dates from today ("这周日" = the coming Sunday). Reply in the user's language (Chinese → Chinese); keep "TELEGRAM:"/"STOP." as-is. Never invent schedule facts. Tone: warm and human, like a sharp friend who keeps your calendar — after the facts, add ONE short personal sentence that reacts to what they actually said (a trip, stress, good news): e.g. \"Clear HW#3 Monday and the beach is all yours.\" Never more than one such sentence, no emoji strings.${inp.audio || inp.image ? ' Always include "transcript": "<what you heard/saw, in its original language>" in the JSON.' : ""}` }];
+Resolve relative dates from today ("这周日" = the coming Sunday). Reply in the user's language (Chinese → Chinese), in plain conversational sentences — no telegram caps, no "STOP.". Never invent schedule facts. Tone: warm and human, like a sharp friend who keeps your calendar — after the facts, add ONE short personal sentence that reacts to what they actually said (a trip, stress, good news): e.g. \"Clear HW#3 Monday and the beach is all yours.\" Never more than one such sentence, no emoji strings.${inp.audio || inp.image ? ' Always include "transcript": "<what you heard/saw, in its original language>" in the JSON.' : ""}` }];
   if (inp.audio) parts.push({ inline_data: { mime_type: inp.audio.mime, data: inp.audio.data } });
   if (inp.image) parts.push({ inline_data: { mime_type: inp.image.mime, data: inp.image.data } });
   const r: Decision & { transcript?: string } = await geminiJson(parts);
@@ -80,7 +79,7 @@ async function act(r: Decision, text: string, open: ReturnType<typeof openDeadli
     if (!d || (r.confidence ?? 0) < 0.75) return clarifyText(open.filter(x => !x.done).slice(0, 3), lang);
     if (r.intent === "done") { markDone(d.uid, d.title, "imessage"); logAgent("triage", `Marked done from your text: ${d.course} · ${d.title} (“${text.slice(0, 60)}”). Reminders for it are off.`, { uid: d.uid, via: "imessage" }); }
     else { unmarkDone(d.uid); logAgent("triage", `Re-opened from your text: ${d.course} · ${d.title}.`, { uid: d.uid, via: "imessage" }); }
-    return r.reply || telegram([`${r.intent === "done" ? "MARKED DONE" : "REOPENED"}: ${d.course} ${d.title}`]);
+    return r.reply || (lang === "zh" ? `${r.intent === "done" ? "已标记完成" : "已重新打开"}：${d.course} · ${d.title}` : `${r.intent === "done" ? "Marked done" : "Reopened"}: ${d.course} · ${d.title}`);
   }
   if (r.intent === "clarify") {
     const cands = (r.candidates ?? []).map(id => open.find(x => x.uid === id)).filter(Boolean) as typeof open;
@@ -119,7 +118,7 @@ function clarifyText(cands: ReturnType<typeof openDeadlines>, lang: "zh" | "en")
 function rulesFallback(text: string, now: Date, lang: "zh" | "en"): string {
   if (/^\s*(done|完成|交了)\s*$/i.test(text)) {
     const open = openDeadlines(now).filter(d => !d.done);
-    if (open.length === 1) { markDone(open[0].uid, open[0].title, "imessage"); return telegram([`MARKED DONE: ${open[0].course} ${open[0].title}`]); }
+    if (open.length === 1) { markDone(open[0].uid, open[0].title, "imessage"); return lang === "zh" ? `已标记完成：${open[0].course} · ${open[0].title}` : `Marked done: ${open[0].course} · ${open[0].title}`; }
     return clarifyText(open.slice(0, 3), lang);
   }
   return lang === "zh" ? "接上 Gemini 后我才能听懂整句话。现在只认「done」。" : "I only understand “done” until Gemini is connected.";

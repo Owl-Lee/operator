@@ -65,18 +65,17 @@ test("diff: moved deadline and new item are detected; unchanged feed is quiet", 
   assert.ok(diffSnapshots(a, withNew).some(c => c.type === "new" && c.item.uid === "new1"));
 });
 
-test("telegram wording: uppercase, STOP., both times on a move", () => {
+test("message wording: plain sentences, both times on a move", () => {
   const a = parseIcs(feed), b = parseIcs(feed.replace("20261027T035900Z", "20261030T035900Z"));
   const c = diffSnapshots(a, b).find(x => x.item.uid === "hw3")!;
   const t = changeTelegram(c);
-  assert.match(t, /^TELEGRAM: AMENDMENT/);
-  assert.match(t, /EST 393 HW#3/);
-  assert.match(t, /STOP\.$/);
-  assert.match(t, /MON, OCT 26, 11:59 PM/);
-  assert.match(t, /THU, OCT 29, 11:59 PM/);
+  assert.match(t, /^EST 393 · HW#3 moved: /);
+  assert.ok(!/TELEGRAM|STOP\./.test(t), "plain wording, no telegram caps");
+  assert.match(t, /Mon, Oct 26, 11:59 PM/);
+  assert.match(t, /Thu, Oct 29, 11:59 PM/);
   const r = reminderTelegram(a.find(i => i.uid === "hw3")!, 3);
-  assert.match(r, /3 HOURS|3 H/i);
-  assert.equal(telegram(["HELLO"]), "TELEGRAM: HELLO. STOP.");
+  assert.match(r, /due in 3 hours/);
+  assert.equal(telegram(["Hello"]), "Hello.");
 });
 
 test("upcoming: window and ordering", () => {

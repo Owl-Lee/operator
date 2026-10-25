@@ -17,7 +17,7 @@ Live at **[myoperator.club](https://myoperator.club)**.
 |---|---|
 | **Watches Brightspace** | Pulls the iCal feed every 10 minutes, diffs it against the last snapshot, and notices when a professor quietly moves a deadline. |
 | **Triages instead of forwarding** | Every item is judged *urgent / need-to-know / ignore*. In one real feed, 83 of 94 items were ignored (old semesters, past dates, availability notices). Ignored items are never pushed. |
-| **Sends telegrams** | `TELEGRAM: AMENDMENT EST 393 HW#3. STOP. MOVED TO MON, OCT 26, 11:59 PM. STOP.` over iMessage, plus 24 h / 3 h / 1 h reminders. |
+| **Sends telegrams** | `EST 393 · HW#3 moved: Thu, Oct 29, 11:59 PM → Mon, Oct 26, 11:59 PM.` over iMessage, plus 24 h / 3 h / 1 h reminders. |
 | **Takes replies** | Text, voice notes and photos from your phone go through one Gemini call that decides the intent: *done*, *undo*, *question*, *add*, *clarify*, *chat*. It only acts when it is sure; otherwise it asks. |
 | **Reads aloud** | A spoken briefing (Gemini writes it, ElevenLabs reads it) as a voice note on your phone or on the dashboard with live word-by-word subtitles. |
 | **Voice call** | Hands-free mode in the dashboard: pause for a second, it sends; it answers out loud; it listens again. |

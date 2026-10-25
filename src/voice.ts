@@ -15,7 +15,7 @@ export async function briefingText(lang: "zh" | "en", now = new Date()): Promise
     return lang === "zh" ? `早上好。今天是${today}。最近的截止：${next.map(d => `${d.course} ${d.title}`).join("，") || "没有"}。` : `Good morning. It's ${today}. Coming up: ${next.map(d => `${d.course} ${d.title}`).join(", ") || "nothing"}.`;
   }
   const r = await geminiJson([{ text: `Write a short spoken briefing for a Stony Brook student, to be read aloud by a text-to-speech voice. It is ${clock} on ${today} (America/New_York) — greet for THIS time of day (morning / afternoon / evening / late night), never say "good morning" at night.
-Style: a cheerful old telegraph operator — but natural spoken ${lang === "zh" ? "Simplified Chinese" : "English"}, 3–5 short sentences, under 70 words / 120 Chinese characters. Lead with anything due within 24–48 hours, then today's classes/meetings, end with one line of encouragement. Do not read ids, URLs or "STOP.". Skip items marked DONE.
+Style: warm and natural, like a friend reading you your day — no sound effects, no telegraph gimmicks — spoken ${lang === "zh" ? "Simplified Chinese" : "English"}, 3–5 short sentences, under 70 words / 120 Chinese characters. Lead with anything due within 24–48 hours, then today's classes/meetings, end with one line of encouragement. Do not read ids, URLs or "STOP.". Skip items marked DONE.
 SCHEDULE:
 ${scheduleContext(now)}
 Return ONLY JSON: {"text":"..."}` }]);
