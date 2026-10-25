@@ -51,7 +51,7 @@ QUESTION: ${question}` }];
 export const geminiJson = (parts: any[]) => callJson(parts);
 
 async function callJson(parts: any[]): Promise<any> {
-  const body = JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2 } });
+  const body = JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { response_mime_type: "application/json", temperature: 0.2, thinkingConfig: { thinkingBudget: 0 } } });
   let lastErr = "", quotaHits = 0;
   for (const model of MODELS()) {
     if (quotaHits >= 2) break; // per-minute quota is per project: stop hammering, let the caller tell the user to wait

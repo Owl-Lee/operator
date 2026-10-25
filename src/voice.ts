@@ -28,7 +28,7 @@ export async function speakTimed(text: string): Promise<TimedSpeech> {
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID()}/with-timestamps?output_format=mp3_44100_128`, {
     method: "POST",
     headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY!, "content-type": "application/json" },
-    body: JSON.stringify({ text, model_id: "eleven_multilingual_v2", voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35 } }),
+    body: JSON.stringify({ text, model_id: "eleven_flash_v2_5", voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35 } }),
     signal: AbortSignal.timeout(60_000),
   });
   if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 200)}`);
@@ -77,7 +77,7 @@ export async function speak(text: string): Promise<Buffer> {
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID()}?output_format=mp3_44100_128`, {
     method: "POST",
     headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY!, "content-type": "application/json", accept: "audio/mpeg" },
-    body: JSON.stringify({ text, model_id: "eleven_multilingual_v2", voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35 } }),
+    body: JSON.stringify({ text, model_id: "eleven_flash_v2_5", voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35 } }),
     signal: AbortSignal.timeout(60_000),
   });
   if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 200)}`);

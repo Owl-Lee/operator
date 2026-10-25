@@ -1418,7 +1418,10 @@ dc.addEventListener("drop", e => { e.preventDefault(); dc.classList.remove("drag
 document.addEventListener("dragover", e => { if ([...(e.dataTransfer?.types || [])].includes("Files")) e.preventDefault(); });
 document.addEventListener("drop", e => { const f = [...(e.dataTransfer?.files || [])].find(x => x.type.startsWith("image/")); if (!f) return; e.preventDefault(); dc.classList.remove("drag"); openDrawer(); setImage(f); });
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { $("skinWrap").classList.remove("open"); return closeDrawer(); }
+  if (e.key === "Escape") { // first press stops any audio; drawer closes on the next
+    const a1 = $("briefAudio"), a2 = $("sayAudio"), playing = (!a1.paused && !a1.ended) || (!a2.paused && !a2.ended);
+    if (playing) { if (!a1.paused) { a1.pause(); a1.dispatchEvent(new Event("ended")); } if (!a2.paused) { a2.pause(); a2.dispatchEvent(new Event("ended")); } return; }
+    $("skinWrap").classList.remove("open"); return closeDrawer(); }
   if ((e.target?.matches && e.target.matches("input, textarea, [contenteditable]")) || e.metaKey || e.ctrlKey || e.altKey) return;
   const views = { "1": "today", "2": "week", "3": "deadlines", "4": "courses" };
   if (views[e.key]) { e.preventDefault(); return go(views[e.key]); }
