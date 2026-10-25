@@ -20,6 +20,22 @@ Return ONLY JSON: {"text":"..."}` }]);
   return String(r.text ?? "").trim();
 }
 
+export interface TimedSpeech { audio: Buffer; chars: string[]; starts: number[]; ends: number[] }
+/** Text → MP3 + per-character timestamps (for live subtitles). */
+export async function speakTimed(text: string): Promise<TimedSpeech> {
+  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID()}/with-timestamps?output_format=mp3_44100_128`, {
+    method: "POST",
+    headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY!, "content-type": "application/json" },
+    body: JSON.stringify({ text, model_id: "eleven_multilingual_v2", voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35 } }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const j: any = await res.json();
+  const al = j.alignment || j.normalized_alignment || {};
+  return { audio: Buffer.from(j.audio_base64, "base64"), chars: al.characters ?? [], starts: al.character_start_times_seconds ?? [], ends: al.character_end_times_seconds ?? [] };
+}
+export const timedJson = (t: TimedSpeech) => ({ audio: t.audio.toString("base64"), chars: t.chars, starts: t.starts, ends: t.ends });
+
 /** Text → MP3 bytes via ElevenLabs. */
 export async function speak(text: string): Promise<Buffer> {
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID()}?output_format=mp3_44100_128`, {
