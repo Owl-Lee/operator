@@ -1,46 +1,45 @@
 ## Inspiration
 
-Last month one of us got a zero on a homework. Not for skipping it: he never saw it. It was sitting in Brightspace, the platform every Stony Brook class runs on, between old-semester posts, "module now available" notices and campus announcements. We counted the feed this week: **94 items, and 11 of them actually mattered**.
+Last month one of us got a zero on a homework. He never saw it. It was hidden in Brightspace, the platform every Stony Brook class uses, between old posts and campus notices. We counted our feed this week: 94 items, 11 that mattered.
 
-The theme was Steel and Steam, and that made us think of the one job that used to solve exactly this problem: the telegraph operator, who listened to every line all day and only came to find you when a wire actually concerned you.
+The theme was Steel and Steam. That made us think of the telegraph operator: someone who listens to every line all day and only comes to find you when a message really matters.
 
 ## What it does
 
-Operator is an AI agent that watches Brightspace for you and reaches you on iMessage only when something matters.
+Operator is an AI agent that watches Brightspace for you and messages you on iMessage only when something matters.
 
-- **Filters instead of forwarding.** Every ten minutes it reads your Brightspace calendar feed and sorts every item: urgent, need-to-know, or ignore. In our real feed 83 of 94 were ignored. The dashboard shows what was filtered and why.
-- **Catches silent changes.** When a professor moves a deadline you get one plain line: `EST 393 · HW#3 moved: Thu, Oct 29, 11:59 PM → Mon, Oct 26, 11:59 PM.` Reminders at 24 h, 3 h and 1 h re-arm against the new time.
-- **Takes replies in any form.** Text "HW#3 交了", send a voice note, or photograph your timetable. One Gemini call decides the intent (done, undo, question, add, clarify, chat), acts only when it is confident, and asks back otherwise.
-- **Talks.** A spoken briefing of your day, written by Gemini and read by ElevenLabs, as a voice note on your phone or on the dashboard with live word-by-word subtitles. A hands-free voice-call mode lets you just talk to it.
-- **A calm dashboard.** Home, week, deadlines by month, per-course cards, a log of everything the agent did, English or Chinese, five skins, one input and nothing to configure.
+- **Filters, not forwards.** Every 10 minutes it reads your Brightspace calendar and sorts each item: urgent, good to know, or ignore. In our feed, 83 of 94 were ignored. The dashboard shows why.
+- **Catches changes.** If a professor moves a deadline, you get one line. Reminders at 24 h, 3 h and 1 h move with it.
+- **You can talk back.** Text, voice note or a photo of your timetable. Gemini works out what you mean, marks things done, adds events, or answers questions. If it is not sure, it asks.
+- **It talks too.** A short spoken briefing of your day, on your phone or on the dashboard with live subtitles. There is also a hands-free voice call mode.
+- **A simple dashboard.** Home, week, deadlines, courses, a log of what the agent did. English or Chinese. Nothing to set up.
 
 ## How we built it
 
-- **TypeScript on Node 22**, no framework on either side: the dashboard is a single HTML file, the server is Node's `http` module.
-- **Brightspace** through its private iCal feed, parsed with `node-ical`, diffed against the previous snapshot every poll.
-- **Google Gemini** (REST, JSON mode) for understanding text, photos and voice, for Q&A over the live schedule, and for writing the briefing. One call per message, automatic model fallback.
-- **Photon Spectrum SDK** for iMessage in both directions. Incoming voice notes are transcoded with ffmpeg before Gemini sees them; outgoing ones are transcoded so iMessage plays them inline.
-- **ElevenLabs** text-to-speech with per-character timestamps, which drives the subtitles. Briefings are pre-generated and cached so a click plays instantly.
-- **Vultr** VPS behind nginx and Let's Encrypt, domain **myoperator.club** from the GoDaddy Registry offer.
+- TypeScript on Node. The dashboard is one HTML file, no framework.
+- Brightspace via its calendar feed, checked every 10 minutes and compared with the last check.
+- Google Gemini for understanding text, photos and voice, for questions, and for writing the briefing.
+- Photon for iMessage in both directions.
+- ElevenLabs for voice, with word timestamps for the subtitles.
+- Hosted on Vultr at myoperator.club, a GoDaddy Registry domain.
 
 ## Challenges we ran into
 
-- Gemini confidently invented a transcript for an audio format it could not decode and marked an assignment done. Now everything is transcoded to MP3 first and the prompt forbids acting on audio it cannot hear.
-- iMessage shows a dead 00:00 player for MP3 voice notes. AAC in an m4a container fixed it.
-- The server ran in UTC while every schedule time was New York wall-clock time. That shifted a briefing by five hours and produced a fake "deadline moved" message for a campus notice. Timezone is now pinned in code, and ignored items never produce change messages.
-- Staying inside API quotas meant merging intent detection, extraction and answering into a single model call per message.
+- Gemini once made up a transcript for audio it could not decode and marked a homework done. We now convert all audio first and tell the model never to guess.
+- iMessage would not play our voice notes until we changed the audio format.
+- The server ran in UTC while all our times were New York time, which caused a fake "deadline moved" message. Fixed by pinning the timezone.
 
 ## Accomplishments that we're proud of
 
-- A complete loop on real course data: Brightspace → triage → iMessage → reply from the phone → dashboard updates.
-- 83 of 94 items correctly silenced, each with a readable reason.
-- Voice in both directions, with subtitles that light up as the words are spoken.
-- Live on a real domain with HTTPS, code public, tests for the rules engine.
+- The full loop works on real course data: Brightspace → filter → iMessage → reply from the phone → dashboard updates.
+- 83 of 94 items correctly silenced, each with a reason.
+- Voice in both directions, with live subtitles.
+- Live on a real domain, open source, with tests.
 
 ## What we learned
 
-Filtering is the product. Forwarding everything is easy and useless; the value is in what the agent decides not to say, and in being able to show why.
+Filtering is the product. The value is in what the agent decides not to say, and in showing why.
 
 ## What's next for Operator
 
-Sign-in with SBU email so anyone can connect their own feed, Gemini-assisted triage with its reasoning written into the message, and reading instructor announcements (which the calendar feed does not carry) from Brightspace notification emails.
+Login with SBU email so anyone can connect their own feed, and reading instructor announcements from Brightspace emails.
