@@ -242,7 +242,8 @@ html[data-theme="steam"] .kara span.now { color: #b85f28; }
 /* drawer: mic + read-aloud */
 .ib.mic.rec { color: #fff; background: var(--urgent); animation: pulse 1s ease-in-out infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(229,55,46,.18); } }
-.bub.ai .say { display: inline-flex; align-items: center; gap: 4px; margin: 8px 0 0 6px; font: 600 11px var(--disp); color: var(--muted); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 8px; background: #fff; cursor: pointer; }
+.bub.ai .say { display: inline-flex; align-items: center; gap: 4px; margin: 6px 0 0; font: 600 11px var(--disp); color: var(--muted); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 7px; background: #fff; cursor: pointer; line-height: 1; }
+.bub.ai .say span:empty { display: none; }
 .bub.ai .say:hover, .bub.ai .say.on { color: var(--accent); border-color: var(--accent); }
 #feed { max-height: 520px; overflow: auto; }
 .dl .item.urgent h4 { color: var(--urgent); }
@@ -429,7 +430,7 @@ body.drawer-open .drawer { transform: none; } body.drawer-open .scrim { opacity:
 .bub.ai .it:first-of-type { border-top: 0; }
 .bub.ai .it b { display: block; font: 600 14px var(--disp); } .bub.ai .it small { color: var(--muted); font-size: 12.5px; }
 .bub.ai .eng { display: inline-block; margin-top: 8px; font: 600 10px var(--disp); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 8px; }
-.bub.ai .eng.g { color: var(--event); border-color: #9ad9cc; }
+.bub.ai .eng.g { display: none; } /* every answer is Gemini now; no need to badge each one */
 .chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 10px; }
 .chips button { font: 500 12px/1.35 var(--sans); color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 5px 10px; text-align: left; white-space: normal; }
 .chips button:hover { border-color: var(--line-2); color: var(--ink); }
@@ -1096,8 +1097,8 @@ async function playBriefing() {
 /* Read a drawer answer aloud with live subtitles. One at a time; click again to stop. */
 async function sayText(btn, pre) {
   const a = $("sayAudio");
-  if (btn.classList.contains("on")) { a.pause(); btn.classList.remove("on"); btn.lastChild.textContent = t("say.play"); return; }
-  document.querySelectorAll(".say.on").forEach(x => { x.classList.remove("on"); x.lastChild.textContent = t("say.play"); }); a.pause();
+  if (btn.classList.contains("on")) { a.pause(); btn.classList.remove("on"); btn.lastChild.textContent = ""; return; }
+  document.querySelectorAll(".say.on").forEach(x => { x.classList.remove("on"); x.lastChild.textContent = ""; }); a.pause();
   btn.classList.add("on"); btn.lastChild.textContent = t("say.loading");
   try {
     const r = pre || await (await fetch("/api/speak", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: btn.dataset.say, timed: 1 }) })).json();
@@ -1106,9 +1107,9 @@ async function sayText(btn, pre) {
     a.src = b64url(r.audio); btn.lastChild.textContent = t("say.stop");
     await new Promise((res, rej) => { a.onended = res; a.onerror = rej; a.play().catch(rej); });
   } catch (e) { toast(t("drawer.err", { e: e.message })); }
-  btn.classList.remove("on"); btn.lastChild.textContent = t("say.play");
+  btn.classList.remove("on"); btn.lastChild.textContent = "";
 }
-const sayBtn = text => state.setup?.elevenlabs && text ? `<button class="say" type="button" data-say="${esc(text)}">🔊 <span>${t("say.play")}</span></button>` : "";
+const sayBtn = text => state.setup?.elevenlabs && text ? `<button class="say" type="button" data-say="${esc(text)}" title="${t("say.play")}">🔊<span></span></button>` : "";
 /* An answer bubble whose text can light up while it's read. */
 const voiceBubble = (text, tag) => bubble(`<div class="kara">${esc(text).replace(/\n/g, "<br>")}</div>${tag ? '<span class="eng g">Gemini</span>' : ""}${sayBtn(text)}`);
 /* Browser mic → same brain as the phone. Click to start, click again to stop and send.
