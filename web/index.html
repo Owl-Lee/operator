@@ -226,10 +226,12 @@ textarea, input { font-family: var(--sans); }
 /* voice briefing: subtitle + progress, so you know what's being read and how long is left */
 .brief { margin: -6px 0 22px; padding: 14px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); animation: rise .25s ease-out; }
 .brief-text { font-size: 15px; line-height: 1.6; color: var(--ink); }
-.kara span { color: var(--muted); transition: color .12s; }
-.kara span.lit { color: var(--ink); }
+/* live subtitles: unread words sit back, read words come forward, the word being spoken is in the accent colour */
+.kara span { opacity: .32; transition: opacity .15s, color .15s; }
+.kara span.lit { opacity: 1; }
+.kara span.now { color: var(--accent); font-weight: 600; }
 .bub.ai .kara { display: block; }
-.bub.ai .kara span.lit { color: var(--ink); }
+html[data-theme="steam"] .kara span.now { color: #b85f28; }
 .dh .call { margin-left: auto; margin-right: 6px; display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--disp); color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
 .dh .call svg { width: 14px; height: 14px; }
 .dh .call.on { color: #fff; background: var(--urgent); border-color: var(--urgent); animation: pulse 1.2s ease-in-out infinite; }
@@ -1054,11 +1056,24 @@ function renderSetup() {
 const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 /* Live subtitles: one <span> per character, lit as the audio reaches its timestamp. */
 function karaoke(el, voice, audio) {
+  // Group characters into tokens: Latin words stay whole, each CJK character is its own token, spaces/newlines are glue.
   const chars = voice.chars || [], starts = voice.starts || [];
-  el.innerHTML = chars.map(c => c === "\n" ? "<br>" : `<span>${esc(c)}</span>`).join("");
-  const spans = [...el.querySelectorAll("span")]; let idx = 0; const times = starts.filter((_, i) => chars[i] !== "\n");
-  const tick = () => { const t0 = audio.currentTime + 0.08; while (idx < spans.length && times[idx] <= t0) spans[idx++].classList.add("lit"); };
-  audio.addEventListener("timeupdate", tick); audio.addEventListener("ended", () => spans.forEach(s => s.classList.add("lit")), { once: true });
+  const cjk = c => /[\u3000-\u9fff\uf900-\ufaff\uff00-\uffef]/.test(c);
+  const toks = []; let cur = null;
+  chars.forEach((c, i) => {
+    if (c === "\n" || c === " ") { cur = null; toks.push({ glue: c }); return; }
+    if (cjk(c) || !cur || cur.cjk) { cur = { text: c, t: starts[i] ?? 0, cjk: cjk(c) }; toks.push(cur); }
+    else cur.text += c;
+  });
+  el.innerHTML = toks.map(k => k.glue === "\n" ? "<br>" : k.glue ? " " : `<span>${esc(k.text)}</span>`).join("");
+  const spans = [...el.querySelectorAll("span")], times = toks.filter(k => !k.glue).map(k => k.t); let idx = 0;
+  const tick = () => {
+    const t0 = audio.currentTime + 0.1; let moved = false;
+    while (idx < spans.length && times[idx] <= t0) { spans[idx].classList.add("lit"); idx++; moved = true; }
+    if (moved) { spans.forEach(s => s.classList.remove("now")); if (idx > 0) spans[idx - 1].classList.add("now"); }
+  };
+  audio.addEventListener("timeupdate", tick);
+  audio.addEventListener("ended", () => spans.forEach(s => { s.classList.add("lit"); s.classList.remove("now"); }), { once: true });
   const raf = () => { if (!audio.paused && !audio.ended) { tick(); requestAnimationFrame(raf); } }; audio.addEventListener("play", () => requestAnimationFrame(raf));
   return () => audio.removeEventListener("timeupdate", tick);
 }
