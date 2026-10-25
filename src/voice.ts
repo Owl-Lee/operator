@@ -51,6 +51,7 @@ function briefKey(now: Date) {
   return part + "|" + scheduleContext(now) + "|" + loadDone().map(d => d.uid).join(",");
 }
 export async function getBriefing(lang: "zh" | "en", now = new Date()): Promise<{ text: string; timed: TimedSpeech; cached: boolean }> {
+  if (warming) { try { await warming; } catch {} } // a click during warm-up waits for it rather than generating twice
   const key = briefKey(now), c = briefCache[lang];
   if (c && c.key === key && Date.now() - c.at < 60 * 60_000) return { text: c.text, timed: c.timed, cached: true };
   const text = await briefingText(lang, now);

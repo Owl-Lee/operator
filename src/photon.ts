@@ -32,15 +32,13 @@ export async function sendTelegram(text: string): Promise<void> {
 
 /**
  * Send an audio buffer as an iMessage voice-note bubble. iMessage only plays its own voice-note format
- * (Apple CAF with Opus) inline — an MP3 shows a dead 00:00 player — so transcode first when ffmpeg is around.
+ * inline — an MP3 shows a dead 00:00 player — so transcode to AAC (m4a) first when ffmpeg is around.
  */
 export async function sendVoice(audio: Buffer, mimeType = "audio/mpeg", name = "briefing.mp3"): Promise<void> {
   const { voice } = await import("spectrum-ts");
   const dm = await getDm();
   if (/mpeg|mp3/.test(mimeType)) {
     const base = name.replace(/\.mp3$/, "");
-    const caf = await transcode(audio, "mp3", ["-c:a", "libopus", "-b:a", "32k", "-ar", "48000", "-ac", "1", "-f", "caf"], "caf");
-    if (caf) { await dm.send(voice(caf, { mimeType: "audio/x-caf", name: base + ".caf" })); return; }
     const m4a = await transcode(audio, "mp3", ["-c:a", "aac", "-b:a", "64k", "-ac", "1", "-movflags", "+faststart"], "m4a");
     if (m4a) { await dm.send(voice(m4a, { mimeType: "audio/x-m4a", name: base + ".m4a" })); return; }
   }
