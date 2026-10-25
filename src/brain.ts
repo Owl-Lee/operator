@@ -42,7 +42,8 @@ export async function handleInbound(input: string | InboundInput, now = new Date
   }
 }
 
-async function decide(inp: InboundInput, now: Date, lang: "zh" | "en"): Promise<string> {
+async function decide(inp: InboundInput, now: Date, lang0: "zh" | "en"): Promise<string> {
+  let lang = lang0;
   const open = openDeadlines(now);
   const today = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
   const text = inp.text ?? "";
@@ -68,6 +69,7 @@ Resolve relative dates from today ("这周日" = the coming Sunday). Reply in th
   if (inp.audio) parts.push({ inline_data: { mime_type: inp.audio.mime, data: inp.audio.data } });
   if (inp.image) parts.push({ inline_data: { mime_type: inp.image.mime, data: inp.image.data } });
   const r: Decision & { transcript?: string } = await geminiJson(parts);
+  if (r.transcript && (inp.audio || inp.image)) lang = /[一-龥]/.test(r.transcript) ? "zh" : "en"; // the prefix follows the language we actually heard
   const heard = r.transcript && (inp.audio || inp.image) ? (lang === "zh" ? `（${inp.audio ? "听到" : "看到"}：${r.transcript.slice(0, 120)}）\n` : `(${inp.audio ? "Heard" : "Saw"}: ${r.transcript.slice(0, 120)})\n`) : "";
   const out = await act(r, text || r.transcript || "", open, now, lang, today);
   return heard + out;
