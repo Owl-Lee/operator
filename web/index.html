@@ -1341,7 +1341,7 @@ document.addEventListener("click", async e => {
   if (e.target.closest("#dattach")) { e.preventDefault(); e.stopPropagation(); $("dfile").click(); return; }
   if (e.target.closest("#prevX")) return clearImage();
   if (e.target.closest("#quietToggle")) { quietOpen = !quietOpen; quietGroups.clear(); return renderQuiet(); }
-  const qg = e.target.closest("[data-qg]"); if (qg) { const k = qg.dataset.qg; if (quietOpen) { quietOpen = false; quietGroups.clear(); quietGroups.add(k); } else quietGroups.has(k) ? quietGroups.delete(k) : quietGroups.add(k); return renderQuiet(); }
+  const qg = e.target.closest("[data-qg]"); if (qg) { const k = qg.dataset.qg, was = quietGroups.has(k) && !quietOpen; quietOpen = false; quietGroups.clear(); if (!was) quietGroups.add(k); return renderQuiet(); } // one group open at a time
   if (e.target.closest("#icalBtn")) {
     const u = $("icalInput").value.trim(), m = $("icalMsg"); m.className = "msg"; m.textContent = t("setup.importing"); $("icalBtn").disabled = true;
     const r = await (await fetch("/api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ icalUrl: u }) })).json();
