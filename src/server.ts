@@ -8,7 +8,8 @@ import { parseText } from "./parse.js";
 import { geminiExtract, geminiAsk, hasGemini, type GItem } from "./gemini.js";
 import { loadSchedule, saveSchedule, scheduleContext, type Schedule } from "./schedule.js";
 import { startAgent } from "./agent.js";
-import { hasPhoton, sendVoice } from "./photon.js";
+import { hasPhoton, sendVoice, toGeminiAudio } from "./photon.js";
+import { handleInbound } from "./brain.js";
 import { hasElevenLabs, briefingText, speak } from "./voice.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
@@ -116,6 +117,25 @@ createServer(async (req, res) => {
       return json({ ok: true, items: added, summary, engine, notes });
     }
     /* Questions: Gemini answers over a text dump of the next two weeks. */
+    /* Read any text aloud (drawer answers). */
+    if (url.pathname === "/api/speak" && req.method === "POST") {
+      const { text } = await body(req);
+      if (!text?.trim()) return json({ error: "Nothing to say." }, 400);
+      if (!hasElevenLabs()) return json({ error: "ElevenLabs not connected." }, 503);
+      const audio = await speak(String(text).slice(0, 600));
+      res.writeHead(200, { "content-type": "audio/mpeg", "cache-control": "no-store" }); res.end(audio); return;
+    }
+    /* Talk to the agent from the browser mic: same brain as the phone (done / add / question / chat). */
+    if (url.pathname === "/api/ask-voice" && req.method === "POST") {
+      const { audio, mime } = await body(req);
+      if (!audio) return json({ error: "No audio." }, 400);
+      if (!hasGemini()) return json({ error: "Gemini not connected." }, 503);
+      const conv = await toGeminiAudio(Buffer.from(audio, "base64"), mime || "audio/webm");
+      if (!conv) return json({ error: "Could not decode the recording (ffmpeg)." }, 500);
+      const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
+      const reply = await handleInbound({ audio: conv }, now);
+      return json({ ok: true, reply: reply ?? "" });
+    }
     if (url.pathname === "/api/ask" && req.method === "POST") {
       const { question, lang } = await body(req);
       if (!question?.trim()) return json({ error: "Empty question." }, 400);

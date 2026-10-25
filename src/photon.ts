@@ -30,34 +30,51 @@ export async function sendTelegram(text: string): Promise<void> {
   await dm.send(text);
 }
 
-/** Send an audio buffer as an iMessage voice-note bubble. */
+/**
+ * Send an audio buffer as an iMessage voice-note bubble. iMessage only plays its own voice-note format
+ * (Apple CAF with Opus) inline — an MP3 shows a dead 00:00 player — so transcode first when ffmpeg is around.
+ */
 export async function sendVoice(audio: Buffer, mimeType = "audio/mpeg", name = "briefing.mp3"): Promise<void> {
   const { voice } = await import("spectrum-ts");
   const dm = await getDm();
+  if (/mpeg|mp3/.test(mimeType)) {
+    const base = name.replace(/\.mp3$/, "");
+    const caf = await transcode(audio, "mp3", ["-c:a", "libopus", "-b:a", "32k", "-ar", "48000", "-ac", "1", "-f", "caf"], "caf");
+    if (caf) { await dm.send(voice(caf, { mimeType: "audio/x-caf", name: base + ".caf" })); return; }
+    const m4a = await transcode(audio, "mp3", ["-c:a", "aac", "-b:a", "64k", "-ac", "1", "-movflags", "+faststart"], "m4a");
+    if (m4a) { await dm.send(voice(m4a, { mimeType: "audio/x-m4a", name: base + ".m4a" })); return; }
+  }
   await dm.send(voice(audio, { mimeType, name }));
+}
+
+/** Run ffmpeg on a buffer; null when ffmpeg is missing or fails (callers fall back). */
+export async function transcode(buf: Buffer, inExt: string, args: string[], outExt: string): Promise<Buffer | null> {
+  const { execFile } = await import("node:child_process");
+  const { writeFileSync, readFileSync, mkdtempSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = mkdtempSync(join(tmpdir(), "bt-voice-"));
+  const src = join(dir, "in." + inExt), out = join(dir, "out." + outExt);
+  writeFileSync(src, buf);
+  try {
+    await new Promise<void>((res, rej) => execFile(process.env.FFMPEG || "ffmpeg", ["-y", "-loglevel", "error", "-i", src, ...args, out], { timeout: 30_000 }, e => e ? rej(e) : res()));
+    return readFileSync(out);
+  } catch (e: any) {
+    console.log(`[agent] ffmpeg unavailable or failed: ${e?.message ?? e}`);
+    return null;
+  } finally { try { rmSync(dir, { recursive: true, force: true }); } catch {} }
 }
 
 /**
  * iMessage voice notes arrive as Apple CAF (Opus), which Gemini cannot decode — and when it can't decode
  * audio it may invent a transcript. So: convert to MP3 with ffmpeg, or refuse. Never hand Gemini raw CAF.
  */
-async function toGeminiAudio(buf: Buffer, mime: string): Promise<{ data: string; mime: string } | null> {
+export async function toGeminiAudio(buf: Buffer, mime: string): Promise<{ data: string; mime: string } | null> {
   const ok = /^audio\/(mpeg|mp3|wav|x-wav|aac|ogg|flac|aiff)$/i.test(mime);
   if (ok) return { data: buf.toString("base64"), mime };
-  const { execFile } = await import("node:child_process");
-  const { writeFileSync, readFileSync, mkdtempSync, rmSync } = await import("node:fs");
-  const { tmpdir } = await import("node:os");
-  const { join } = await import("node:path");
-  const dir = mkdtempSync(join(tmpdir(), "bt-voice-"));
-  const src = join(dir, "in.caf"), out = join(dir, "out.mp3");
-  writeFileSync(src, buf);
-  try {
-    await new Promise<void>((res, rej) => execFile(process.env.FFMPEG || "ffmpeg", ["-y", "-loglevel", "error", "-i", src, "-ac", "1", "-ar", "16000", "-b:a", "48k", out], { timeout: 20_000 }, e => e ? rej(e) : res()));
-    return { data: readFileSync(out).toString("base64"), mime: "audio/mpeg" };
-  } catch (e: any) {
-    console.log(`[agent] ffmpeg unavailable or failed: ${e?.message ?? e}`);
-    return null;
-  } finally { try { rmSync(dir, { recursive: true, force: true }); } catch {} }
+  const ext = /webm/.test(mime) ? "webm" : /mp4|m4a/.test(mime) ? "m4a" : /ogg|opus/.test(mime) ? "ogg" : "caf";
+  const mp3 = await transcode(buf, ext, ["-vn", "-ac", "1", "-ar", "16000", "-b:a", "48k"], "mp3");
+  return mp3 ? { data: mp3.toString("base64"), mime: "audio/mpeg" } : null;
 }
 
 export interface Inbound { text?: string; audio?: { data: string; mime: string }; image?: { data: string; mime: string } }
