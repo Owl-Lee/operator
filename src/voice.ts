@@ -1,5 +1,6 @@
 import { geminiJson, hasGemini } from "./gemini.js";
 import { openDeadlines, scheduleContext } from "./schedule.js";
+import { loadDone } from "./store.js";
 
 /** ElevenLabs: the "morning telegram" read aloud. Needs ELEVENLABS_API_KEY in .env. */
 export const hasElevenLabs = () => !!process.env.ELEVENLABS_API_KEY;
@@ -36,6 +37,36 @@ export async function speakTimed(text: string): Promise<TimedSpeech> {
   return { audio: Buffer.from(j.audio_base64, "base64"), chars: al.characters ?? [], starts: al.character_start_times_seconds ?? [], ends: al.character_end_times_seconds ?? [] };
 }
 export const timedJson = (t: TimedSpeech) => ({ audio: t.audio.toString("base64"), chars: t.chars, starts: t.starts, ends: t.ends });
+
+/**
+ * The briefing is pre-generated and cached so a click plays instantly. It is rebuilt when the schedule,
+ * the done-list or the part of the day changes, or after an hour — and warmed in the background on
+ * startup, after every Brightspace poll and after edits, so the slow path almost never runs on a click.
+ */
+const briefCache: Record<string, { key: string; at: number; text: string; timed: TimedSpeech }> = {};
+let warming: Promise<void> | null = null;
+function briefKey(now: Date) {
+  const h = Number(now.toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hour12: false }));
+  const part = h < 5 ? "night" : h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
+  return part + "|" + scheduleContext(now) + "|" + loadDone().map(d => d.uid).join(",");
+}
+export async function getBriefing(lang: "zh" | "en", now = new Date()): Promise<{ text: string; timed: TimedSpeech; cached: boolean }> {
+  const key = briefKey(now), c = briefCache[lang];
+  if (c && c.key === key && Date.now() - c.at < 60 * 60_000) return { text: c.text, timed: c.timed, cached: true };
+  const text = await briefingText(lang, now);
+  const timed = await speakTimed(text);
+  briefCache[lang] = { key, at: Date.now(), text, timed };
+  return { text, timed, cached: false };
+}
+export function warmBriefing(log: (s: string) => void = () => {}): void {
+  if (!hasElevenLabs() || !hasGemini() || warming) return;
+  warming = (async () => {
+    for (const lang of ["zh", "en"] as const) {
+      try { const r = await getBriefing(lang); if (!r.cached) log(`briefing ready (${lang}): ${r.text.slice(0, 50)}…`); }
+      catch (e: any) { log(`briefing warm-up failed (${lang}): ${e?.message ?? e}`); }
+    }
+  })().finally(() => { warming = null; });
+}
 
 /** Text → MP3 bytes via ElevenLabs. */
 export async function speak(text: string): Promise<Buffer> {

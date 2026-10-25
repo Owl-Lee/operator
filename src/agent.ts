@@ -1,6 +1,7 @@
 import { hasPhoton, startInbound, sendTelegram } from "./photon.js";
 import { handleInbound } from "./brain.js";
 import { runPoll, icalUrl } from "./poll.js";
+import { warmBriefing } from "./voice.js";
 import { openDeadlines } from "./schedule.js";
 import { logAgent, logTelegram, loadSentReminders, markReminderSent } from "./store.js";
 import { reminderTelegram } from "./telegram.js";
@@ -17,12 +18,14 @@ export function startAgent(log: (s: string) => void = console.log): void {
   } else log("Photon not configured — inbound and telegrams disabled.");
 
   if (icalUrl()) {
-    const poll = async () => { try { const r = await runPoll(); if (r.changes.length) log(`poll: ${r.changes.length} change(s)`); } catch (e: any) { log(`poll failed: ${e?.message ?? e}`); } };
+    const poll = async () => { try { const r = await runPoll(); if (r.changes.length) log(`poll: ${r.changes.length} change(s)`); } catch (e: any) { log(`poll failed: ${e?.message ?? e}`); } warmBriefing(log); };
     setTimeout(poll, 5_000);
     setInterval(poll, POLL_MS);
   }
 
   setInterval(() => remindTick(log).catch(e => log(`remind failed: ${e?.message ?? e}`)), 60_000);
+  setTimeout(() => warmBriefing(log), 8_000);
+  setInterval(() => warmBriefing(log), 20 * 60_000); // picks up the change of part-of-day
 }
 
 /** Once a minute: for each open, not-done deadline, send the 24h / 3h / 1h telegram when its window arrives. */

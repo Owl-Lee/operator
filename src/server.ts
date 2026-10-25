@@ -10,7 +10,7 @@ import { loadSchedule, saveSchedule, scheduleContext, type Schedule } from "./sc
 import { startAgent } from "./agent.js";
 import { hasPhoton, sendVoice, toGeminiAudio } from "./photon.js";
 import { handleInbound } from "./brain.js";
-import { hasElevenLabs, briefingText, speak, speakTimed, timedJson } from "./voice.js";
+import { hasElevenLabs, speak, speakTimed, timedJson, getBriefing, warmBriefing } from "./voice.js";
 
 /** npm run web → dashboard at http://localhost:4242 */
 const PORT = Number(process.env.PORT ?? 4242);
@@ -35,10 +35,9 @@ createServer(async (req, res) => {
       if (!hasElevenLabs()) return json({ error: "ElevenLabs not connected." }, 503);
       const now = process.env.FAKE_NOW ? new Date(process.env.FAKE_NOW) : new Date();
       const lang = (url.searchParams.get("lang") === "en" ? "en" : "zh") as "zh" | "en";
-      const text = await briefingText(lang, now);
-      logAgent("telegram", `Read the morning briefing aloud: “${text.slice(0, 80)}…”`, { voice: true });
-      if (req.method === "GET" && url.searchParams.get("timed")) return json({ ok: true, text, ...timedJson(await speakTimed(text)) });
-      const audio = await speak(text);
+      const b = await getBriefing(lang, now); const text = b.text, audio = b.timed.audio;
+      logAgent("telegram", `Read the briefing aloud: “${text.slice(0, 80)}…”`, { voice: true }, { collapseKey: "briefing" });
+      if (req.method === "GET" && url.searchParams.get("timed")) return json({ ok: true, text, cached: b.cached, ...timedJson(b.timed) });
       if (req.method === "POST") {
         const { send } = await body(req);
         if (send && hasPhoton()) { await sendVoice(audio); logTelegram(`[voice] ${text}`, true); }
@@ -53,6 +52,7 @@ createServer(async (req, res) => {
       if (!uid) return json({ error: "uid required" }, 400);
       if (undo) { unmarkDone(uid); logAgent("triage", `Re-opened from the dashboard: ${title ?? uid}.`, { uid, via: "web" }, { collapseKey: `done:${uid}` }); }
       else { markDone(uid, title ?? uid, "web"); logAgent("triage", `Marked done from the dashboard: ${title ?? uid}. Reminders for it are off.`, { uid, via: "web" }, { collapseKey: `done:${uid}` }); }
+      setTimeout(() => warmBriefing(), 500);
       return json({ ok: true });
     }
     /* Setup page: save the Brightspace feed URL and import right away. */
