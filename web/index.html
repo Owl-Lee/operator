@@ -927,7 +927,9 @@ function tick() {
 }
 /* count a big number up from 0 the first time it appears */
 function countUp(el, to, ms = 700) {
-  if (!el || el.dataset.counted === String(to)) return; el.dataset.counted = String(to);
+  // remember per element id, not on the node: the card is re-rendered (new node) every time a group is toggled
+  if (!el) return; const done = countUp.done || (countUp.done = {}), key = el.id || "_";
+  if (done[key] === to) { el.textContent = to; return; } done[key] = to;
   const t0 = performance.now(); const step = t => { const p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(to * e); if (p < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
 }
 let toastTimer;
