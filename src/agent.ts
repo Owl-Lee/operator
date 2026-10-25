@@ -37,7 +37,9 @@ async function remindTick(log: (s: string) => void): Promise<void> {
     if (d.done) continue;
     const due = Date.parse(d.due), hoursLeft = (due - n) / 3.6e6;
     for (const h of REMIND_AT) {
-      const key = `${d.uid}@${h}`;
+      // The key carries the due time: when a professor moves the deadline, the old markers stop matching and the
+      // 24h / 3h / 1h reminders are scheduled again against the new time. The AMENDMENT telegram already said it moved.
+      const key = `${d.uid}@${new Date(due).toISOString()}@${h}`;
       // fire inside the 10-minute window after the threshold passes (so a restart doesn't replay old ones)
       if (sent.includes(key) || hoursLeft > h || hoursLeft < h - 10 / 60) continue;
       const item = items.find(i => i.uid === d.uid) ?? { title: d.title, course: d.course, due: d.due } as any;
