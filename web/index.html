@@ -1219,7 +1219,7 @@ async function sendToAgent() {
     try {
       const r = await (await fetch("/api/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question: text, lang }) })).json();
       if (r.error) { wait.innerHTML = answer(text, allItems()); return; }
-      wait.innerHTML = `<div class="kara">${esc(r.answer)}</div><div class="used" style="margin-top:8px">${r.used.map(u => `<span>${t("ans.used", { x: esc(u) })}</span>`).join("")}</div><span class="eng g">Gemini</span>${sayBtn(r.answer)}`;
+      wait.innerHTML = `<div class="kara">${esc(r.answer)}</div>${sayBtn(r.answer)}`;
     } catch { wait.innerHTML = answer(text, allItems()); }
     load(); return;
   }
