@@ -1077,7 +1077,11 @@ function renderWeekView(items) {
       const tight = c > 0;
       const shortTitle = i.title.split(/\s[·(（]|\s-\s/)[0].trim(); // "Office hours · Prof. (EST 393)" → "Office hours"
       const range = `${timeOf(i.start)}–${timeOf(i.end)}`;
-      const lines = Math.floor((hpx - 8 - 15) / 13.7), tl = !tight && lines >= 3 && i.title.length > 16 ? 2 : 1, dl = lines - (tl - 1), tall = !tight && dl >= 2; // title may take two lines when there is room
+      // Pixel budget: title lines are 15px, detail lines 13.7px, 8px padding. The title takes as many lines as it
+      // needs (≈11 characters per line in a week column) as long as one detail line still fits.
+      const avail = hpx - 8, est = Math.ceil(i.title.length / 11);
+      const tl = tight ? 1 : Math.max(1, Math.min(est, Math.floor((avail - 13.7) / 15))), dl = Math.max(1, Math.floor((avail - tl * 15) / 13.7));
+      const tall = !tight && avail >= 15 + 2 * 13.7; // enough for a title and two detail lines → wrap instead of truncating
       col += `<div class="blk ${tight ? "tight" : ""} ${tall ? "tall" : ""} ${c ? "over" : ""}" data-kind="${i.kind}" tabindex="0" style="top:${top}px;height:${hpx}px;--h:${hpx}px;left:calc(${inset}% + 3px);right:3px;z-index:${1 + c};--dl:${dl};--tl:${tl}" title="${esc(i.title)} · ${range}${i.location ? " · " + esc(i.location) : ""}${i.conflict ? " — " + t("overlaps") + " " + esc(i.conflict) : ""}">${tight ? `${esc(shortTitle)} <span class="tm">${range}</span>` : `<b class="t">${esc(i.title)}</b><small>${range}${i.location ? " · " + esc(i.location) : ""}</small>`}</div>`;
     }
     cols.push(`<div class="col">${col}</div>`);
