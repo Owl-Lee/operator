@@ -50,8 +50,9 @@ function briefKey(now: Date) {
   const part = h < 5 ? "night" : h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
   return part + "|" + scheduleContext(now) + "|" + loadDone().map(d => d.uid).join(",");
 }
-export async function getBriefing(lang: "zh" | "en", now = new Date()): Promise<{ text: string; timed: TimedSpeech; cached: boolean }> {
-  if (warming) { try { await warming; } catch {} } // a click during warm-up waits for it rather than generating twice
+export async function getBriefing(lang: "zh" | "en", now = new Date(), fromWarm = false): Promise<{ text: string; timed: TimedSpeech; cached: boolean }> {
+  // A click during warm-up waits for it rather than generating twice. The warm-up itself must not wait on itself.
+  if (warming && !fromWarm) { try { await warming; } catch {} }
   const key = briefKey(now), c = briefCache[lang];
   if (c && c.key === key && Date.now() - c.at < 60 * 60_000) return { text: c.text, timed: c.timed, cached: true };
   const text = await briefingText(lang, now);
@@ -63,7 +64,7 @@ export function warmBriefing(log: (s: string) => void = () => {}): void {
   if (!hasElevenLabs() || !hasGemini() || warming) return;
   warming = (async () => {
     for (const lang of ["zh", "en"] as const) {
-      try { const r = await getBriefing(lang); if (!r.cached) log(`briefing ready (${lang}): ${r.text.slice(0, 50)}…`); }
+      try { const r = await getBriefing(lang, new Date(), true); if (!r.cached) log(`briefing ready (${lang}): ${r.text.slice(0, 50)}…`); }
       catch (e: any) { log(`briefing warm-up failed (${lang}): ${e?.message ?? e}`); }
     }
   })().finally(() => { warming = null; });
