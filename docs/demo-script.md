@@ -32,9 +32,7 @@
 
 （展示手机上的消息）
 
-> When a teacher moves a deadline, I get one line. Before a deadline, I get three reminders: 24 hours, 3 hours, 1 hour.
->
-> And I can talk back. Watch.
+> The same agent is on my phone. I can talk to it here too, and it reminds me before every deadline. Watch.
 
 （手机发语音：「我刚交了 EST 393 的 HW#3」→ 等回复 → 切回网页，HW#3 打勾）
 
