@@ -1063,7 +1063,10 @@ function renderWeekView(items) {
     cols.push(`<div class="col">${col}</div>`);
   }
   $("wk").innerHTML = head + allday + body + cols.join("");
-  const wrap = $("wkwrap"); if (wrap && !wrap.dataset.scrolled) { wrap.scrollTop = (8 - H0) * PX; wrap.dataset.scrolled = "1"; }
+  // Open the week where the week actually starts: one hour above the earliest block (11:00 when the week is empty).
+  const wrap = $("wkwrap"), tops = [...$("wk").querySelectorAll(".blk")].map(b => parseFloat(b.style.top)).filter(Number.isFinite);
+  const want = Math.max(0, (tops.length ? Math.floor(Math.min(...tops) / PX) - 1 : 11 - H0) * PX);
+  if (wrap) { wrap.dataset.want = String(want); if (!wrap.dataset.scrolled && wrap.offsetParent) { wrap.scrollTop = want; wrap.dataset.scrolled = "1"; } }
 }
 /* One card per current course: class times and every upcoming deadline. */
 function renderCourses() {
@@ -1317,7 +1320,7 @@ function go(view) {
   document.querySelectorAll(".tab, .tabbar button").forEach(x => x.classList.toggle("on", x.dataset.view === view));
   $("setupBtn").classList.toggle("on", view === "setup");
   document.querySelectorAll(".view").forEach(v => { const show = v.id === "view-" + view; if (show && v.hidden) { v.style.animation = "none"; void v.offsetWidth; v.style.animation = ""; } v.hidden = !show; });
-  if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled) { w.scrollTop = 60; w.dataset.scrolled = "1"; } }
+  if (view === "week") { const w = $("wkwrap"); if (w && !w.dataset.scrolled) { w.scrollTop = Number(w.dataset.want || 240); w.dataset.scrolled = "1"; } }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 document.addEventListener("click", async e => {
