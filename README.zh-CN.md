@@ -6,8 +6,9 @@
 
 Operator 是给石溪大学（Stony Brook）学生做的 agent。它每十分钟读一次你的 Brightspace 日历源，判断哪些真的重要，只在值得打扰你的时候通过 iMessage 发一封短电报。你可以直接回它：打字、发语音、拍张课表照片，或者在网页上跟它对话。它会回答、记下你交代的事，并记住你已经做完了什么。
 
-SBUHacks 2026（主题 Steel and Steam）36 小时作品。
-线上地址：**[myoperator.club](https://myoperator.club)**
+SBUHacks 2026（主题 Steel and Steam）36 小时作品（[Devpost](https://devpost.com/software/operator-y1zcet)）。
+
+> **状态：** 比赛用的线上部署（myoperator.club）赛后已下线。本地 `npm run web` 即可运行，见下文「自己跑起来」。
 
 ![Operator 首页，蒸汽皮肤](docs/home-steam.jpg)
 

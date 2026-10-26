@@ -6,8 +6,9 @@ English · [中文](README.zh-CN.md)
 
 Operator is an agent for Stony Brook students. It reads your Brightspace calendar feed every ten minutes, decides what actually matters, and sends you a short telegram over iMessage only when it does. You can text it back, send it a voice note or a photo of a timetable, or just talk to it on the dashboard. It answers, records what you tell it, and remembers what you have already finished.
 
-Built in 36 hours for **SBUHacks 2026 · Steel and Steam**.
-Live at **[myoperator.club](https://myoperator.club)**.
+Built in 36 hours for **SBUHacks 2026 · Steel and Steam** ([Devpost](https://devpost.com/software/operator-y1zcet)).
+
+> **Status:** the hackathon deployment at myoperator.club was taken down after the event. Everything runs locally with `npm run web`; see *Run it yourself* below.
 
 ![Operator dashboard, steam skin](docs/home-steam.jpg)
 
