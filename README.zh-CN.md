@@ -10,6 +10,10 @@ SBUHacks 2026（主题 Steel and Steam）36 小时作品（[Devpost](https://dev
 
 > **状态：** 比赛用的线上部署（myoperator.club）赛后已下线。本地 `npm run web` 即可运行，见下文「自己跑起来」。
 
+[![Operator 演示视频](docs/thumbnail.png)](https://youtu.be/1TopOzZE1o8)
+
+▶ **[看 5 分钟演示视频](https://youtu.be/1TopOzZE1o8)** · [Devpost 提交页](https://devpost.com/software/operator-y1zcet)
+
 ![Operator 首页，蒸汽皮肤](docs/home-steam.jpg)
 
 ## 它做什么

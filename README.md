@@ -10,6 +10,10 @@ Built in 36 hours for **SBUHacks 2026 · Steel and Steam** ([Devpost](https://de
 
 > **Status:** the hackathon deployment at myoperator.club was taken down after the event. Everything runs locally with `npm run web`; see *Run it yourself* below.
 
+[![Operator demo video](docs/thumbnail.png)](https://youtu.be/1TopOzZE1o8)
+
+▶ **[Watch the 5-minute demo](https://youtu.be/1TopOzZE1o8)** · [Devpost submission](https://devpost.com/software/operator-y1zcet)
+
 ![Operator dashboard, steam skin](docs/home-steam.jpg)
 
 ## What it does
